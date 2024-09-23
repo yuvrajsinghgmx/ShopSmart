@@ -12,59 +12,86 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun HomeScreen() {
-    var items by remember { mutableStateOf(mutableListOf<String>()) }
+    var items by remember { mutableStateOf(SnapshotStateList<String>()) }
     var newItem by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(text = "ShopSmart", style = MaterialTheme.typography.headlineMedium)
+    Scaffold(
+        topBar = {
+            Box (modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center){
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "ShopSmart",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium ,
+                    modifier = Modifier.padding(20.dp),
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn(modifier = Modifier) {
-            items(items) { item ->
-                var isChecked by remember { mutableStateOf(false) }
-
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = { isChecked = it }
-                    )
-                    Text(
-                        text = item,
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(items) { item ->
+                    var isChecked by remember { mutableStateOf(false) }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .padding(start = 8.dp),
-                        color = if (isChecked) Color.Gray else Color.Black,
-                        textDecoration = if (isChecked) TextDecoration.LineThrough else TextDecoration.None
-                    )
-                    IconButton(onClick = {
-                        items.remove(item)
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp) // Add padding between items
+                    ) {
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { isChecked = it }
+                        )
+                        Text(
+                            text = item,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp),
+                            color = if (isChecked) Color.Gray else Color.Black,
+                            textDecoration = if (isChecked) TextDecoration.LineThrough else TextDecoration.None
+                        )
+                        IconButton(onClick = {
+                            items.remove(item)
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
                     }
                 }
             }
-        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = newItem,
-                onValueChange = { newItem = it },
-                placeholder = { Text("Add new item") },
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Button(onClick = {
-                if (newItem.isNotBlank()) {
-                    items.add(newItem)
-                    newItem = ""
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = newItem,
+                    onValueChange = { newItem = it },
+                    placeholder = { Text("Add new item") },
+                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                )
+                Button(
+                    onClick = {
+                        if (newItem.isNotBlank()) {
+                            items.add(newItem)
+                            newItem = ""
+                        }
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("Add Item")
                 }
-            }) {
-                Text("+")
             }
         }
     }
