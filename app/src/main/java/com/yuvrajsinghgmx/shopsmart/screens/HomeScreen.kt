@@ -48,7 +48,7 @@ fun HomeScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp) // Add padding between items
+                            .padding(vertical = 8.dp)
                     ) {
                         Checkbox(
                             checked = isChecked,
