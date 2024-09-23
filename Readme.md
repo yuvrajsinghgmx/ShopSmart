@@ -16,7 +16,7 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 
 ## **Upcoming Features:**
 
-- **List Creation**: Users can create multiple shopping lists.
+- **List Creation**: Users can create and add multiple shopping lists.
 - **Item Sorting**: Items are sorted by categories for easier shopping.
 - **Voice Input**: Users can add items using voice input.
 - **Price Estimation**: Add price estimates for items to keep track of budgets.
