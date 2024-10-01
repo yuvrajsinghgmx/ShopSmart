@@ -13,7 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.yuvrajsinghgmx.shopsmart.R
 
 @Composable
 fun HomeScreen() {
@@ -59,7 +64,10 @@ fun HomeScreen() {
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 8.dp),
-                            color = if (isChecked) Color.Gray else Color.Black,
+                            style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
+                                fontSize = 18.sp,
+                            ),
                             textDecoration = if (isChecked) TextDecoration.LineThrough else TextDecoration.None
                         )
                         IconButton(onClick = {
