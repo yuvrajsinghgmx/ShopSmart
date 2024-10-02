@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -20,20 +19,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 
+data class Product(val name: String, val amount: Int)
+
 @Composable
 fun HomeScreen() {
-    var items by remember { mutableStateOf(SnapshotStateList<String>()) }
+    val items by remember { mutableStateOf(SnapshotStateList<Product>()) }
     var newItem by remember { mutableStateOf("") }
+    var newAmount by remember { mutableStateOf("") }
+    var totalAmount by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
-            Box (modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center){
-
+            Box(modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center) {
                 Text(
                     text = "ShopSmart",
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineMedium ,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(20.dp),
                 )
             }
@@ -47,7 +49,7 @@ fun HomeScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(items) { item ->
+                items(items) { product ->
                     var isChecked by remember { mutableStateOf(false) }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -60,7 +62,7 @@ fun HomeScreen() {
                             onCheckedChange = { isChecked = it }
                         )
                         Text(
-                            text = item,
+                            text = product.name,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 8.dp),
@@ -70,14 +72,27 @@ fun HomeScreen() {
                             ),
                             textDecoration = if (isChecked) TextDecoration.LineThrough else TextDecoration.None
                         )
+                        Text(
+                            text = product.amount.toString(),
+                            modifier = Modifier.padding(start = 8.dp),
+                            style = TextStyle(fontSize = 18.sp)
+                        )
                         IconButton(onClick = {
-                            items.remove(item)
+                            totalAmount -= product.amount // Update total when deleting
+                            items.remove(product)
                         }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
                     }
                 }
             }
+
+            // Display total amount
+            Text(
+                text = "Total Amount: $totalAmount",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -89,11 +104,21 @@ fun HomeScreen() {
                     placeholder = { Text("Add new item") },
                     modifier = Modifier.weight(1f).padding(end = 8.dp)
                 )
+                TextField(
+                    value = newAmount,
+                    onValueChange = { newAmount = it },
+                    placeholder = { Text("Add amount") },
+                    modifier = Modifier.weight(1f).padding(end = 8.dp)
+                )
+                // adding amount when button clicked and only when item and amount is not empty
                 Button(
                     onClick = {
-                        if (newItem.isNotBlank()) {
-                            items.add(newItem)
+                        if (newItem.isNotBlank() && newAmount.isNotBlank()) {
+                            val amountValue = newAmount.toIntOrNull() ?: 0
+                            items.add(Product(newItem, amountValue))
+                            totalAmount += amountValue // Update total amount
                             newItem = ""
+                            newAmount = ""
                         }
                     },
                     modifier = Modifier.padding(start = 8.dp)
