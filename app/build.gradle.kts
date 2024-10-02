@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.yuvrajsinghgmx.shopsmart"
-        minSdk = 27
+        minSdk = 31
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+//    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,6 +67,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
 
     //Added DataStore and Gson dependencies
     implementation ("androidx.datastore:datastore:1.0.0")
@@ -73,9 +76,6 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.8.8")
 
     val lifecycle_version = "2.8.6"
-    val arch_version = "2.2.0"
-
-    // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // ViewModel utilities for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")

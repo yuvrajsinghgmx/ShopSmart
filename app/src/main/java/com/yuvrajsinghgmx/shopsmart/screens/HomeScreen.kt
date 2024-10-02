@@ -14,8 +14,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,6 +55,10 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
     val lightTextColor = Color(0xFF332D25)
     val primaryColor = Color(0xFF332D25)
     val secondaryColor = Color(0xFFDBD6CA)
+
+    // Handling status bar height for insets
+    val insets = WindowInsets.systemBars
+    val statusBarHeight = with(LocalDensity.current) { insets.getTop(LocalDensity.current).toDp() }
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -143,7 +145,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                         }
                     }
                 }
-            }
         }
     ) { innerPadding ->
         Column(
