@@ -126,10 +126,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                "Total:",
-                                style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = lightTextColor)
-                            )
+                            Text("Total:", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = lightTextColor))
                             val total = subtotal + deliveryFee - discount
                             Text("₹$total", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = lightTextColor))
                         }
@@ -148,7 +145,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                         }
                     }
                 }
-            }
         }
     ) { innerPadding ->
         Column(
@@ -219,6 +215,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
             }
         }
     }
+
     if (showDialog) {
         Dialog(onDismissRequest = { showDialog = false }) {
             Card(
@@ -314,4 +311,4 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
             }
         }
     }
-        }
+}
