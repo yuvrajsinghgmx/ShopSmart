@@ -9,11 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,9 +27,6 @@ import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
-import kotlin.collections.map
-import kotlin.collections.remove
-import kotlin.collections.toMutableList
 
 data class Product(val name: String, val amount: Int)
 
@@ -43,20 +39,29 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
     var newAmount by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
+    // Handling status bar height for insets
+    val insets = WindowInsets.systemBars
+    val statusBarHeight = with(LocalDensity.current) { insets.getTop(LocalDensity.current).toDp() }
+
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
     }
+
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "ShopSmart",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                }
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = statusBarHeight + 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "ShopSmart",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(20.dp)
+                )
+            }
         }
     ) { innerPadding ->
         Column(
