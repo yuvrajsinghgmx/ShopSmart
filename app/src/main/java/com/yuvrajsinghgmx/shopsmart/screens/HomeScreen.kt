@@ -9,15 +9,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 
 @Composable
@@ -25,24 +26,31 @@ fun HomeScreen() {
     var items by remember { mutableStateOf(SnapshotStateList<String>()) }
     var newItem by remember { mutableStateOf("") }
 
+    val insets = WindowInsets.systemBars
+    val statusBarHeight = with(LocalDensity.current) { insets.getTop(LocalDensity.current).toDp() }
+
     Scaffold(
         topBar = {
-            Box (modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center){
-
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = statusBarHeight + 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = "ShopSmart",
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineMedium ,
-                    modifier = Modifier.padding(20.dp),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(20.dp)
                 )
             }
         }
     ) { innerPadding ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .padding(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -66,7 +74,7 @@ fun HomeScreen() {
                                 .padding(start = 8.dp),
                             style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                                fontSize = 18.sp,
+                                fontSize = 18.sp
                             ),
                             textDecoration = if (isChecked) TextDecoration.LineThrough else TextDecoration.None
                         )
@@ -103,4 +111,10 @@ fun HomeScreen() {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen()
 }
