@@ -73,8 +73,6 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.8.8")
 
     val lifecycle_version = "2.8.6"
-    val arch_version = "2.2.0"
-
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // ViewModel utilities for Compose
