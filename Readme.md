@@ -33,7 +33,7 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 
 | Home Screen      | List Creation           | Dark Mode      |
 |------------------|-------------------------|----------------|
-| ![Home Screen](https://github.com/Satyajit0003/ShopSmart/blob/c39b8147e25a3d7b3c06ee73028af7c225ec895e/Screenshot%202024-10-03%20202535.png)) | ![List Creation](https://github.com/Satyajit0003/ShopSmart/blob/c39b8147e25a3d7b3c06ee73028af7c225ec895e/Screenshot%202024-10-03%20202631.png)      | ![Dark Mode](https://github.com/Satyajit0003/ShopSmart/blob/c39b8147e25a3d7b3c06ee73028af7c225ec895e/Screenshot%202024-10-03%20202631.png) |
+| ![Splash Screen](./Assets/Pasted%20image.png)) | ![List Creation](https://github.com/Satyajit0003/ShopSmart/blob/c39b8147e25a3d7b3c06ee73028af7c225ec895e/Screenshot%202024-10-03%20202631.png)      | ![Dark Mode](https://github.com/Satyajit0003/ShopSmart/blob/c39b8147e25a3d7b3c06ee73028af7c225ec895e/Screenshot%202024-10-03%20202631.png) |
 
 ---
 
