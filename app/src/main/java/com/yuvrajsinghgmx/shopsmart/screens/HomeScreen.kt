@@ -1,12 +1,14 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -14,33 +16,42 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.yuvrajsinghgmx.shopsmart.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Query
+import retrofit2.http.Url
 
-data class Product(val name: String, val amount: Int)
-
+data class Product(val name: String, val amount: Int, val imageUrl: String? = null)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
+fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val items = viewModel.items.collectAsState(initial = emptyList())
     var newItem by remember { mutableStateOf("") }
@@ -49,16 +60,13 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
     val selectedItems = remember { mutableStateListOf<Product>() }
     var showDeleteButton by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     // Color theme
     val lightBackgroundColor = Color(0xFFF6F5F3)
     val lightTextColor = Color(0xFF332D25)
     val primaryColor = Color(0xFF332D25)
     val secondaryColor = Color(0xFFDBD6CA)
-
-    // Handling status bar height for insets
-    val insets = WindowInsets.systemBars
-    val statusBarHeight = with(LocalDensity.current) { insets.getTop(LocalDensity.current).toDp() }
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -82,7 +90,8 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                     if (showDeleteButton) {
                         IconButton(onClick = {
                             coroutineScope.launch {
-                                val updatedItems = items.value.toMutableList().also { it.removeAll(selectedItems) }
+                                val updatedItems =
+                                    items.value.toMutableList().also { it.removeAll(selectedItems) }
                                 viewModel.updateItems(updatedItems)
                                 saveItems(context, updatedItems.map { Poduct(it.name, it.amount) })
                                 selectedItems.clear()
@@ -104,7 +113,11 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                 onClick = { showDialog = true },
                 containerColor = primaryColor
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Item", tint = lightBackgroundColor)
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add Item",
+                    tint = lightBackgroundColor
+                )
             }
         },
         bottomBar = {
@@ -119,16 +132,30 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         val subtotal = items.value.sumOf { it.amount }
-                        val deliveryFee = 10
+                        val deliveryFee = 0
                         val discount = 0
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text("Total:", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = lightTextColor))
+                            Text(
+                                "Total:",
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = lightTextColor
+                                )
+                            )
                             val total = subtotal + deliveryFee - discount
-                            Text("₹$total", style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = lightTextColor))
+                            Text(
+                                "₹$total",
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = lightTextColor
+                                )
+                            )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
@@ -145,6 +172,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                         }
                     }
                 }
+            }
         }
     ) { innerPadding ->
         Column(
@@ -160,40 +188,54 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, secondaryColor),
-                        colors = CardDefaults.cardColors(containerColor = lightBackgroundColor)
+                            .padding(bottom = 16.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                BorderStroke(2.dp, Color(0xFF332D25)),
+                                RoundedCornerShape(16.dp)
+                            ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = secondaryColor)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .padding(16.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.shoppingbag),
-                                contentDescription = "Placeholder",
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .padding(end = 8.dp)
-                            )
+                            if (product.imageUrl != null) {
+                                AsyncImage(
+                                    model = product.imageUrl,
+                                    contentDescription = product.name,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(100.dp,100.dp)
+                                        .clip(CircleShape)
+                                        .padding(end = 1.dp)
+                                        .border(
+                                            BorderStroke(2.dp, Color(0xFF332D25)),
+                                            CircleShape
+                                        )
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = product.name,
                                     style = TextStyle(
-                                        fontFamily = FontFamily(Font(R.font.montserrat_regular)),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = lightTextColor
                                     )
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "₹${product.amount}",
-                                    style = TextStyle(fontSize = 14.sp, color = Color.Gray)
+                                    style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                                 )
                             }
+                            Spacer(modifier = Modifier.width(16.dp))
                             Checkbox(
                                 checked = isChecked,
                                 onCheckedChange = { checked ->
@@ -207,7 +249,8 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                                 },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = primaryColor
-                                )
+                                ),
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -220,7 +263,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
         Dialog(onDismissRequest = { showDialog = false }) {
             Card(
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.padding(16.dp).background(Color(0xFFF6F5F3))
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color(0xFFF6F5F3))
             ) {
                 Column(
                     modifier = Modifier
@@ -253,8 +298,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
-
-                        )
+                    )
 
                     OutlinedTextField(
                         value = itemAmount,
@@ -271,6 +315,11 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
                     )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                    }
 
                     Row(
                         horizontalArrangement = Arrangement.End,
@@ -287,20 +336,36 @@ fun HomeScreen(viewModel: ShoppingListViewModel = viewModel()) {
                         Button(
                             onClick = {
                                 if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
-                                    val amountValue = itemAmount.toIntOrNull() ?: 0
-                                    coroutineScope.launch {
-                                        val newProduct = Product(itemName, amountValue)
-                                        val updatedItems =
-                                            items.value.toMutableList().also { it.add(newProduct) }
-                                        viewModel.updateItems(updatedItems)
-                                        saveItems(
-                                            context,
-                                            updatedItems.map { Poduct(it.name, it.amount) })
-                                        newItem = ""
-                                        newAmount = ""
+                                    if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                                        isLoading = true
+                                        coroutineScope.launch {
+                                            val imageUrl =
+                                                viewModel.searchImage(itemName) // Fetch image URL
+                                            val amountValue = itemAmount.toIntOrNull() ?: 0
+                                            val newProduct = Product(
+                                                itemName,
+                                                amountValue,
+                                                imageUrl
+                                            ) // Include imageUrl
+                                            val updatedItems = items.value.toMutableList()
+                                                .also { it.add(newProduct) }
+                                            viewModel.updateItems(updatedItems)
+                                            saveItems(
+                                                context,
+                                                updatedItems.map {
+                                                    Poduct(
+                                                        it.name,
+                                                        it.amount,
+                                                        imageUrl
+                                                    )
+                                                }) // Save imageUrl
+                                            newItem = ""
+                                            newAmount = ""
+                                            isLoading = false
+                                            showDialog = false
+                                        }
                                     }
                                 }
-                                showDialog = false
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF332D25))
                         ) {

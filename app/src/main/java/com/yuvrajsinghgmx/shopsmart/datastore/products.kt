@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.map
 import kotlin.contracts.contract
 import kotlin.text.get
 
-data class Poduct(val name: String, val amount: Int)
+data class Poduct(val name: String, val amount: Int, val imageUrl: String? = null)
 
 object ShoppingList{
     val ITEMS_KEY = stringPreferencesKey("items")
 }
 
-suspend fun saveItems(context: Context, items: List<Poduct>){
-    val json = Gson().toJson(items)
+suspend fun saveItems(context: Context, items: List<Poduct>) {
     context.dataStore.edit { preferences ->
-        preferences[ShoppingList.ITEMS_KEY] = json
+        val jsonString = Gson().toJson(items)
+        preferences[ShoppingList.ITEMS_KEY] = jsonString
     }
 }
 
