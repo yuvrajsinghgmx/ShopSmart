@@ -50,11 +50,12 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 Here's a sneak peek at ShopSmart in action
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/196f1f50-c4b3-43ed-bef7-10a13f2daf45" width="200" />
-  <img src="https://github.com/user-attachments/assets/b5efefcd-27b4-4703-bc2c-823da27dc8ed" width="200" />
-  <img src="https://github.com/user-attachments/assets/1c49ef8e-9d7b-4779-9ce9-53de57532952" width="200" />
-  <img src="https://github.com/user-attachments/assets/b95f926f-ecd6-4883-8264-849c6a05701e" width="200" />
+  <img src="https://github.com/user-attachments/assets/196f1f50-c4b3-43ed-bef7-10a13f2daf45" width="200" height="300" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b5efefcd-27b4-4703-bc2c-823da27dc8ed" width="200" height="300" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/1c49ef8e-9d7b-4779-9ce9-53de57532952" width="200" height="300" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b95f926f-ecd6-4883-8264-849c6a05701e" width="200" height="300" />
 </p>
+
 
 
 ## **Code of Conduct**
