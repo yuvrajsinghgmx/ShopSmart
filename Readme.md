@@ -4,8 +4,10 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 
 ## **Table of Contents**
 
+- [Available Features](#Available-Features)
 - [Upcoming Features](#upcoming-features)
 - [Technologies Used](#technologies-used)
+- [Screenshots](#Screenshots)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing Guidelines](#contributing-guidelines)
 - [Installation](#installation)
@@ -14,15 +16,20 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 
 ---
 
+## **Available Features**
+
+- **List Creation with Image Generation**: Users can create and add multiple shopping lists. Each list will automatically generate a relevant image for better organization.
+- **Offline Mode**: All features are available without an internet connection.
+- **Price Estimation**: Add price estimates for items to keep track of budgets.
+
+---
+
 ## **Upcoming Features:**
 
-- **List Creation**: Users can create and add multiple shopping lists.
 - **Item Sorting**: Items are sorted by categories for easier shopping.
 - **Voice Input**: Users can add items using voice input.
-- **Price Estimation**: Add price estimates for items to keep track of budgets.
 - **Reminders**: Set reminders for shopping trips.
 - **Dark Mode**: An optional dark mode for better usability in low-light environments.
-- **Offline Mode**: All features are available without an internet connection.
 
 ---
 
@@ -32,8 +39,16 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 - **Android SDK**: Android Software Development Kit for building Android apps. [Android SDK Website](https://developer.android.com/studio)
 - **MVVM Architecture**: Model-View-ViewModel architecture pattern for clean and maintainable code.
 - **Room**: Used for local database management and data storage.
+- Retrofit: HTTP client for API requests. 
+- Pixabay API: Used to fetch images for list creation. 
+- ViewModel: Manages UI-related data in a lifecycle-conscious way.
 
 ---
+
+## **Screenshots**
+
+Here's a sneak peek at ShopSmart in action
+
 
 ## **Code of Conduct**
 
