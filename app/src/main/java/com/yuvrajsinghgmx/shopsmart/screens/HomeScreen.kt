@@ -1,7 +1,14 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
 import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -23,10 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
@@ -171,7 +181,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-                                // Handle checkout action
+
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -193,76 +203,117 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(items.value) { product ->
-                    var isChecked by remember { mutableStateOf(false) }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .border(
-                                BorderStroke(2.dp, Color(0xFF332D25)),
-                                RoundedCornerShape(16.dp)
-                            ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = secondaryColor)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        ) {
-                            if (product.imageUrl != null) {
-                                AsyncImage(
-                                    model = product.imageUrl,
-                                    contentDescription = product.name,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(100.dp,100.dp)
-                                        .clip(CircleShape)
-                                        .padding(end = 1.dp)
-                                        .border(
-                                            BorderStroke(2.dp, Color(0xFF332D25)),
-                                            CircleShape
-                                        )
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(16.dp))
+            if (items.value.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val infiniteTransition = rememberInfiniteTransition()
+                    val scale by infiniteTransition.animateFloat(
+                        initialValue = 1f,
+                        targetValue = 1.1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1000, easing = LinearEasing),
+                            repeatMode = RepeatMode.Reverse
+                        ), label = ""
+                    )
 
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = product.name,
-                                    style = TextStyle(
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = lightTextColor
+                    Image(
+                        painter = painterResource(id = R.drawable.empty),
+                        contentDescription = "Empty List",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .scale(scale)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Your shopping list is empty.",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            color = lightTextColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Add items using the '+' button below.",
+                        style = TextStyle(fontSize = 16.sp, color = Color.Gray)
+                    )
+                }
+            }
+            else {
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    items(items.value) { product ->
+                        var isChecked by remember { mutableStateOf(false) }
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    BorderStroke(2.dp, Color(0xFF332D25)),
+                                    RoundedCornerShape(16.dp)
+                                ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(containerColor = secondaryColor)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                            ) {
+                                if (product.imageUrl != null) {
+                                    AsyncImage(
+                                        model = product.imageUrl,
+                                        contentDescription = product.name,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(100.dp, 100.dp)
+                                            .clip(CircleShape)
+                                            .padding(end = 1.dp)
+                                            .border(
+                                                BorderStroke(2.dp, Color(0xFF332D25)),
+                                                CircleShape
+                                            )
                                     )
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "₹${product.amount}",
-                                    style = TextStyle(fontSize = 16.sp, color = Color.Gray)
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = product.name,
+                                        style = TextStyle(
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = lightTextColor
+                                        )
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "₹${product.amount}",
+                                        style = TextStyle(fontSize = 16.sp, color = Color.Gray)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Checkbox(
+                                    checked = isChecked,
+                                    onCheckedChange = { checked ->
+                                        isChecked = checked
+                                        if (checked) {
+                                            selectedItems.add(product)
+                                        } else {
+                                            selectedItems.remove(product)
+                                        }
+                                        showDeleteButton = selectedItems.isNotEmpty()
+                                    },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = primaryColor
+                                    ),
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Checkbox(
-                                checked = isChecked,
-                                onCheckedChange = { checked ->
-                                    isChecked = checked
-                                    if (checked) {
-                                        selectedItems.add(product)
-                                    } else {
-                                        selectedItems.remove(product)
-                                    }
-                                    showDeleteButton = selectedItems.isNotEmpty()
-                                },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = primaryColor
-                                ),
-                                modifier = Modifier.size(24.dp)
-                            )
                         }
                     }
                 }
@@ -352,7 +403,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         isLoading = true
                                         coroutineScope.launch {
                                             val imageUrl =
-                                                viewModel.searchImage(itemName) // Fetch image URL
+                                                viewModel.searchImage(itemName)
                                             val amountValue = itemAmount.toIntOrNull() ?: 0
                                             val newProduct = Product(
                                                 itemName,
