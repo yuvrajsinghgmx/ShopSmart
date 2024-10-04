@@ -98,15 +98,12 @@ dependencies {
     //Retrofit
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
-
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-
     implementation("org.jsoup:jsoup:1.16.1")
     implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
-
     //Navigation
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
 }
