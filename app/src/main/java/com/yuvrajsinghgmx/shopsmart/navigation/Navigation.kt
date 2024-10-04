@@ -8,10 +8,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yuvrajsinghgmx.shopsmart.screens.EditAdd
 import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.Profile
 import com.yuvrajsinghgmx.shopsmart.screens.ShopSmartNavBar
+import com.yuvrajsinghgmx.shopsmart.screens.Upcoming
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
@@ -27,8 +27,8 @@ fun Navigation(navController: NavHostController, viewModel: ShoppingListViewMode
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("Home") { HomeScreen(viewModel, navController) }
-            composable("Add") { EditAdd() }
-            composable("profile") { Profile() }
+            composable("UpComing") { Upcoming() }
+            composable("Profile") { Profile() }
         }
     }
 }

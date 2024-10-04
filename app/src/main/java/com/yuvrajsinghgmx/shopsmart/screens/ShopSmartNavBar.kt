@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -24,12 +25,12 @@ fun ShopSmartNavBar(navController: NavHostController) {
             unselectedIcon = Icons.Default.Home
         ),
         ButtonNavigationItem(
-            title = "Add",
-            selectedIcon = Icons.Default.ShoppingCart,
-            unselectedIcon = Icons.Default.ShoppingCart
+            title = "UpComing",
+            selectedIcon = Icons.Default.DateRange,
+            unselectedIcon = Icons.Default.DateRange
         ),
         ButtonNavigationItem(
-            title = "profile",
+            title = "Profile",
             selectedIcon = Icons.Default.Person,
             unselectedIcon = Icons.Default.Person
         )
