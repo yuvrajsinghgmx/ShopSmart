@@ -48,13 +48,13 @@ This is a simple shopping list app developed using Kotlin(Jetpack Compose). It a
 ## **Screenshots**
 
 Here's a sneak peek at ShopSmart in action
+![Screenshot 2024-10-04 113624](https://github.com/user-attachments/assets/196f1f50-c4b3-43ed-bef7-10a13f2daf45)
 
-![Screenshot 2024-10-04 113117](https://github.com/user-attachments/assets/4ecb141d-8999-494e-a405-87a2c4b4266c)
-![Screenshot 2024-10-04 113200](https://github.com/user-attachments/assets/0499813b-aa4b-4d2b-aa38-5debfd54732e)
-![Screenshot 2024-10-04 113135](https://github.com/user-attachments/assets/77ae3464-d1ac-44e0-9906-771de76f7ca3)
-![Screenshot 2024-10-04 113146](https://github.com/user-attachments/assets/030ea520-862e-4161-b675-f249b3522166)
+![Screenshot 2024-10-04 113604](https://github.com/user-attachments/assets/b5efefcd-27b4-4703-bc2c-823da27dc8ed)
 
+![Screenshot 2024-10-04 113613](https://github.com/user-attachments/assets/1c49ef8e-9d7b-4779-9ce9-53de57532952)
 
+![Screenshot 2024-10-04 113526](https://github.com/user-attachments/assets/b95f926f-ecd6-4883-8264-849c6a05701e)
 
 ## **Code of Conduct**
 
