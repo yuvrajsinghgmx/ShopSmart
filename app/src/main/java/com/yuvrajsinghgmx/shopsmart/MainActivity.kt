@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.api.API
+import com.yuvrajsinghgmx.shopsmart.navigation.Navigation
 import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
@@ -28,7 +30,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ShopSmartTheme {
                 val viewModel : ShoppingListViewModel = hiltViewModel()
-                HomeScreen(viewModel)
+                val navController = rememberNavController()
+                Navigation(navController ,viewModel)
             }
         }
     }

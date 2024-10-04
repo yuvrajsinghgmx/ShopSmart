@@ -14,14 +14,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
@@ -49,9 +53,16 @@ import retrofit2.http.Url
 
 data class Product(val name: String, val amount: Int, val imageUrl: String? = null)
 
+data class ButtonNavigationItem(
+    val title: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+)
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
+fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController: NavController) {
     val context = LocalContext.current
     val items = viewModel.items.collectAsState(initial = emptyList())
     var newItem by remember { mutableStateOf("") }
@@ -266,6 +277,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .padding(16.dp)
                     .background(Color(0xFFF6F5F3))
+
             ) {
                 Column(
                     modifier = Modifier

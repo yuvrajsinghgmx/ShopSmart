@@ -106,4 +106,7 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.16.1")
     implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+
+    //Navigation
+    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
 }

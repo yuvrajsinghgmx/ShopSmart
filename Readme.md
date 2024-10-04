@@ -4,7 +4,16 @@
 
 ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Compose. From organizing items by category to adding them through voice commands, ShopSmart helps you streamline your grocery shopping experience—whether you're online or offline.
 
----
+- [Available Features](#Available-Features)
+- [Upcoming Features](#upcoming-features)
+- [Technologies Used](#technologies-used)
+- [Screenshots](#Screenshots)
+- [Code of Conduct](#code-of-conduct)
+- [Contributing Guidelines](#contributing-guidelines)
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [License](#license)
+
 
 ## **🔗 Table of Contents**
 1. [Features](#features)
@@ -17,16 +26,20 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 ---
 ## **✨ Features**
 
-### **✔️ Developed Features**
-- **📝 List Management**: Create, update, and manage multiple shopping lists effortlessly.
-- **🌑 Dark Mode**: Switch to dark mode for a comfortable low-light experience.
+## **Available Features**
 
-### **🚧 In Progress / Upcoming Features**
-- **📦 Category-Based Sorting**: Automatically organize items by category for a more streamlined shopping experience.
-- **🎤 Voice Input**: Add items hands-free using voice commands.
-- **📶 Full Offline Support**: Access and manage all your lists without an internet connection.
-- **💰 Budget Tracking**: Get price estimates and manage your budget in real time.
-- **🔔 Reminders**: Never miss a shopping trip with timely reminders.
+- **List Creation with Image Generation**: Users can create and add multiple shopping lists. Each list will automatically generate a relevant image for better organization.
+- **Offline Mode**: All features are available without an internet connection.
+- **Price Estimation**: Add price estimates for items to keep track of budgets.
+
+---
+
+## **Upcoming Features:**
+
+- **Item Sorting**: Items are sorted by categories for easier shopping.
+- **Voice Input**: Users can add items using voice input.
+- **Reminders**: Set reminders for shopping trips.
+- **Dark Mode**: An optional dark mode for better usability in low-light environments.
 
 ---
 ## **📱 Preview**
@@ -37,14 +50,28 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 
 ---
 
-## **🛠️ Tech Stack**
-- **Kotlin**: The core language for Android development.
-- **Jetpack Compose**: Android’s modern UI toolkit.
-- **MVVM**: Clean, maintainable architecture using the Model-View-ViewModel pattern.
-- **Room Database**: Local database for storing shopping lists.
-- **Android SDK**: Provides tools and libraries for Android app development.
+- **Kotlin**: The primary programming language used for app development. [Kotlin Website](https://kotlinlang.org/)
+- **Android SDK**: Android Software Development Kit for building Android apps. [Android SDK Website](https://developer.android.com/studio)
+- **MVVM Architecture**: Model-View-ViewModel architecture pattern for clean and maintainable code.
+- **Room**: Used for local database management and data storage.
+- Retrofit: HTTP client for API requests. 
+- Pixabay API: Used to fetch images for list creation. 
+- ViewModel: Manages UI-related data in a lifecycle-conscious way.
 
 ---
+
+## **Screenshots**
+
+Here's a sneak peek at ShopSmart in action
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/196f1f50-c4b3-43ed-bef7-10a13f2daf45" width="300" height="600" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b5efefcd-27b4-4703-bc2c-823da27dc8ed" width="300" height="600" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/1c49ef8e-9d7b-4779-9ce9-53de57532952" width="300" height="600" style="margin-right: 10px;" />
+  <img src="https://github.com/user-attachments/assets/b95f926f-ecd6-4883-8264-849c6a05701e" width="300" height="600" />
+</p>
+
+
 
 ## **Code of Conduct**
 
