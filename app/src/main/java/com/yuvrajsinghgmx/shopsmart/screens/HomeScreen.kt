@@ -123,12 +123,12 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
         bottomBar = {
             if (items.value.isNotEmpty()) {
                 Surface(
-                    color = lightBackgroundColor,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    color = Color(0xFF4D6357),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
                     shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         val subtotal = items.value.sumOf { it.amount }
