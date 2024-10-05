@@ -2,7 +2,6 @@ package com.yuvrajsinghgmx.shopsmart.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -17,14 +16,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(modifier: Modifier = Modifier) {
-    val lightBackgroundColor = Color(0xFFF6F5F3)
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -33,15 +30,10 @@ fun Profile(modifier: Modifier = Modifier) {
                         "Profile",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
                     )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
+                }
             )
-        },
-        containerColor = lightBackgroundColor
+        }
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -63,8 +55,7 @@ fun Profile(modifier: Modifier = Modifier) {
             Text(
                 "User",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF332D25)
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -78,7 +69,6 @@ fun Profile(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .padding(8.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -100,8 +90,7 @@ fun ProfileItem(title: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF332D25)
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
