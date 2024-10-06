@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -8,8 +10,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,11 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,33 +44,31 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
+import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
-
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null)
 
 data class ButtonNavigationItem(
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 )
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController: NavController) {
     val context = LocalContext.current
     val items = viewModel.items.collectAsState(initial = emptyList())
-    var newItem by remember { mutableStateOf("") }
-    var newAmount by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val selectedItems = remember { mutableStateListOf<Product>() }
     var showDeleteButton by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val lightBackgroundColor = Color(0xFFF6F5F3)
+    val lightTextColor = Color(0xFF332D25)
+    val primaryColor = Color(0xFF332D25)
+    val secondaryColor = Color(0xFFDBD6CA)
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -84,8 +82,12 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         text = "ShopSmart",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineMedium,
+                        color = lightTextColor
                     )
                 },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = lightBackgroundColor
+                ),
                 actions = {
                     if (showDeleteButton) {
                         IconButton(onClick = {
@@ -93,7 +95,17 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                 val updatedItems =
                                     items.value.toMutableList().also { it.removeAll(selectedItems) }
                                 viewModel.updateItems(updatedItems)
-                                saveItems(context, updatedItems.map { Poduct(it.name, it.amount) })
+                                // Highlighted change: Corrected to save Product with isChecked and imageUrl
+                                saveItems(
+                                    context,
+                                    updatedItems.map {
+                                        Product(
+                                            it.name,
+                                            it.amount,
+                                            it.imageUrl,
+                                            it.isChecked
+                                        )
+                                    })
                                 selectedItems.clear()
                                 showDeleteButton = false
                             }
@@ -101,7 +113,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete Selected",
-//                                tint = Color(primaryColor.value)
+                                tint = Color(primaryColor.value)
                             )
                         }
                     }
@@ -111,21 +123,29 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showDialog = true },
+                containerColor = primaryColor
             ) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = "Add Item",
+                    tint = lightBackgroundColor
                 )
             }
         },
         bottomBar = {
             if (items.value.isNotEmpty()) {
                 Surface(
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                    color = Color(0xFF4D6357),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
+                    shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp),
-                    border = BorderStroke(4.dp, Brush.verticalGradient(colors = listOf(MaterialTheme.colorScheme.onPrimaryContainer, Color.Transparent)))
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         val subtotal = items.value.sumOf { it.amount }
@@ -141,6 +161,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                 style = TextStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
+                                    color = lightTextColor
                                 )
                             )
                             val total = subtotal + deliveryFee - discount
@@ -149,20 +170,51 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                 style = TextStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
+                                    color = lightTextColor
                                 )
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-
+                                // TODO: Handle checkout action
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                         ) {
-                            Text("Checkout",fontSize = 18.sp)
+                            Text("Checkout", color = lightBackgroundColor, fontSize = 18.sp)
+                        }
+
+                        Button(
+                            onClick = {
+                                if (viewModel.isAnyItemUnchecked()) {
+                                    Toast.makeText(
+                                        context,
+                                        "You missed some item.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Shopping done!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                        ) {
+                            Text(
+                                "Shopping Completed",
+                                color = lightBackgroundColor,
+                                fontSize = 18.sp
+                            )
                         }
                     }
                 }
@@ -172,6 +224,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(lightBackgroundColor)
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
@@ -192,7 +245,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                     )
 
                     Image(
-                        painter = painterResource(id = if(isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
+                        painter = painterResource(id = R.drawable.empty),
                         contentDescription = "Empty List",
                         modifier = Modifier
                             .size(200.dp)
@@ -203,6 +256,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         "Your shopping list is empty.",
                         style = TextStyle(
                             fontSize = 20.sp,
+                            color = lightTextColor,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -212,18 +266,36 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                     )
                 }
-            }
-            else {
+            } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(items.value) { product ->
-                        var isChecked by remember { mutableStateOf(false) }
+                        var isChecked by remember { mutableStateOf(product.isChecked) }
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { checked ->
+                                isChecked = checked
+
+                                val updatedItems = items.value.toMutableList().also {
+                                    it[it.indexOf(product)] = product.copy(isChecked = checked)
+                                }
+                                viewModel.updateItems(updatedItems)
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = primaryColor
+                            ),
+                            modifier = Modifier.size(24.dp)
+                        )
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .border(2.dp, color = MaterialTheme.colorScheme.outline,RoundedCornerShape(16.dp)),
+                                .border(
+                                    BorderStroke(2.dp, Color(0xFF332D25)),
+                                    RoundedCornerShape(16.dp)
+                                ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(containerColor = secondaryColor)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -241,7 +313,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                             .clip(CircleShape)
                                             .padding(end = 1.dp)
                                             .border(
-                                                BorderStroke(2.dp, MaterialTheme.colorScheme.outline),
+                                                BorderStroke(2.dp, Color(0xFF332D25)),
                                                 CircleShape
                                             )
                                     )
@@ -254,6 +326,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         style = TextStyle(
                                             fontSize = 20.sp,
                                             fontWeight = FontWeight.Bold,
+                                            color = lightTextColor
                                         )
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
@@ -274,6 +347,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         }
                                         showDeleteButton = selectedItems.isNotEmpty()
                                     },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = primaryColor
+                                    ),
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -282,73 +358,90 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                 }
             }
         }
-    }
 
-    if (showDialog) {
-        Dialog(onDismissRequest = { showDialog = false }) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                Column(
+        if (showDialog) {
+            Dialog(onDismissRequest = { showDialog = false }) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .background(Color(0xFFF6F5F3))
+
                 ) {
-                    var itemName by remember { mutableStateOf("") }
-                    var itemAmount by remember { mutableStateOf("") }
-
-                    Text(
-                        "Add New Item",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    OutlinedTextField(
-                        value = itemName,
-                        onValueChange = { itemName = it },
-                        label = { Text("Item Name") },
-                        shape = RoundedCornerShape(8.dp),
+                    Column(
                         modifier = Modifier
+                            .padding(24.dp)
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                    )
-
-                    OutlinedTextField(
-                        value = itemAmount,
-                        onValueChange = { itemAmount = it },
-                        label = { Text("Amount") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Button(
-                            onClick = { showDialog = false },
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text("Cancel")
+                        var itemName by remember { mutableStateOf("") }
+                        var itemAmount by remember { mutableStateOf("") }
+
+                        Text(
+                            "Add New Item",
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF332D25)
+                            ),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = itemName,
+                            onValueChange = { itemName = it },
+                            label = { Text("Item Name", color = Color(0xFF332D25)) },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = Color(0xFF332D25),
+                                focusedBorderColor = Color(0xFF332D25),
+                                unfocusedBorderColor = Color(0xFFDBD6CA),
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                        )
+
+                        OutlinedTextField(
+                            value = itemAmount,
+                            onValueChange = { itemAmount = it },
+                            label = { Text("Amount", color = Color(0xFF332D25)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = Color(0xFF332D25),
+                                focusedBorderColor = Color(0xFF332D25),
+                                unfocusedBorderColor = Color(0xFFDBD6CA),
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
                         }
 
-                        Button(
-                            onClick = {
-                                if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = { showDialog = false },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(
+                                        0xFFDBD6CA
+                                    )
+                                ),
+                                modifier = Modifier.padding(end = 8.dp)
+                            ) {
+                                Text("Cancel", color = Color(0xFF332D25))
+                            }
+
+                            Button(
+                                onClick = {
                                     if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                                        // Highlighted change: To ensure proper usage of Product class
                                         isLoading = true
                                         coroutineScope.launch {
                                             val imageUrl =
@@ -357,30 +450,39 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                             val newProduct = Product(
                                                 itemName,
                                                 amountValue,
-                                                imageUrl
-                                            ) // Include imageUrl
+                                                imageUrl,  // Include imageUrl
+                                                false      // Default isChecked to false
+                                            )
                                             val updatedItems = items.value.toMutableList()
                                                 .also { it.add(newProduct) }
                                             viewModel.updateItems(updatedItems)
+                                            // Highlighted change: Saving product with imageUrl
                                             saveItems(
                                                 context,
                                                 updatedItems.map {
-                                                    Poduct(
+                                                    Product(
                                                         it.name,
                                                         it.amount,
-                                                        imageUrl
+                                                        it.imageUrl, // Save imageUrl
+                                                        it.isChecked  // Save isChecked
                                                     )
-                                                }) // Save imageUrl
-                                            newItem = ""
-                                            newAmount = ""
+                                                }
+                                            )
+                                            itemName = "" // Reset item name
+                                            itemAmount = "" // Reset item amount
                                             isLoading = false
                                             showDialog = false
                                         }
                                     }
-                                }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(
+                                        0xFF332D25
+                                    )
+                                )
+                            ) {
+                                Text("Add", color = Color.White)
                             }
-                        ) {
-                            Text("Add")
                         }
                     }
                 }
