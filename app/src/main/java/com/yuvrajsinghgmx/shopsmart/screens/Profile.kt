@@ -41,23 +41,20 @@ fun Profile(modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope()
     val lightBackgroundColor = Color(0xFFF6F5F3)
     var isEditing by remember { mutableStateOf(false) }
-    var userName by remember { mutableStateOf(SharedPrefsHelper.getUserName(context)) }
-    var userEmail by remember { mutableStateOf(SharedPrefsHelper.getUserEmail(context)) }
-    var profilePhotoUri by remember { mutableStateOf(SharedPrefsHelper.getProfilePhotoUri(context)) }
+
+    // Initialize state variables
+    var userName by remember { mutableStateOf("") }
+    var userEmail by remember { mutableStateOf("") }
+    var profilePhotoUri by remember { mutableStateOf<Uri?>(null) }
     var showImagePreview by remember { mutableStateOf(false) }
     var isNameError by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
-    var refreshTrigger by remember { mutableStateOf(0) }
 
-    fun refreshProfileData() {
+    // Fetch data once when composable is first composed
+    LaunchedEffect(Unit) {
         userName = SharedPrefsHelper.getUserName(context)
         userEmail = SharedPrefsHelper.getUserEmail(context)
         profilePhotoUri = SharedPrefsHelper.getProfilePhotoUri(context)
-        refreshTrigger++
-    }
-
-    LaunchedEffect(refreshTrigger) {
-        refreshProfileData()
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -69,7 +66,6 @@ fun Profile(modifier: Modifier = Modifier) {
                 copiedUri?.let { savedUri ->
                     profilePhotoUri = savedUri
                     SharedPrefsHelper.saveProfilePhotoUri(context, savedUri)
-                    refreshProfileData()
                 }
             }
         }
@@ -147,12 +143,13 @@ fun Profile(modifier: Modifier = Modifier) {
                     value = userName,
                     onValueChange = {
                         userName = it
+                        // Re-validate the name field as the user types
                         isNameError = it.isEmpty()
                     },
                     label = { Text("Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    isError = isNameError,
+                    isError = isNameError,  // If there's an error, highlight the text field
                     supportingText = {
                         if (isNameError) {
                             Text("Name cannot be empty", color = MaterialTheme.colorScheme.error)
@@ -164,12 +161,13 @@ fun Profile(modifier: Modifier = Modifier) {
                     value = userEmail,
                     onValueChange = {
                         userEmail = it
+                        // Re-validate the email field as the user types
                         isEmailError = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
                     },
                     label = { Text("Email") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    isError = isEmailError,
+                    isError = isEmailError,  // If there's an error, highlight the text field
                     supportingText = {
                         if (isEmailError) {
                             Text("Invalid email address format", color = MaterialTheme.colorScheme.error)
@@ -202,7 +200,7 @@ fun Profile(modifier: Modifier = Modifier) {
                             SharedPrefsHelper.saveUserEmail(context, userEmail)
                             Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
                             isEditing = false
-                            refreshProfileData()
+                            // No need to refreshProfileData here
                         } else {
                             Toast.makeText(context, "Please correct the errors", Toast.LENGTH_SHORT).show()
                         }
