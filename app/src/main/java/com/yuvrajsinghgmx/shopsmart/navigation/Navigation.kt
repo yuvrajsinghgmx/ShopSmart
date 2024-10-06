@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.Profile
+import com.yuvrajsinghgmx.shopsmart.screens.Profile  // Update this import
 import com.yuvrajsinghgmx.shopsmart.screens.ShopSmartNavBar
 import com.yuvrajsinghgmx.shopsmart.screens.Upcoming
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
@@ -25,7 +25,7 @@ fun Navigation(navController: NavHostController, viewModel: ShoppingListViewMode
         ) {
             composable("Home") { HomeScreen(viewModel, navController) }
             composable("UpComing") { Upcoming() }
-            composable("Profile") { Profile() }
+            composable("Profile") { Profile() }  // Update this line
         }
     }
 }
