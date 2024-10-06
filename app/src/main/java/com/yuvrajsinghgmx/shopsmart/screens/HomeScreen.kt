@@ -11,8 +11,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,16 +23,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -47,21 +46,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Query
-import retrofit2.http.Url
 
 data class Product(val name: String, val amount: Int, val imageUrl: String? = null)
 
@@ -85,11 +74,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    // Color theme
-    val lightBackgroundColor = Color(0xFFF6F5F3)
-    val lightTextColor = Color(0xFF332D25)
-    val primaryColor = Color(0xFF332D25)
-    val secondaryColor = Color(0xFFDBD6CA)
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -103,12 +87,8 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         text = "ShopSmart",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineMedium,
-                        color = lightTextColor
                     )
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                ),
                 actions = {
                     if (showDeleteButton) {
                         IconButton(onClick = {
@@ -124,7 +104,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete Selected",
-                                tint = Color(primaryColor.value)
+//                                tint = Color(primaryColor.value)
                             )
                         }
                     }
@@ -134,25 +114,22 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showDialog = true },
-                containerColor = primaryColor
             ) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = "Add Item",
-                    tint = lightBackgroundColor
                 )
             }
         },
         bottomBar = {
             if (items.value.isNotEmpty()) {
                 Surface(
-                    color = Color(0xFF4D6357),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-                    shadowElevation = 8.dp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
                 ) {
+
                 }
             }
         }
@@ -160,7 +137,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(lightBackgroundColor)
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
@@ -181,7 +157,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                     )
 
                     Image(
-                        painter = painterResource(id = R.drawable.empty),
+                        painter = painterResource(id = if(isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
                         contentDescription = "Empty List",
                         modifier = Modifier
                             .size(200.dp)
@@ -192,7 +168,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         "Your shopping list is empty.",
                         style = TextStyle(
                             fontSize = 20.sp,
-                            color = lightTextColor,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -218,6 +193,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                 ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
                             colors = CardDefaults.cardColors(containerColor = Color(rgb(234, 235, 230)))
+
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -248,7 +224,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         style = TextStyle(
                                             fontSize = 20.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = lightTextColor
                                         )
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
@@ -269,9 +244,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         }
                                         showDeleteButton = selectedItems.isNotEmpty()
                                     },
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = primaryColor
-                                    ),
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -328,7 +300,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                 colors = CardDefaults.cardColors(
                     containerColor = Color(rgb(234, 235, 230))
                 )
-
             ) {
                 Column(
                     modifier = Modifier
@@ -343,7 +314,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         style = TextStyle(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF332D25)
                         ),
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -360,6 +330,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                             focusedTextColor = Color(0xFF332D25),
                             unfocusedTextColor = Color(0xFF332D25)
                         ),
+
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
@@ -446,10 +417,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                         }
 
                                 }
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF332D25))
+                            }
                         ) {
-                            Text("Add", color = Color.White)
+                            Text("Add")
                         }
                     }
                 }
