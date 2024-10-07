@@ -1,16 +1,22 @@
 package com.yuvrajsinghgmx.shopsmart.viewmodel
 
 import android.content.Context
+import androidx.compose.animation.core.copy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.Repository.ImageRepo
+import com.yuvrajsinghgmx.shopsmart.datastore.ShoppingList
+import com.yuvrajsinghgmx.shopsmart.datastore.dataStore
 import com.yuvrajsinghgmx.shopsmart.datastore.getItems
-import com.yuvrajsinghgmx.shopsmart.datastore.Product // Ensure you import the correct Product class
+import com.yuvrajsinghgmx.shopsmart.screens.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,26 +33,17 @@ class ShoppingListViewModel @Inject constructor(
 
     fun loadItems(context: Context) {
         viewModelScope.launch {
-            val products = getItems(context).first()
+            val products = getItems(context).first() // Get the initial list of products
             val updatedProducts = products.map { product ->
-                // Highlighted line
                 val imageUrl = searchImage(product.name)
-                // Ensure you're calling the copy on the correct Product data class with isChecked
-                product.copy(imageUrl = imageUrl, isChecked = false)
+                product.copy(imageUrl = imageUrl) // Update the imageUrl for each product
             }
-            _items.value = updatedProducts
+            _items.value = updatedProducts // Update the state with the updated products
         }
     }
+
     suspend fun searchImage(query: String): String? {
         val galleryUrls = imageRepo.getProducts(query)
-        return galleryUrls?.firstOrNull()
-    }
-    fun areAllItemsChecked(): Boolean {
-        return _items.value.all { it.isChecked }
-    }
-
-    // Check if any item is still unchecked
-    fun isAnyItemUnchecked(): Boolean {
-        return _items.value.any { !it.isChecked }
+        return galleryUrls?.firstOrNull() // Return the first gallery URL if available
     }
 }
