@@ -15,9 +15,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun ShopSmartNavBar(navController: NavHostController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     val items = listOf(
         ButtonNavigationItem(
             title = "Home",
@@ -40,13 +45,13 @@ fun ShopSmartNavBar(navController: NavHostController) {
     NavigationBar( tonalElevation = 4.dp) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                selected = selectedItemIndex == index,
+                selected = currentDestination?.route == item.title,
                 onClick = {
-                    selectedItemIndex = index
                     navController.navigate(item.title){
                         popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
+                            saveState = true
                         }
+                        launchSingleTop = true
                     }
                 },
                 icon = {
