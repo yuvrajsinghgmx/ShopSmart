@@ -13,16 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-
-data class ButtonNavigationItem(
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
 
 @Composable
 fun ShopSmartNavBar(navController: NavHostController) {
@@ -47,9 +40,9 @@ fun ShopSmartNavBar(navController: NavHostController) {
             unselectedIcon = Icons.Default.Person
         )
     )
-    var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
 
-    NavigationBar(tonalElevation = 4.dp) {
+    NavigationBar( tonalElevation = 4.dp) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = currentDestination?.route == item.title,
@@ -59,8 +52,6 @@ fun ShopSmartNavBar(navController: NavHostController) {
                             saveState = true
                         }
                         launchSingleTop = true
-                        restoreState = true
-
                     }
                 },
                 icon = {
@@ -71,9 +62,9 @@ fun ShopSmartNavBar(navController: NavHostController) {
                 },
                 label = { Text(item.title) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                    selectedIconColor= MaterialTheme.colorScheme.onBackground,
                     selectedTextColor = Color.Unspecified,
-                    indicatorColor = MaterialTheme.colorScheme.surfaceTint
+                    indicatorColor= MaterialTheme.colorScheme.surfaceTint
                 )
             )
         }
