@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.content.Context
 import android.graphics.Color.rgb
 import android.util.Log
 import android.widget.Toast
@@ -129,52 +130,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                 )
             }
         },
-        bottomBar = {
-            if (items.value.isNotEmpty()) {
-                Surface(
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                ) {
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                "Total:",
-                                style = TextStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            )
-                            val total = subtotal + deliveryFee - discount
-                            Text(
-                                "₹$total",
-                                style = TextStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = {
-                                saveOrdersToSharedPreferences(context, items.value)
-                                navController.navigate("MyOrders")
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(8.dp),
-                        ) {
-                            Text("Checkout", fontSize = 18.sp)
-                        }
-                    }
-                }
-            }
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -311,7 +267,8 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = {
-
+                            saveOrdersToSharedPreferences(context, items.value)
+                                navController.navigate("MyOrders")
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -435,7 +392,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                                 itemName,
                                                 amountValue,
                                                 imageUrl
-                                            ) // Include imageUrl
+                                            )
                                             val updatedItems = items.value.toMutableList()
                                                 .also { it.add(newProduct) }
                                             viewModel.updateItems(updatedItems)
@@ -447,7 +404,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                                         it.amount,
                                                         imageUrl
                                                     )
-                                                }) // Save imageUrl
+                                                })
                                             newItem = ""
                                             newAmount = ""
                                             isLoading = false
