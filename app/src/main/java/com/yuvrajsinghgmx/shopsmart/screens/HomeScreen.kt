@@ -1,10 +1,19 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import android.content.Context
+import android.graphics.Color.rgb
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -125,13 +135,8 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 60.dp),
-                    border = BorderStroke(4.dp, Brush.verticalGradient(colors = listOf(MaterialTheme.colorScheme.onPrimaryContainer, Color.Transparent)))
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        val subtotal = items.value.sumOf { it.amount }
-                        val deliveryFee = 0
-                        val discount = 0
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -222,16 +227,17 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 10.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .border(2.dp, color = MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(16.dp)
+                                    .padding(10.dp)
                             ) {
                                 if (product.imageUrl != null) {
                                     AsyncImage(
@@ -239,11 +245,11 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         contentDescription = product.name,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
-                                            .size(100.dp, 100.dp)
+                                            .size(70.dp, 70.dp)
                                             .clip(CircleShape)
                                             .padding(end = 1.dp)
                                             .border(
-                                                BorderStroke(2.dp, MaterialTheme.colorScheme.outline),
+                                                BorderStroke(1.dp, Color(0xFF332D25)),
                                                 CircleShape
                                             )
                                     )
@@ -282,6 +288,42 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         }
                     }
                 }
+
+                Column(modifier = Modifier.width(300.dp)) {
+                    val subtotal = items.value.sumOf { it.amount }
+                    val deliveryFee = 0
+                    val discount = 0
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        val total = subtotal + deliveryFee - discount
+                        Text(
+                            "Total: ₹${total}",
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
+                    ) {
+                        Text("Checkout", color = Color.White, fontSize = 18.sp)
+                    }
+                }
+
+
             }
         }
     }
@@ -292,6 +334,10 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .padding(16.dp)
+                    .background(Color.Transparent),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(rgb(234, 235, 230))
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -313,8 +359,16 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     OutlinedTextField(
                         value = itemName,
                         onValueChange = { itemName = it },
-                        label = { Text("Item Name") },
+                        label = { Text("Item Name", color = Color.Black) },
                         shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = Color(0xFF332D25),
+                            focusedBorderColor = Color(0xFF332D25),
+                            unfocusedBorderColor = Color(0xFFDBD6CA),
+                            focusedTextColor = Color(0xFF332D25),
+                            unfocusedTextColor = Color(0xFF332D25)
+                        ),
+
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
@@ -323,9 +377,17 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     OutlinedTextField(
                         value = itemAmount,
                         onValueChange = { itemAmount = it },
-                        label = { Text("Amount") },
+                        label = { Text("Amount", color = Color.Black) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = Color(0xFF332D25),
+                            focusedBorderColor = Color(0xFF332D25),
+                            unfocusedBorderColor = Color(0xFFDBD6CA),
+                            focusedTextColor = Color(0xFF332D25),
+                            unfocusedTextColor = Color(0xFF332D25)
+
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
@@ -337,32 +399,60 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     }
 
                     Row(
-                        horizontalArrangement = Arrangement.End,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Button(
-                            onClick = { showDialog = false },
+                            onClick = {
+                                showDialog = false
+                                      },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF332D25)),
                             modifier = Modifier.padding(end = 8.dp)
                         ) {
-                            Text("Cancel")
+                            Text("Cancel", color = Color.White)
                         }
 
                         Button(
                             onClick = {
-                                if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
-                                    isLoading = true
-                                    coroutineScope.launch {
-                                        val imageUrl = viewModel.searchImage(itemName)
-                                        val amountValue = itemAmount.toIntOrNull() ?: 0
-                                        val newProduct = Product(itemName, amountValue, imageUrl)
-                                        val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
-                                        viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl) })
-                                        newItem = ""
-                                        newAmount = ""
-                                        isLoading = false
-                                        showDialog = false
-                                    }
+
+                                if(itemName.isBlank() && itemAmount.isBlank()) {
+                                    Toast.makeText(context, "Please Enter valid Data", Toast.LENGTH_SHORT).show()
+                                }
+                                else if(itemName.isBlank()) {
+                                    Toast.makeText(context, "Please Enter a valid Name", Toast.LENGTH_SHORT).show()
+                                }
+                                else if(itemAmount.isBlank()) {
+                                    Toast.makeText(context, "Please Enter a valid Amount", Toast.LENGTH_SHORT).show()
+                                }
+
+                                    if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                                        isLoading = true
+                                        coroutineScope.launch {
+                                            val imageUrl =
+                                                viewModel.searchImage(itemName)
+                                            val amountValue = itemAmount.toIntOrNull() ?: 0
+                                            val newProduct = Product(
+                                                itemName,
+                                                amountValue,
+                                                imageUrl
+                                            ) // Include imageUrl
+                                            val updatedItems = items.value.toMutableList()
+                                                .also { it.add(newProduct) }
+                                            viewModel.updateItems(updatedItems)
+                                            saveItems(
+                                                context,
+                                                updatedItems.map {
+                                                    Poduct(
+                                                        it.name,
+                                                        it.amount,
+                                                        imageUrl
+                                                    )
+                                                }) // Save imageUrl
+                                            newItem = ""
+                                            newAmount = ""
+                                            isLoading = false
+                                            showDialog = false
+                                        }
                                 }
                             }
                         ) {

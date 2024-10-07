@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 data class ButtonNavigationItem(
     val title: String,
@@ -25,6 +26,10 @@ data class ButtonNavigationItem(
 
 @Composable
 fun ShopSmartNavBar(navController: NavHostController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     val items = listOf(
         ButtonNavigationItem(
             title = "Home",
@@ -47,15 +52,15 @@ fun ShopSmartNavBar(navController: NavHostController) {
     NavigationBar(tonalElevation = 4.dp) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
-                selected = selectedItemIndex == index,
+                selected = currentDestination?.route == item.title,
                 onClick = {
-                    selectedItemIndex = index
                     navController.navigate(item.title){
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
                         launchSingleTop = true
                         restoreState = true
+
                     }
                 },
                 icon = {
