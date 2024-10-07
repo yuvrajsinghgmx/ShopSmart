@@ -1,7 +1,3 @@
-import org.gradle.kotlin.dsl.android
-import org.gradle.kotlin.dsl.hilt
-import org.gradle.kotlin.dsl.test
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
