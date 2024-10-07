@@ -11,11 +11,10 @@ import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.Profile
 import com.yuvrajsinghgmx.shopsmart.screens.ShopSmartNavBar
 import com.yuvrajsinghgmx.shopsmart.screens.Upcoming
-import com.yuvrajsinghgmx.shopsmart.screens.MyOrders
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
-fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
+fun Navigation(navController: NavHostController, viewModel: ShoppingListViewModel) {
     Scaffold(
         bottomBar = { ShopSmartNavBar(navController) }
     ) { innerPadding ->
@@ -24,18 +23,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("Home") {
-                HomeScreen(viewModel = viewModel, navController = navController)
-            }
-            composable("UpComing") {
-                Upcoming()
-            }
-            composable("Profile") {
-                Profile(navController = navController)
-            }
-            composable("MyOrders") {
-                MyOrders(navController = navController)
-            }
+            composable("Home") { HomeScreen(viewModel, navController) }
+            composable("UpComing") { Upcoming() }
+            composable("Profile") { Profile() }
         }
     }
 }
