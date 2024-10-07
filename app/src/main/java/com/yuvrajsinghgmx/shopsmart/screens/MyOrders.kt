@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,21 +21,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyOrders(navController: NavController) {
     val context = LocalContext.current
     var orders by remember { mutableStateOf(listOf<Poduct>()) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        try {
-            orders = SharedPrefsHelper.getOrders(context)
-            Log.d("MyOrders", "Orders loaded: ${orders.size}")
-            Toast.makeText(context, "Orders loaded: ${orders.size}", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Log.e("MyOrders", "Error loading orders", e)
-            Toast.makeText(context, "Error loading orders", Toast.LENGTH_SHORT).show()
+        loadOrders(context) { loadedOrders ->
+            orders = loadedOrders
         }
     }
 
@@ -47,6 +45,21 @@ fun MyOrders(navController: NavController) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                clearOrders(context)
+                                orders = emptyList()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Clear Orders"
                         )
                     }
                 }
@@ -108,7 +121,7 @@ fun MyOrders(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 100.dp) // Increased bottom padding for the button
+                    .padding(bottom = 100.dp)
             ) {
                 items(orders) { order ->
                     OrderItem(order)
@@ -155,5 +168,29 @@ fun OrderItem(order: Poduct) {
                 color = MaterialTheme.colorScheme.primary
             )
         }
+    }
+}
+
+private suspend fun loadOrders(context: android.content.Context, onOrdersLoaded: (List<Poduct>) -> Unit) {
+    try {
+        val loadedOrders = SharedPrefsHelper.getOrders(context)
+        Log.d("MyOrders", "Orders loaded: ${loadedOrders.size}")
+        Toast.makeText(context, "Orders loaded: ${loadedOrders.size}", Toast.LENGTH_SHORT).show()
+        onOrdersLoaded(loadedOrders)
+    } catch (e: Exception) {
+        Log.e("MyOrders", "Error loading orders", e)
+        Toast.makeText(context, "Error loading orders", Toast.LENGTH_SHORT).show()
+        onOrdersLoaded(emptyList())
+    }
+}
+
+private suspend fun clearOrders(context: android.content.Context) {
+    try {
+        SharedPrefsHelper.saveOrders(context, emptyList())
+        Log.d("MyOrders", "Orders cleared")
+        Toast.makeText(context, "All orders cleared", Toast.LENGTH_SHORT).show()
+    } catch (e: Exception) {
+        Log.e("MyOrders", "Error clearing orders", e)
+        Toast.makeText(context, "Error clearing orders", Toast.LENGTH_SHORT).show()
     }
 }
