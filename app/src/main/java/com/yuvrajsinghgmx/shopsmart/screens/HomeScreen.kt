@@ -179,7 +179,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
             else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(items.value) { product ->
-                        var isChecked by remember { mutableStateOf(false) }
+                        val isChecked = product in selectedItems
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -230,7 +230,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                 Checkbox(
                                     checked = isChecked,
                                     onCheckedChange = { checked ->
-                                        isChecked = checked
                                         if (checked) {
                                             selectedItems.add(product)
                                         } else {
