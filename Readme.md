@@ -136,6 +136,22 @@ Please follow these guidelines while contributing:
 - Be open to feedback from other contributors.
 - Participate in code reviews to help improve the project.
 
+---
+
+## 👀 Our Contributors
+
+- We extend our heartfelt gratitude for your invaluable contribution to our project! Your efforts play a pivotal role in elevating this project to greater heights.
+- Make sure you show some love by giving ⭐ to our repository.
+
+<div align="center">
+
+  <a href="https://github.com/yuvrajsinghgmx/ShopSmart">
+    <img src="https://contrib.rocks/image?repo=yuvrajsinghgmx/ShopSmart&&max=100" />
+  </a>
+</div>
+
+---
+
 ## **Code of Conduct**
 
 Please note that this project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/). By participating in this project, you agree to abide by its terms.
