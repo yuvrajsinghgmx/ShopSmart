@@ -8,13 +8,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.Profile  // Update this import
+import com.yuvrajsinghgmx.shopsmart.screens.Profile
 import com.yuvrajsinghgmx.shopsmart.screens.ShopSmartNavBar
 import com.yuvrajsinghgmx.shopsmart.screens.Upcoming
+import com.yuvrajsinghgmx.shopsmart.screens.MyOrders
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
-fun Navigation(navController: NavHostController, viewModel: ShoppingListViewModel) {
+fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
     Scaffold(
         bottomBar = { ShopSmartNavBar(navController) }
     ) { innerPadding ->
@@ -23,9 +24,18 @@ fun Navigation(navController: NavHostController, viewModel: ShoppingListViewMode
             startDestination = "Home",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("Home") { HomeScreen(viewModel, navController) }
-            composable("UpComing") { Upcoming() }
-            composable("Profile") { Profile() }  // Update this line
+            composable("Home") {
+                HomeScreen(viewModel = viewModel, navController = navController)
+            }
+            composable("UpComing") {
+                Upcoming()
+            }
+            composable("Profile") {
+                Profile(navController = navController)
+            }
+            composable("MyOrders") {
+                MyOrders(navController = navController)
+            }
         }
     }
 }

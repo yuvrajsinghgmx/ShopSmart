@@ -1,17 +1,11 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -22,15 +16,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,21 +37,33 @@ import coil.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
+import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
 data class Product(val name: String, val amount: Int, val imageUrl: String? = null)
 
-data class ButtonNavigationItem(
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
-
-
+private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
+    try {
+        val orders = items.map { Poduct(it.name, it.amount, it.imageUrl) }
+        if (orders.isNotEmpty()) {
+            SharedPrefsHelper.saveOrders(context, orders)
+            Log.d("HomeScreen", "Orders saved: ${orders.size}")
+            Toast.makeText(context, "Orders saved successfully", Toast.LENGTH_SHORT).show()
+        } else {
+            // If the order list is empty, clear the orders in SharedPreferences
+            SharedPrefsHelper.saveOrders(context, emptyList())
+            Log.d("HomeScreen", "No orders to save, cleared existing orders")
+            Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception) {
+        Log.e("HomeScreen", "Error saving orders", e)
+        Toast.makeText(context, "Error saving orders", Toast.LENGTH_SHORT).show()
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController: NavController) {
+fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController: NavController) {
     val context = LocalContext.current
     val items = viewModel.items.collectAsState(initial = emptyList())
     var newItem by remember { mutableStateOf("") }
@@ -70,7 +73,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
     var showDeleteButton by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -100,8 +102,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         }) {
                             Icon(
                                 Icons.Default.Delete,
-                                contentDescription = "Delete Selected",
-//                                tint = Color(primaryColor.value)
+                                contentDescription = "Delete Selected"
                             )
                         }
                     }
@@ -155,14 +156,15 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-
+                                saveOrdersToSharedPreferences(context, items.value)
+                                navController.navigate("MyOrders")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             shape = RoundedCornerShape(8.dp),
                         ) {
-                            Text("Checkout",fontSize = 18.sp)
+                            Text("Checkout", fontSize = 18.sp)
                         }
                     }
                 }
@@ -222,7 +224,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .border(2.dp, color = MaterialTheme.colorScheme.outline,RoundedCornerShape(16.dp)),
+                                .border(2.dp, color = MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         ) {
                             Row(
@@ -348,34 +350,18 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                         Button(
                             onClick = {
                                 if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
-                                    if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
-                                        isLoading = true
-                                        coroutineScope.launch {
-                                            val imageUrl =
-                                                viewModel.searchImage(itemName)
-                                            val amountValue = itemAmount.toIntOrNull() ?: 0
-                                            val newProduct = Product(
-                                                itemName,
-                                                amountValue,
-                                                imageUrl
-                                            ) // Include imageUrl
-                                            val updatedItems = items.value.toMutableList()
-                                                .also { it.add(newProduct) }
-                                            viewModel.updateItems(updatedItems)
-                                            saveItems(
-                                                context,
-                                                updatedItems.map {
-                                                    Poduct(
-                                                        it.name,
-                                                        it.amount,
-                                                        imageUrl
-                                                    )
-                                                }) // Save imageUrl
-                                            newItem = ""
-                                            newAmount = ""
-                                            isLoading = false
-                                            showDialog = false
-                                        }
+                                    isLoading = true
+                                    coroutineScope.launch {
+                                        val imageUrl = viewModel.searchImage(itemName)
+                                        val amountValue = itemAmount.toIntOrNull() ?: 0
+                                        val newProduct = Product(itemName, amountValue, imageUrl)
+                                        val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
+                                        viewModel.updateItems(updatedItems)
+                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl) })
+                                        newItem = ""
+                                        newAmount = ""
+                                        isLoading = false
+                                        showDialog = false
                                     }
                                 }
                             }

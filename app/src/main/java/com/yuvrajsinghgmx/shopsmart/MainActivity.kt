@@ -9,12 +9,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.api.API
 import com.yuvrajsinghgmx.shopsmart.navigation.Navigation
-import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,9 +26,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ShopSmartTheme {
-                val viewModel : ShoppingListViewModel = hiltViewModel()
+                val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
-                Navigation(navController ,viewModel)
+                Navigation(viewModel = viewModel, navController = navController)
             }
         }
     }

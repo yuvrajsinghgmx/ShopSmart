@@ -12,7 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,10 +32,12 @@ import com.yuvrajsinghgmx.shopsmart.components.ImagePreviewDialog
 import com.yuvrajsinghgmx.shopsmart.utils.ImageHelper
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.Icons
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(modifier: Modifier = Modifier) {
+fun Profile(modifier: Modifier = Modifier,navController: NavController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val lightBackgroundColor = Color(0xFFF6F5F3)
@@ -223,7 +224,9 @@ fun Profile(modifier: Modifier = Modifier) {
                 border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    ProfileItem(title = "My Orders")
+                    ProfileItem(title = "My Orders") {
+                        navController.navigate("MyOrders")
+                    }
                     ProfileItem(title = "Settings")
                     ProfileItem(title = "Help & Support")
                 }
@@ -242,9 +245,9 @@ fun Profile(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ProfileItem(title: String) {
+fun ProfileItem(title: String, onClick: () -> Unit = {}) {
     TextButton(
-        onClick = { /* Handle click */ },
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
