@@ -11,6 +11,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -127,7 +129,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
 
                 }
@@ -266,7 +268,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = lightTextColor
+                                color = Color.Black
                             )
                         )
                     }
@@ -279,9 +281,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(),navController:
                             .fillMaxWidth()
                             .height(56.dp),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
                     ) {
-                        Text("Checkout", color = lightBackgroundColor, fontSize = 18.sp)
+                        Text("Checkout", color = Color.White, fontSize = 18.sp)
                     }
                 }
 
