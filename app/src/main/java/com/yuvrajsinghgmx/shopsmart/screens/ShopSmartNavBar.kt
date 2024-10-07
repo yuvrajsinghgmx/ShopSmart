@@ -4,16 +4,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 @Composable
@@ -35,9 +35,10 @@ fun ShopSmartNavBar(navController: NavHostController) {
             unselectedIcon = Icons.Default.Person
         )
     )
-    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
+    var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    NavigationBar( tonalElevation = 4.dp) {
+    NavigationBar(containerColor = lightBackgroundColor) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
@@ -56,11 +57,6 @@ fun ShopSmartNavBar(navController: NavHostController) {
                     )
                 },
                 label = { Text(item.title) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor= MaterialTheme.colorScheme.onBackground,
-                    selectedTextColor = Color.Unspecified,
-                    indicatorColor= MaterialTheme.colorScheme.surfaceTint
-                )
             )
         }
     }
