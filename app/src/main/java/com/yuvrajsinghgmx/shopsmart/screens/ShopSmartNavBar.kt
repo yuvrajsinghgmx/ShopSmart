@@ -54,14 +54,10 @@ fun ShopSmartNavBar(navController: NavHostController) {
             NavigationBarItem(
                 selected = currentDestination?.route == item.title,
                 onClick = {
-                    navController.navigate(item.title){
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                        navController.navigate(item.title) {
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
-
-                    }
                 },
                 icon = {
                     Icon(
