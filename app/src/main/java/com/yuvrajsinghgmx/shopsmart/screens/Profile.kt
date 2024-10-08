@@ -228,7 +228,9 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         navController.navigate("MyOrders")
                     }
                     ProfileItem(title = "Settings")
-                    ProfileItem(title = "Help & Support")
+                    ProfileItem(title = "Help & Support"){
+                        navController.navigate("Help")
+                    }
                 }
             }
         }
