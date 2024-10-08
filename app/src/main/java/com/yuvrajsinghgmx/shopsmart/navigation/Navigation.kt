@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.yuvrajsinghgmx.shopsmart.screens.HelpS
 import com.yuvrajsinghgmx.shopsmart.screens.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.Profile
 import com.yuvrajsinghgmx.shopsmart.screens.ShopSmartNavBar
@@ -35,6 +36,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
             composable("MyOrders") {
                 MyOrders(navController = navController)
+            }
+            composable("Help") {
+                HelpS(navController = navController)
             }
         }
     }
