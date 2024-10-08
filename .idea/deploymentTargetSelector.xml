@@ -2,12 +2,12 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="ShopSmart">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-02T10:05:51.657864300Z">
+        <DropdownSelection timestamp="2024-10-07T21:21:52.514360300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\as351\.android\avd\Pixel_8_Pro_API_34.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\farha\.android\avd\Pixel_6_API_31.avd" />
             </handle>
           </Target>
         </DropdownSelection>
