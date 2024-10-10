@@ -5,6 +5,7 @@ import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
+import com.yuvrajsinghgmx.shopsmart.screens.Product
 
 object SharedPrefsHelper {
     private const val PREFS_NAME = "ShopSmartPrefs"
@@ -48,11 +49,11 @@ object SharedPrefsHelper {
         getPrefs(context).edit().putString(KEY_ORDERS, json).apply()
     }
 
-    fun getOrders(context: Context): List<Poduct> {
+    fun getOrders(context: Context): List<Product> {
         val gson = Gson()
         val json = getPrefs(context).getString(KEY_ORDERS, null)
         return if (json != null) {
-            val type = object : TypeToken<List<Poduct>>() {}.type
+            val type = object : TypeToken<List<Product>>() {}.type
             gson.fromJson(json, type)
         } else {
             emptyList()

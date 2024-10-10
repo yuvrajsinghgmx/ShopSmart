@@ -29,7 +29,8 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 HomeScreen(viewModel = viewModel, navController = navController)
             }
             composable("UpComing") {
-                Upcoming()
+                Upcoming(
+                    modifier = Modifier.padding(innerPadding),)
             }
             composable("Profile") {
                 Profile(navController = navController)
