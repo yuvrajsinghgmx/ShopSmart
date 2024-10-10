@@ -59,10 +59,11 @@ class ShoppingListViewModel @Inject constructor(
 
     // Add a new item
     fun addItem(name: String, price: String, date: String) {
-        val newProduct = Product(name = name, amount = price.toIntOrNull() ?: 0, futureDate = date)
-        val updatedItems = _items.value.toMutableList().apply { add(newProduct) }
-        _items.value = updatedItems
-    }
+    val amount = price.toIntOrNull() ?: 0
+    val newProduct = Product(name = name, amount = amount, futureDate = date)
+    val updatedItems = _items.value.toMutableList().apply { add(newProduct) }
+    _items.value = updatedItems
+}
 
     // Remove an item
     fun removeItem(product: Product) {
