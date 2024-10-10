@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
@@ -26,6 +28,12 @@ class ShoppingListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _items = MutableStateFlow<List<Product>>(emptyList())
     val items: StateFlow<List<Product>> = _items.asStateFlow()
+
+    // New StateFlow to hold today's list
+    private val _todayItems = MutableStateFlow<List<Product>>(emptyList())
+    val todayItems: StateFlow<List<Product>> = _todayItems.asStateFlow()
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     fun updateItems(newItems: List<Product>) {
         _items.value = newItems
@@ -39,7 +47,28 @@ class ShoppingListViewModel @Inject constructor(
                 product.copy(imageUrl = imageUrl) // Update the imageUrl for each product
             }
             _items.value = updatedProducts // Update the state with the updated products
+
+            // Filter todays items
+            val today = LocalDate.now()
+            val todayList = products.filter { product ->
+                product.date != null && LocalDate.parse(product.date, dateFormatter).isEqual(today)
+            }
+            _todayItems.value = todayList // Update today's list
         }
+    }
+
+    // Add a new item
+    fun addItem(name: String, price: String, date: String) {
+    val amount = price.toIntOrNull() ?: 0
+    val newProduct = Product(name = name, amount = amount, futureDate = date)
+    val updatedItems = _items.value.toMutableList().apply { add(newProduct) }
+    _items.value = updatedItems
+}
+
+    // Remove an item
+    fun removeItem(product: Product) {
+        val updatedItems = _items.value.toMutableList().apply { remove(product) }
+        _items.value = updatedItems
     }
 
     suspend fun searchImage(query: String): String? {

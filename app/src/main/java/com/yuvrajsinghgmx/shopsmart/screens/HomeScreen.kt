@@ -52,7 +52,8 @@ import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
+data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis(), 
+                   val futureDate: Long? = null // Added futureDate property.
 
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
@@ -62,7 +63,6 @@ private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>
             Log.d("HomeScreen", "Orders saved: ${orders.size}")
             Toast.makeText(context, "Orders saved successfully", Toast.LENGTH_SHORT).show()
         } else {
-            // If the order list is empty, clear the orders in SharedPreferences
             SharedPrefsHelper.saveOrders(context, emptyList())
             Log.d("HomeScreen", "No orders to save, cleared existing orders")
             Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show()
@@ -80,6 +80,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     val items = viewModel.items.collectAsState(initial = emptyList())
     var newItem by remember { mutableStateOf("") }
     var newAmount by remember { mutableStateOf("") }
+    var futureDate by remember { mutableStateOf<Long?>(null) }  // Added futureDate state.
     val coroutineScope = rememberCoroutineScope()
     val selectedItems = remember { mutableStateListOf<Product>() }
     var showDeleteButton by remember { mutableStateOf(false) }
@@ -134,10 +135,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
 
         ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(16.dp)
         ) {
             if (items.value.isEmpty()) {
                 Column(
@@ -158,17 +156,12 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     Image(
                         painter = painterResource(id = if(isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
                         contentDescription = "Empty List",
-                        modifier = Modifier
-                            .size(200.dp)
-                            .scale(scale)
+                        modifier = Modifier.size(200.dp).scale(scale)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         "Your shopping list is empty.",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -176,12 +169,14 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                     )
                 }
-            }
-            else {
+            } else {
+                // Group items by date including future dates.
                 val groupedItems = items.value.groupBy { product ->
-                    val date = java.util.Date(product.dateAdded)
-                    val dateFormat = java.text.SimpleDateFormat("EEEE, d MMMM YYYY", java.util.Locale.getDefault())
-                    dateFormat.format(date)
+                    val dateFormat =
+                        java.text.SimpleDateFormat("EEEE, d MMMM YYYY", java.util.Locale.getDefault())
+                    
+                    product.futureDate?.let { dateFormat.format(java.util.Date(it)) } ?: 
+                    dateFormat.format(java.util.Date(product.dateAdded))
                 }
 
                 LazyColumn(modifier = Modifier.weight(1f)) {
@@ -189,73 +184,45 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         item {
                             Text(
                                 text = day,
-                                style = TextStyle(
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                ),
+                                style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black),
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
                         items(products) { product ->
                             val isChecked = product in selectedItems
+
                             Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .border(2.dp, color = MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp)),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                modifier = Modifier.fillMaxWidth().padding(bottom=10.dp).clip(RoundedCornerShape(16.dp)).border(2.dp, color=MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp)),
+                                elevation=CardDefaults.cardElevation(defaultElevation=4.dp),
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(10.dp)
-                                ) {
+                                Row(verticalAlignment=Alignment.CenterVertically, modifier=Modifier.fillMaxSize().padding(10.dp)) {
                                     if (product.imageUrl != null) {
                                         AsyncImage(
-                                            model = product.imageUrl,
-                                            contentDescription = product.name,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(70.dp, 70.dp)
-                                                .clip(CircleShape)
-                                                .padding(end = 1.dp)
-                                                .border(
-                                                    BorderStroke(1.dp, Color(0xFF332D25)),
-                                                    CircleShape
-                                                )
+                                            model=product.imageUrl,
+                                            contentDescription=product.name,
+                                            contentScale=ContentScale.Crop,
+                                            modifier=Modifier.size(70.dp).clip(CircleShape).padding(end=1.dp).border(BorderStroke(1.dp, Color(0xFF332D25)), CircleShape)
                                         )
                                     }
-                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Spacer(modifier=Modifier.width(16.dp))
 
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = product.name,
-                                            style = TextStyle(
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                        )
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = "₹${product.amount}",
-                                            style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                                        )
+                                    Column(modifier=Modifier.weight(1f)) {
+                                        Text(text=product.name, style=TextStyle(fontSize=20.sp,fontWeight=FontWeight.Bold))
+                                        Spacer(modifier=Modifier.height(4.dp))
+                                        Text(text="₹${product.amount}", style=TextStyle(fontSize=16.sp,color=Color.Gray))
                                     }
-                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Spacer(modifier=Modifier.width(16.dp))
                                     Checkbox(
-                                        checked = isChecked,
-                                        onCheckedChange = { checked ->
+                                        checked=isChecked,
+                                        onCheckedChange={ checked ->
                                             if (checked) {
                                                 selectedItems.add(product)
                                             } else {
                                                 selectedItems.remove(product)
                                             }
-                                            showDeleteButton = selectedItems.isNotEmpty()
+                                            showDeleteButton=selectedItems.isNotEmpty()
                                         },
-                                        modifier = Modifier.size(24.dp)
+                                        modifier=Modifier.size(24.dp)
                                     )
                                 }
                             }
@@ -263,38 +230,24 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     }
                 }
 
-                Column(modifier = Modifier.width(300.dp)) {
-                    val subtotal = items.value.sumOf { it.amount }
-                    val deliveryFee = 0
-                    val discount = 0
+                Column(modifier=Modifier.width(300.dp)) {
+                    val subtotal=items.value.sumOf { it.amount }
+                    val deliveryFee=0 // You can adjust this as needed.
+                    val discount=0 // You can adjust this as needed.
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val total = subtotal + deliveryFee - discount
-                        Text(
-                            "Total: ₹${total}",
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                        )
+                    Row(modifier=Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.SpaceBetween) {
+                        val total=subtotal + deliveryFee - discount
+
+                        Text("Total: ₹${total}", style=TextStyle(fontSize=20.sp,fontWeight=FontWeight.Bold,color=Color.Black))
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = {
-                            saveOrdersToSharedPreferences(context, items.value)
-                            navController.navigate("MyOrders")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
-                    ) {
-                        Text("Checkout", color = Color.White, fontSize = 18.sp)
+
+                    Spacer(modifier=Modifier.height(16.dp))
+
+                    Button(onClick={
+                        saveOrdersToSharedPreferences(context, items.value)
+                        navController.navigate("MyOrders")
+                    }, modifier=Modifier.fillMaxWidth().height(56.dp), shape=RoundedCornerShape(10.dp), colors=ButtonDefaults.buttonColors(containerColor=colorResource(id=R.color.primarybg))) {
+                        Text("Checkout", color=Color.White,fontSize=18.sp)
                     }
                 }
             }
@@ -302,121 +255,76 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     }
 
     if (showDialog) {
-        Dialog(onDismissRequest = { showDialog = false }) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.Transparent),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(rgb(234, 235, 230))
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth()
-                ) {
+        Dialog(onDismissRequest={ showDialog=false }) {
+            Card(shape=RoundedCornerShape(16.dp), modifier=Modifier.padding(16.dp).background(Color.Transparent), colors=CardDefaults.cardColors(containerColor=color(rgb(234, 235, 230)))) {
+                Column(modifier=Modifier.padding(24.dp).fillMaxWidth()) {
                     var itemName by remember { mutableStateOf("") }
                     var itemAmount by remember { mutableStateOf("") }
 
-                    Text(
-                        "Add New Item",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                    Text("Add New Item", style=TextStyle(fontSize=20.sp,fontWeight=FontWeight.Bold), modifier=Modifier.padding(bottom=16.dp))
 
-                    OutlinedTextField(
-                        value = itemName,
-                        onValueChange = { itemName = it },
-                        label = { Text("Item Name", color = Color.Black) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color(0xFF332D25),
-                            focusedBorderColor = Color(0xFF332D25),
-                            unfocusedBorderColor = Color(0xFFDBD6CA),
-                            focusedTextColor = Color(0xFF332D25),
-                            unfocusedTextColor = Color(0xFF332D25)
-                        ),
+                    OutlinedTextField(value=itemName, onValueChange={ itemName=it }, label={ Text("Item Name", color=Color.Black) }, shape=RoundedCornerShape(8.dp), colors=
+                     OutlinedTextFieldDefaults.colors(cursorColor=color(0xFF332D25), focusedBorderColor=color(0xFF332D25), unfocusedBorderColor=color(0xFFDBD6CA), focusedTextColor=color(0xFF332D25), unfocusedTextColor=color(0xFF332D25)), 
+                     modifier=Modifier.fillMaxWidth().padding(bottom=8.dp))
 
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                    )
+                    OutlinedTextField(value=itemAmount, onValueChange={ itemAmount=it }, label={ Text("Amount", color=Color.Black) }, keyboardOptions=
+                     KeyboardOptions(keyboardType=KeyboardType.Number), shape=
+                     RoundedCornerShape(8.dp), colors=
+                     OutlinedTextFieldDefaults.colors(cursorColor=color(0xFF332D25), focusedBorderColor=color(0xFF332D25), unfocusedBorderColor=color(0xFFDBD6CA), focusedTextColor=color(0xFF332D25), unfocusedTextColor=color(0xFF332D25)), 
+                     modifier=
+                     Modifier.fillMaxWidth().padding(bottom=16.dp))
 
-                    OutlinedTextField(
-                        value = itemAmount,
-                        onValueChange = { itemAmount = it },
-                        label = { Text("Amount", color = Color.Black) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color(0xFF332D25),
-                            focusedBorderColor = Color(0xFF332D25),
-                            unfocusedBorderColor = Color(0xFFDBD6CA),
-                            focusedTextColor = Color(0xFF332D25),
-                            unfocusedTextColor = Color(0xFF332D25)
+                    // Add a field for future date input here.
+                     OutlinedTextField(value=futureDate?.let { java.text.SimpleDateFormat("dd/MM/yyyy").format(it) } ?: "", onValueChange={ /* Handle date input */ },label={ Text("Future Date (optional)", color=Color.Black) }, shape=RoundedCornerShape(8.dp),colors=
+                      OutlinedTextFieldDefaults.colors(cursorColor=color(0xFF332D25), focusedBorderColor=color(0xFF332D25), unfocusedBorderColor=color(0xFFDBD6CA), focusedTextColor=color(0xFF332D25), unfocusedTextColor=color(0xFF332D25)), 
+                      modifier=
+                      Modifier.fillMaxWidth().padding(bottom=8.dp))
 
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
+                    if (isLoading) CircularProgressIndicator(modifier=
+                     Modifier.align(Alignment.CenterHorizontally))
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(
-                            onClick = {
-                                showDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF332D25)),
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text("Cancel", color = Color.White)
+                    Row(horizontalArrangement=
+                     Arrangement.SpaceBetween, modifier=
+                     Modifier.fillMaxWidth()) {
+
+                        Button(onClick={ showDialog=false }, colors=
+                         ButtonDefaults.buttonColors(containerColor=color(0xFF332D25)), modifier=
+                         Modifier.padding(end=8.dp)) {
+                            Text("Cancel", color=
+                             Color.White)
                         }
 
-                        Button(
-                            onClick = {
-                                if (itemName.isBlank() && itemAmount.isBlank()) {
-                                    Toast.makeText(context, "Please Enter valid Data", Toast.LENGTH_SHORT).show()
-                                } else if (itemName.isBlank()) {
-                                    Toast.makeText(context, "Please Enter a valid Name", Toast.LENGTH_SHORT).show()
-                                } else if (itemAmount.isBlank()) {
-                                    Toast.makeText(context, "Please Enter a valid Amount", Toast.LENGTH_SHORT).show()
-                                }
+                        Button(onClick={
+                            if (itemName.isBlank() && itemAmount.isBlank()) Toast.makeText(context,"Please Enter valid Data",Toast.LENGTH_SHORT).show()
+                            else if (itemName.isBlank()) Toast.makeText(context,"Please Enter a valid Name",Toast.LENGTH_SHORT).show()
+                            else if (itemAmount.isBlank()) Toast.makeText(context,"Please Enter a valid Amount",Toast.LENGTH_SHORT).show()
 
-                                if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
-                                    isLoading = true
-                                    coroutineScope.launch {
-                                        val imageUrl = viewModel.searchImage(itemName)
-                                        val amountValue = itemAmount.toIntOrNull() ?: 0
-                                        val newProduct = Product(
-                                            name = itemName,
-                                            amount = amountValue,
-                                            imageUrl = imageUrl,
-                                            dateAdded = System.currentTimeMillis() // Set the current time
-                                        )
-                                        val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
-                                        viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
-                                        newItem = ""
-                                        newAmount = ""
-                                        isLoading = false
-                                        showDialog = false
-                                    }
+                            if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                                isLoading=true
+
+                                coroutineScope.launch {
+                                    val amountValue=itemAmount.toIntOrNull() ?: 0
+
+                                    // Handle future date input here.
+                                    val newProduct=
+                                     Product(name=itemName, amount=
+                                     amountValue, futureDate=futureDate)
+
+                                    val updatedItems=
+                                     items.value.toMutableList().also{ it.add(newProduct) }
+
+                                    viewModel.updateItems(updatedItems)
+
+                                    saveItems(context, updatedItems.map{ Poduct(it.name,it.amount,it.imageUrl,it.dateAdded,it.futureDate)})
+                                    
+                                    itemName=""
+                                    itemAmount=""
+                                    futureDate=null // Reset future date after adding.
+                                    isLoading=false 
+                                    showDialog=false 
                                 }
                             }
-                        ) {
+                        }) {
                             Text("Add")
                         }
                     }

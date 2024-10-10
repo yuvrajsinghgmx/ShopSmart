@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import kotlin.contracts.contract
 import kotlin.text.get
 
-data class Poduct(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
+data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis(), val futureDate: String? = null) // Added futureDate property
 object ShoppingList{
     val ITEMS_KEY = stringPreferencesKey("items")
 }
