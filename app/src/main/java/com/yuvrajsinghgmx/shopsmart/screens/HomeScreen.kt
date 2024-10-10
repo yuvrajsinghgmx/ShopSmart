@@ -61,7 +61,6 @@ private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>
             Log.d("HomeScreen", "Orders saved: ${orders.size}")
             Toast.makeText(context, "Orders saved successfully", Toast.LENGTH_SHORT).show()
         } else {
-            // If the order list is empty, clear the orders in SharedPreferences
             SharedPrefsHelper.saveOrders(context, emptyList())
             Log.d("HomeScreen", "No orders to save, cleared existing orders")
             Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show()
@@ -100,45 +99,66 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         style = MaterialTheme.typography.headlineMedium,
                     )
                 },
+                modifier = Modifier.height(60.dp),
                 actions = {
-                    if (showDeleteButton) {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val updatedItems =
-                                    items.value.toMutableList().also { it.removeAll(selectedItems) }
-                                viewModel.updateItems(updatedItems)
-                                saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
-                                selectedItems.clear()
-                                showDeleteButton = false
-                                selectAll = false
+                    Row (
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (showDeleteButton) {
+                            IconButton(onClick = {
+                                coroutineScope.launch {
+                                    val updatedItems =
+                                        items.value.toMutableList()
+                                            .also { it.removeAll(selectedItems) }
+                                    viewModel.updateItems(updatedItems)
+                                    saveItems(
+                                        context,
+                                        updatedItems.map {
+                                            Poduct(
+                                                it.name,
+                                                it.amount,
+                                                it.imageUrl,
+                                                it.dateAdded
+                                            )
+                                        })
+                                    selectedItems.clear()
+                                    showDeleteButton = false
+                                    selectAll = false
+                                }
                             }
-                        }) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Delete Selected"
-                            )
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete Selected",
+                                )
+                            }
                         }
+                        Checkbox(
+                            checked = selectAll,
+                            onCheckedChange = { checked ->
+                                selectAll = checked
+                                if (checked) {
+                                    selectedItems.addAll(items.value)
+                                } else {
+                                    selectedItems.clear()
+                                }
+                                showDeleteButton = selectedItems.isNotEmpty()
+                            },
+                        )
+
                     }
+
+
                 }
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showDialog = true },
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Add Item",
-                )
-            }
-        },
-
         ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(16.dp,0.dp)
         ) {
             if (items.value.isEmpty()) {
                 Column(
@@ -180,50 +200,19 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
             } else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
-                    val dateFormat = java.text.SimpleDateFormat("EEEE, d MMMM YYYY", java.util.Locale.getDefault())
+                    val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/YYYY", java.util.Locale.getDefault())
                     dateFormat.format(date)
                 }
-
-                // Add "Select All" checkbox
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    Checkbox(
-                        checked = selectAll,
-                        onCheckedChange = { checked ->
-                            selectAll = checked
-                            if (checked) {
-                                selectedItems.addAll(items.value)
-                            } else {
-                                selectedItems.clear()
-                            }
-                            showDeleteButton = selectedItems.isNotEmpty()
-                        },
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Select All",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    )
-                }
-
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     groupedItems.forEach { (day, products) ->
                         item {
                             Text(
                                 text = day,
                                 style = TextStyle(
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Light,
                                 ),
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                modifier = Modifier.padding(8.dp,3.dp,0.dp,3.dp)
                             )
                         }
                         items(products) { product ->
@@ -293,7 +282,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     }
                 }
 
-                Column(modifier = Modifier.width(300.dp)) {
+                Column {
                     val subtotal = items.value.sumOf { it.amount }
                     val deliveryFee = 0
                     val discount = 0
@@ -308,23 +297,36 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
                             )
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = {
-                            saveOrdersToSharedPreferences(context, items.value)
-                            navController.navigate("MyOrders")
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Checkout", color = Color.White, fontSize = 18.sp)
+                        Button(
+                            onClick = {
+                                saveOrdersToSharedPreferences(context, items.value)
+                                navController.navigate("MyOrders")
+                            },
+                            modifier = Modifier
+                                .height(56.dp)
+                                .weight(1f)
+                            ,
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
+                        ) {
+                            Text("Checkout", color = Color.White, fontSize = 18.sp)
+                        }
+                        FloatingActionButton(
+                            onClick = { showDialog = true },
+                            modifier = Modifier.padding(5.dp,0.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Add Item",
+                            )
+                        }
                     }
                 }
             }
@@ -455,4 +457,3 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
         }
     }
 }
-//From BranchOne
