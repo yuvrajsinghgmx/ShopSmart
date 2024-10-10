@@ -200,7 +200,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
             } else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
-                    val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/YYYY", java.util.Locale.getDefault())
+                    val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
                     dateFormat.format(date)
                 }
                 LazyColumn(modifier = Modifier.weight(1f)) {
@@ -296,7 +296,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             "Total: ₹${total}",
                             style = TextStyle(
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.Medium,
                             )
                         )
                     }
