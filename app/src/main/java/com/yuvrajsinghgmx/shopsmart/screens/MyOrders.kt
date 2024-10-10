@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 
@@ -27,7 +26,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MyOrders(navController: NavController) {
     val context = LocalContext.current
-    var orders by remember { mutableStateOf(listOf<Poduct>()) }
+    var orders by remember { mutableStateOf(listOf<Product>()) }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -133,7 +132,7 @@ fun MyOrders(navController: NavController) {
 }
 
 @Composable
-fun OrderItem(order: Poduct) {
+fun OrderItem(order: Product) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +170,7 @@ fun OrderItem(order: Poduct) {
     }
 }
 
-private suspend fun loadOrders(context: android.content.Context, onOrdersLoaded: (List<Poduct>) -> Unit) {
+private suspend fun loadOrders(context: android.content.Context, onOrdersLoaded: (List<Product>) -> Unit) {
     try {
         val loadedOrders = SharedPrefsHelper.getOrders(context)
         Log.d("MyOrders", "Orders loaded: ${loadedOrders.size}")

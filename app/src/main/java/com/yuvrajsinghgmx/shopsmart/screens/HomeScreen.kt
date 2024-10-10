@@ -30,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -85,6 +84,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     var showDeleteButton by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    var selectAll by remember { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -110,6 +110,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                 saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
                                 selectedItems.clear()
                                 showDeleteButton = false
+                                selectAll = false
                             }
                         }) {
                             Icon(
@@ -176,12 +177,40 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                     )
                 }
-            }
-            else {
+            } else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
                     val dateFormat = java.text.SimpleDateFormat("EEEE, d MMMM YYYY", java.util.Locale.getDefault())
                     dateFormat.format(date)
+                }
+
+                // Add "Select All" checkbox
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    Checkbox(
+                        checked = selectAll,
+                        onCheckedChange = { checked ->
+                            selectAll = checked
+                            if (checked) {
+                                selectedItems.addAll(items.value)
+                            } else {
+                                selectedItems.clear()
+                            }
+                            showDeleteButton = selectedItems.isNotEmpty()
+                        },
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Select All",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    )
                 }
 
                 LazyColumn(modifier = Modifier.weight(1f)) {
@@ -254,6 +283,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                                 selectedItems.remove(product)
                                             }
                                             showDeleteButton = selectedItems.isNotEmpty()
+                                            selectAll = selectedItems.size == items.value.size
                                         },
                                         modifier = Modifier.size(24.dp)
                                     )
@@ -425,5 +455,4 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
         }
     }
 }
-
 //From BranchOne
