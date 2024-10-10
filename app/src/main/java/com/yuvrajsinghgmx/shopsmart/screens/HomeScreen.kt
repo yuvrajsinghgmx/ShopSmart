@@ -16,9 +16,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,12 +52,7 @@ import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
-data class Product(
-    val name: String,
-    val amount: Int,
-    val imageUrl: String? = null,
-    val dateAdded: Long = System.currentTimeMillis()
-)
+data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
 
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
@@ -111,16 +107,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                 val updatedItems =
                                     items.value.toMutableList().also { it.removeAll(selectedItems) }
                                 viewModel.updateItems(updatedItems)
-                                saveItems(
-                                    context,
-                                    updatedItems.map {
-                                        Poduct(
-                                            it.name,
-                                            it.amount,
-                                            it.imageUrl,
-                                            it.dateAdded
-                                        )
-                                    })
+                                saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
                                 selectedItems.clear()
                                 showDeleteButton = false
                             }
@@ -158,7 +145,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "")
+                    val infiniteTransition = rememberInfiniteTransition()
                     val scale by infiniteTransition.animateFloat(
                         initialValue = 1f,
                         targetValue = 1.1f,
@@ -169,7 +156,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                     )
 
                     Image(
-                        painter = painterResource(id = if (isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
+                        painter = painterResource(id = if(isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
                         contentDescription = "Empty List",
                         modifier = Modifier
                             .size(200.dp)
@@ -189,59 +176,61 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                     )
                 }
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2), // Two columns
-                    modifier = Modifier.weight(0.8f),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(items.value.size) { index ->
-                        val product = items.value[index]
-                        val isChecked = product in selectedItems
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .aspectRatio(0.77f)
-                                .align(Alignment.CenterHorizontally)
-                                .padding(bottom = 16.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .border(
-                                    2.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    RoundedCornerShape(16.dp)
-                                ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        ) {
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(10.dp)
-                            ) {
-                                if (product.imageUrl != null) {
-                                    AsyncImage(
-                                        model = product.imageUrl,
-                                        contentDescription = product.name,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(1f)
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .align(Alignment.CenterHorizontally)
-                                            .border(BorderStroke(1.dp, Color(0xFF332D25)), RoundedCornerShape(8.dp))
-                                            .background(Color.White)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(16.dp))
+            }
+            else {
+                val groupedItems = items.value.groupBy { product ->
+                    val date = java.util.Date(product.dateAdded)
+                    val dateFormat = java.text.SimpleDateFormat("EEEE, d MMMM YYYY", java.util.Locale.getDefault())
+                    dateFormat.format(date)
+                }
 
+                LazyColumn(modifier = Modifier.weight(1f)) {
+                    groupedItems.forEach { (day, products) ->
+                        item {
+                            Text(
+                                text = day,
+                                style = TextStyle(
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                ),
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                        items(products) { product ->
+                            val isChecked = product in selectedItems
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 10.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .border(2.dp, color = MaterialTheme.colorScheme.outline, RoundedCornerShape(16.dp)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            ) {
                                 Row(
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .fillMaxSize()
+                                        .padding(10.dp)
                                 ) {
-                                    Column {
+                                    if (product.imageUrl != null) {
+                                        AsyncImage(
+                                            model = product.imageUrl,
+                                            contentDescription = product.name,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(70.dp, 70.dp)
+                                                .clip(CircleShape)
+                                                .padding(end = 1.dp)
+                                                .border(
+                                                    BorderStroke(1.dp, Color(0xFF332D25)),
+                                                    CircleShape
+                                                )
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = product.name,
                                             style = TextStyle(
@@ -255,7 +244,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                             style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                                         )
                                     }
-
+                                    Spacer(modifier = Modifier.width(16.dp))
                                     Checkbox(
                                         checked = isChecked,
                                         onCheckedChange = { checked ->
@@ -399,23 +388,11 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         Button(
                             onClick = {
                                 if (itemName.isBlank() && itemAmount.isBlank()) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please Enter valid Data",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Please Enter valid Data", Toast.LENGTH_SHORT).show()
                                 } else if (itemName.isBlank()) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please Enter a valid Name",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Please Enter a valid Name", Toast.LENGTH_SHORT).show()
                                 } else if (itemAmount.isBlank()) {
-                                    Toast.makeText(
-                                        context,
-                                        "Please Enter a valid Amount",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(context, "Please Enter a valid Amount", Toast.LENGTH_SHORT).show()
                                 }
 
                                 if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
@@ -429,19 +406,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                             imageUrl = imageUrl,
                                             dateAdded = System.currentTimeMillis() // Set the current time
                                         )
-                                        val updatedItems =
-                                            items.value.toMutableList().also { it.add(newProduct) }
+                                        val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
                                         viewModel.updateItems(updatedItems)
-                                        saveItems(
-                                            context,
-                                            updatedItems.map {
-                                                Poduct(
-                                                    it.name,
-                                                    it.amount,
-                                                    it.imageUrl,
-                                                    it.dateAdded
-                                                )
-                                            })
+                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
                                         newItem = ""
                                         newAmount = ""
                                         isLoading = false
