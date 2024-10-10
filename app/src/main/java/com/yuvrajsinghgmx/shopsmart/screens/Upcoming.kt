@@ -54,7 +54,11 @@ fun Upcoming(
 
         Button(
             onClick = {
-                onAddItem(itemName, itemPrice, itemDate) // Pass data back to ViewModel or parent
+                if (itemName.isNotBlank() && itemPrice.isNotBlank() && itemDate.isNotBlank()) {
+                    onAddItem(itemName, itemPrice, itemDate) // Pass data back to ViewModel or parent
+                } else {
+                    Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                }
             }
         ) {
             Text("Add Item")
