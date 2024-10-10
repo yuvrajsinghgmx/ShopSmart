@@ -61,3 +61,9 @@ fun Upcoming(
         }
     }
 }
+
+fun MainScreen(viewModel: ShoppingListViewModel) {
+    Upcoming(onAddItem = { name, price, date ->
+        viewModel.addItem(name, price, date)
+    })
+}
