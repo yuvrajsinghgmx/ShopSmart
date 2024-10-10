@@ -12,11 +12,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 
 @Composable
-fun Upcoming(modifier: Modifier = Modifier) {
+fun Upcoming(
+    modifier: Modifier = Modifier, 
+    onAddItem: (String, String, String) -> Unit // New callback for adding items
+) {
     var itemName by remember { mutableStateOf("") }
     var itemPrice by remember { mutableStateOf("") }
+    var itemDate by remember { mutableStateOf("") } // New state for date
 
     Column(
         modifier = modifier
@@ -40,8 +45,17 @@ fun Upcoming(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(16.dp)
         )
 
+        OutlinedTextField(
+            value = itemDate,
+            onValueChange = { itemDate = it },
+            label = { Text("Due Date (yyyy-MM-dd)") }, // Date input as string
+            modifier = Modifier.padding(16.dp)
+        )
+
         Button(
-            onClick = {}
+            onClick = {
+                onAddItem(itemName, itemPrice, itemDate) // Pass data back to ViewModel or parent
+            }
         ) {
             Text("Add Item")
         }
