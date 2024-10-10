@@ -52,7 +52,8 @@ import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis(), val futureDate: Long? = null)
+data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis(), 
+                   val futureDate: Long? = null // Added futureDate property.
 
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
@@ -79,7 +80,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     val items = viewModel.items.collectAsState(initial = emptyList())
     var newItem by remember { mutableStateOf("") }
     var newAmount by remember { mutableStateOf("") }
-    var futureDate by remember { mutableStateOf<Long?>(null) }
+    var futureDate by remember { mutableStateOf<Long?>(null) }  // Added futureDate state.
     val coroutineScope = rememberCoroutineScope()
     val selectedItems = remember { mutableStateListOf<Product>() }
     var showDeleteButton by remember { mutableStateOf(false) }
@@ -273,6 +274,12 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                      modifier=
                      Modifier.fillMaxWidth().padding(bottom=16.dp))
 
+                    // Add a field for future date input here.
+                     OutlinedTextField(value=futureDate?.let { java.text.SimpleDateFormat("dd/MM/yyyy").format(it) } ?: "", onValueChange={ /* Handle date input */ },label={ Text("Future Date (optional)", color=Color.Black) }, shape=RoundedCornerShape(8.dp),colors=
+                      OutlinedTextFieldDefaults.colors(cursorColor=color(0xFF332D25), focusedBorderColor=color(0xFF332D25), unfocusedBorderColor=color(0xFFDBD6CA), focusedTextColor=color(0xFF332D25), unfocusedTextColor=color(0xFF332D25)), 
+                      modifier=
+                      Modifier.fillMaxWidth().padding(bottom=8.dp))
+
                     if (isLoading) CircularProgressIndicator(modifier=
                      Modifier.align(Alignment.CenterHorizontally))
 
@@ -301,17 +308,18 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                     // Handle future date input here.
                                     val newProduct=
                                      Product(name=itemName, amount=
-                                     amountValue)
+                                     amountValue, futureDate=futureDate)
 
                                     val updatedItems=
                                      items.value.toMutableList().also{ it.add(newProduct) }
 
                                     viewModel.updateItems(updatedItems)
 
-                                    saveItems(context, updatedItems.map{ Poduct(it.name,it.amount,it.imageUrl,it.dateAdded)})
+                                    saveItems(context, updatedItems.map{ Poduct(it.name,it.amount,it.imageUrl,it.dateAdded,it.futureDate)})
                                     
                                     itemName=""
                                     itemAmount=""
+                                    futureDate=null // Reset future date after adding.
                                     isLoading=false 
                                     showDialog=false 
                                 }
