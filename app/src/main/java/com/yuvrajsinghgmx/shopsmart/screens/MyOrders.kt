@@ -19,21 +19,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyOrders(navController: NavController) {
+fun MyOrders(navController: NavController, selectedItemsJson: String) {
     val context = LocalContext.current
     var orders by remember { mutableStateOf(listOf<Product>()) }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        loadOrders(context) { loadedOrders ->
-            orders = loadedOrders
-        }
+//    LaunchedEffect(Unit) {
+//        loadOrders(context) { loadedOrders ->
+//            orders = loadedOrders
+//        }
+//    }
+
+    LaunchedEffect(selectedItemsJson) {
+        orders = Gson().fromJson(selectedItemsJson, object : TypeToken<List<Product>>() {}.type)
     }
+
 
     Scaffold(
         topBar = {
