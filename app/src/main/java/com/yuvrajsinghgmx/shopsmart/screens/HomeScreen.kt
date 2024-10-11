@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens
 
 import android.content.Context
 import android.graphics.Color.rgb
+import android.provider.CalendarContract.Colors
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
@@ -33,6 +34,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
@@ -47,11 +50,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -122,6 +127,9 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     var isLoading by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
 
+    var isSearching by remember{ mutableStateOf(false)}
+    var searchKeyword by remember{ mutableStateOf("")}
+
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
     }
@@ -136,14 +144,33 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         }
                     },
                     title = {
-                        Text(
-                            text = "ShopSmart",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
+                        if(isSearching){
+                            OutlinedTextField(
+                                value = searchKeyword,
+                                onValueChange = {
+                                    searchKeyword = it
+                                    viewModel.search(searchKeyword)
+                                                },
+                                leadingIcon = {IconButton(onClick = {isSearching = false}) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowBack,
+                                        contentDescription = "Back Arrow"
+                                    )
+                                }},
+                                shape = RoundedCornerShape(25.dp)
+                            )
+                        }
+                        else {
+                            Text(
+                                text = "ShopSmart",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                        }
                     },
                     actions = {
                         IconButton(onClick = {
+                            isSearching = true
                         }) {
                             Icon(Icons.Default.Search, contentDescription = "Search Icon")
                         }
