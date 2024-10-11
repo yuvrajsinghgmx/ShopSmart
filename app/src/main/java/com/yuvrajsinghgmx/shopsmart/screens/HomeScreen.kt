@@ -23,7 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,69 +96,78 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "ShopSmart",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
-                },
-                modifier = Modifier.height(65.dp),
-                actions = {
-                    Row (
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
+            if (selectedItems.isEmpty()) {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menu Icon")
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "ShopSmart",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = "Search Icon")
+                        }
+                        Checkbox(
+                            checked = selectAll,
+                            onCheckedChange = { checked ->
+                                selectAll = checked
+                                if (checked) {
+                                    selectedItems.clear() // Clear to avoid duplicates
+                                    selectedItems.addAll(items.value)
+                                } else {
+                                    selectedItems.clear()
+                                }
+                                showDeleteButton = selectedItems.isNotEmpty()
+                            },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+                )
+            } else {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            selectedItems.clear()
+                            selectAll = false
+                            showDeleteButton = false
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Close Icon")
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "${selectedItems.size} selected",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    },
+                    actions = {
                         if (showDeleteButton) {
                             IconButton(onClick = {
                                 coroutineScope.launch {
-                                    val updatedItems =
-                                        items.value.toMutableList()
-                                            .also { it.removeAll(selectedItems) }
-                                    viewModel.updateItems(updatedItems)
-                                    saveItems(
-                                        context,
-                                        updatedItems.map {
-                                            Poduct(
-                                                it.name,
-                                                it.amount,
-                                                it.imageUrl,
-                                                it.dateAdded
-                                            )
-                                        })
-                                    selectedItems.clear()
-                                    showDeleteButton = false
-                                    selectAll = false
-                                }
-                            }
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "Delete Selected",
-                                )
-                            }
-                        }
-                        if(items.value.isNotEmpty()) {
-                            Checkbox(
-                                checked = selectAll,
-                                onCheckedChange = { checked ->
-                                    selectAll = checked
-                                    if (checked) {
-                                        selectedItems.addAll(items.value)
-                                    } else {
-                                        selectedItems.clear()
+                                    val updatedItems = items.value.toMutableList().apply {
+                                        removeAll(selectedItems)
                                     }
-                                    showDeleteButton = selectedItems.isNotEmpty()
-                                },
-                            )
+                                    viewModel.updateItems(updatedItems)
+                                    selectedItems.clear()
+                                    selectAll = false
+                                    showDeleteButton = false
+                                }
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                            }
                         }
-
                     }
-
-
-                }
-            )
+                )
+            }
         },
         ) { innerPadding ->
         Column(
