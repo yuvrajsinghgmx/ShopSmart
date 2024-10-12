@@ -46,4 +46,14 @@ class ShoppingListViewModel @Inject constructor(
         val galleryUrls = imageRepo.getProducts(query)
         return galleryUrls?.firstOrNull() // Return the first gallery URL if available
     }
+
+    fun search(keyWord: String){
+        _items.value = _items.value.sortedWith(compareBy<Product> {
+            it.name.startsWith(keyWord, ignoreCase = true)
+        }.thenBy {
+            it.name.contains(keyWord, ignoreCase = true)
+        }.thenBy {
+            it.name
+        }).reversed()
+    }
 }
