@@ -81,6 +81,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
@@ -201,7 +202,59 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                 )
             }
         },
-        ) {innerPadding->
+
+        floatingActionButton = {
+            val subtotal = selectedItems.sumOf { it.amount }
+            val deliveryFee = 0
+            val discount = 0
+            val total = subtotal + deliveryFee - discount
+            if (selectedItems.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = {
+                        val selectedItemsJson = Gson().toJson(selectedItems)
+                        navController.navigate("MyOrders?selectedItems=$selectedItemsJson")
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(5.dp).width(150.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                "Total:"
+                            )
+
+                            Text(
+                                "₹${total}",
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text("Checkout", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                    }
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.padding(5.dp, 0.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add Item",
+                    )
+                }
+            }
+        }
+
+
+    ) {innerPadding->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -250,14 +303,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             "Add items using the  button below.",
                             style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                         )
-                    }
-                    FloatingActionButton(
-                        onClick = { showDialog = true },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth().background(Color.White, RectangleShape)
-                    ) {
-                        Text(text = "Add Items")
                     }
                 }
             } else
@@ -342,54 +387,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                     )
                                 }
                             }
-                        }
-                    }
-                }
-
-                Column {
-                    val subtotal = items.value.sumOf { it.amount }
-                    val deliveryFee = 0
-                    val discount = 0
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        val total = subtotal + deliveryFee - discount
-                        Text(
-                            "Total: ₹${total}",
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Medium,
-                            )
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(
-                            onClick = {
-                                saveOrdersToSharedPreferences(context, items.value)
-                                navController.navigate("MyOrders")
-                            },
-                            modifier = Modifier
-                                .height(56.dp)
-                                .weight(1f)
-                            ,
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primarybg))
-                        ) {
-                            Text("Checkout", color = Color.White, fontSize = 18.sp)
-                        }
-                        FloatingActionButton(
-                            onClick = { showDialog = true },
-                            modifier = Modifier.padding(5.dp,0.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add Item",
-                            )
                         }
                     }
                 }

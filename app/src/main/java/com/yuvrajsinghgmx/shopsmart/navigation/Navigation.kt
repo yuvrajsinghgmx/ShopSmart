@@ -35,8 +35,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             composable("Profile") {
                 Profile(navController = navController)
             }
-            composable("MyOrders") {
-                MyOrders(navController = navController)
+            composable("MyOrders?selectedItems={selectedItems}") { backStackEntry ->
+                val selectedItemsJson = backStackEntry.arguments?.getString("selectedItems")
+                MyOrders(navController = navController, selectedItemsJson = selectedItemsJson ?: "[]")
             }
             composable("Help") {
                 HelpS(navController = navController)
