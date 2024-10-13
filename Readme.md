@@ -155,8 +155,8 @@ Please follow these guidelines while contributing:
 <div align="center">
 
   <a href="https://github.com/yuvrajsinghgmx/ShopSmart">
-    <img src="https://contrib.rocks/image?repo=yuvrajsinghgmx/ShopSmart&&max=100" />
-  </a>
+    <img src="https://contrib.rocks/image?repo=yuvrajsinghgmx/ShopSmart&&max=100"/>
+   </a>
 </div>
 
 ---
@@ -173,6 +173,13 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
+## 👥 Team
+| ![Yuvraj Singh](https://avatars.githubusercontent.com/u/143984267?v=4&s=80) |
+|:--:|
+| **Yuvraj Singh** <br> <sub>Project Admin</sub> | 
+| [![LinkedIn](https://img.icons8.com/fluency/32/000000/linkedin.png)](https://www.linkedin.com/in/yuvrajsinghgmx/) |
+
+For any inquiries or feedback, please contact. Happy Contributing 🫡
 ## **🙏 Support**
 
 Found a bug or have a feature request? Please open an issue.
