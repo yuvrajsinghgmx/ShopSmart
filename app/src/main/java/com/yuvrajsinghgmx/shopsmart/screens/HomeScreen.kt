@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -124,6 +125,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     val coroutineScope = rememberCoroutineScope()
     val selectedItems = remember { mutableStateListOf<Product>() }
     var showDeleteButton by remember { mutableStateOf(false) }
+    var showCartButton by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
@@ -186,6 +188,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                     selectedItems.clear()
                                 }
                                 showDeleteButton = selectedItems.isNotEmpty()
+                                showCartButton = selectedItems.isNotEmpty()
                             },
                             modifier = Modifier.padding(end = 8.dp)
                         )
@@ -198,6 +201,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             selectedItems.clear()
                             selectAll = false
                             showDeleteButton = false
+                            showCartButton = false
                         }) {
                             Icon(Icons.Default.Close, contentDescription = "Close Icon")
                         }
@@ -210,6 +214,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         )
                     },
                     actions = {
+
                         if (showDeleteButton) {
                             IconButton(onClick = {
                                 coroutineScope.launch {
@@ -223,6 +228,22 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                 }
                             }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                            }
+                        }
+                        if (showCartButton) {
+                            IconButton(onClick = {
+
+                                coroutineScope.launch {
+
+                                    viewModel.addItemToCart(selectedItems)
+
+                                    Toast.makeText(context,"added to cart", Toast.LENGTH_SHORT).show()
+                                    selectedItems.clear()
+                                    selectAll = false
+                                    showCartButton = false
+                                }
+                            }) {
+                                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart Icon")
                             }
                         }
                     }
@@ -408,6 +429,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                                 selectedItems.remove(product)
                                             }
                                             showDeleteButton = selectedItems.isNotEmpty()
+                                            showCartButton = selectedItems.isNotEmpty()
                                             selectAll = selectedItems.size == items.value.size
                                         },
                                         modifier = Modifier.size(24.dp)
