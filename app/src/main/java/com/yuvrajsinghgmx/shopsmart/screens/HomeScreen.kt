@@ -2,7 +2,6 @@ package com.yuvrajsinghgmx.shopsmart.screens
 
 import android.content.Context
 import android.graphics.Color.rgb
-import android.provider.CalendarContract.Colors
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
@@ -80,6 +79,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -90,6 +90,7 @@ import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
+import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
@@ -545,3 +546,4 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
         }
     }
 }
+

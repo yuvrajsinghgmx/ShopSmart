@@ -11,7 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 
 @Composable
 fun Upcoming(modifier: Modifier = Modifier) {
@@ -45,5 +47,13 @@ fun Upcoming(modifier: Modifier = Modifier) {
         ) {
             Text("Add Item")
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewUpcoming(){
+    ShopSmartTheme {
+        Upcoming()
     }
 }

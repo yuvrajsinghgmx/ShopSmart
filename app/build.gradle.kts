@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.webkit)
+    
 //    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -76,12 +77,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation(libs.androidx.core.splashscreen)
 
 
     //Added DataStore and Gson dependencies
-    implementation ("androidx.datastore:datastore:1.0.0")
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation (libs.androidx.datastore)
+    implementation (libs.androidx.datastore.preferences)
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // ViewModel utilities for Compose
@@ -99,12 +100,14 @@ dependencies {
     //Retrofit
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
+
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation("org.jsoup:jsoup:1.16.1")
-    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+    implementation(libs.jsoup)
+    implementation(libs.converter.scalars)
+
     //Navigation
-    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation (libs.androidx.navigation.compose)
 }
