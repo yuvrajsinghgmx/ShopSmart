@@ -45,6 +45,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -55,8 +57,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -94,6 +98,7 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
 
@@ -129,8 +134,10 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     var isLoading by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
 
-    var isSearching by remember{ mutableStateOf(false)}
-    var searchKeyword by remember{ mutableStateOf("")}
+    var isSearching by remember { mutableStateOf(false) }
+    var searchKeyword by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.loadItems(context)
@@ -146,23 +153,24 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         }
                     },
                     title = {
-                        if(isSearching){
+                        if (isSearching) {
                             OutlinedTextField(
                                 value = searchKeyword,
                                 onValueChange = {
                                     searchKeyword = it
                                     viewModel.search(searchKeyword)
-                                                },
-                                leadingIcon = {IconButton(onClick = {isSearching = false}) {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBack,
-                                        contentDescription = "Back Arrow"
-                                    )
-                                }},
+                                },
+                                leadingIcon = {
+                                    IconButton(onClick = { isSearching = false }) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowBack,
+                                            contentDescription = "Back Arrow"
+                                        )
+                                    }
+                                },
                                 shape = RoundedCornerShape(25.dp)
                             )
-                        }
-                        else {
+                        } else {
                             Text(
                                 text = "ShopSmart",
                                 fontWeight = FontWeight.Bold,
@@ -280,17 +288,14 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                 }
             }
         }
-
-
-    ) {innerPadding->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            if (items.value.isEmpty())
-            {
+            if (items.value.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -308,7 +313,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             animationSpec = infiniteRepeatable(
                                 animation = tween(1000, easing = LinearEasing),
                                 repeatMode = RepeatMode.Reverse
-                            )
+                            ), label = ""
                         )
 
                         Image(
@@ -333,8 +338,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         )
                     }
                 }
-            } else
-            {
+            } else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
                     val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
@@ -349,7 +353,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Light,
                                 ),
-                                modifier = Modifier.padding(8.dp,3.dp,0.dp,3.dp)
+                                modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
                             )
                         }
                         items(products) { product ->
@@ -462,7 +466,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             focusedTextColor = Color(0xFF332D25),
                             unfocusedTextColor = Color(0xFF332D25)
                         ),
-
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
@@ -480,12 +483,23 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                             unfocusedBorderColor = Color(0xFFDBD6CA),
                             focusedTextColor = Color(0xFF332D25),
                             unfocusedTextColor = Color(0xFF332D25)
-
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
                     )
+
+                    Button(
+                        onClick = { showDatePicker = true },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    ) {
+                        Text("Select Date")
+                    }
+
+                    selectedDate?.let {
+                        Text("Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(it)}", modifier = Modifier.padding(bottom = 16.dp))
+                    }
+
                     if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -514,9 +528,11 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                     Toast.makeText(context, "Please Enter a valid Name", Toast.LENGTH_SHORT).show()
                                 } else if (itemAmount.isBlank()) {
                                     Toast.makeText(context, "Please Enter a valid Amount", Toast.LENGTH_SHORT).show()
+                                } else if (selectedDate == null) {
+                                    Toast.makeText(context, "Please Select a Date", Toast.LENGTH_SHORT).show()
                                 }
 
-                                if (itemName.isNotBlank() && itemAmount.isNotBlank()) {
+                                if (itemName.isNotBlank() && itemAmount.isNotBlank() && selectedDate != null) {
                                     isLoading = true
                                     coroutineScope.launch {
                                         val imageUrl = viewModel.searchImage(itemName)
@@ -525,7 +541,7 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                             name = itemName,
                                             amount = amountValue,
                                             imageUrl = imageUrl,
-                                            dateAdded = System.currentTimeMillis() // Set the current time
+                                            dateAdded = selectedDate ?: System.currentTimeMillis() // Use selected date
                                         )
                                         val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
                                         viewModel.updateItems(updatedItems)
@@ -545,5 +561,43 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
             }
         }
     }
-}
 
+        if (showDatePicker) {
+            DatePickerModal(
+                onDateSelected = { date ->
+                    selectedDate = date
+                    showDatePicker = false
+                },
+                onDismiss = { showDatePicker = false }
+            )
+        }
+    }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerModal(
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
