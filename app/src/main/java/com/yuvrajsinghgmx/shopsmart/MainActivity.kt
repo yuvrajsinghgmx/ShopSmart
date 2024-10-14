@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
             ShopSmartTheme {
                 val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
-                Navigation(navController = navController)
+                Navigation(viewModel = viewModel, navController = navController)
             }
         }
     }

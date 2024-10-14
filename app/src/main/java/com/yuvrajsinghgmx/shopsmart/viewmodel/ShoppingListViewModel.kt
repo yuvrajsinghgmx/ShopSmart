@@ -1,8 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.viewmodel
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.core.copy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,9 +26,6 @@ class ShoppingListViewModel @Inject constructor(
 ) : ViewModel() {
     private val _items = MutableStateFlow<List<Product>>(emptyList())
     val items: StateFlow<List<Product>> = _items.asStateFlow()
-
-    private val _cartItems = MutableStateFlow<List<Product>>(emptyList())
-    val cartItems: StateFlow<List<Product>> = _cartItems.asStateFlow()
 
     fun updateItems(newItems: List<Product>) {
         _items.value = newItems
@@ -61,25 +56,4 @@ class ShoppingListViewModel @Inject constructor(
             it.name
         }).reversed()
     }
-    fun addItemToCart(selectedItems: List<Product>) {
-        println("Before : ${selectedItems}")
-
-        _cartItems.value = _cartItems.value + selectedItems
-        println("Cart updated: ${_cartItems.value}")
-        Log.d("CartLog", "Adding item to cart:")
-    }
-    fun removeItemFromCart(item: Product) {
-        _cartItems.value = _cartItems.value - item
-    }
-
-    // Clear all items from the cart
-    fun clearCart() {
-        _cartItems.value = emptyList()
-    }
-    fun updateCartItems(newCartItems: List<Product>) {
-
-        _cartItems.value = newCartItems
-    }
-
-
 }
