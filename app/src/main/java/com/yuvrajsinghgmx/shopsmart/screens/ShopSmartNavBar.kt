@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -38,9 +37,9 @@ fun ShopSmartNavBar(navController: NavHostController) {
             unselectedIcon = Icons.Default.Home
         ),
         ButtonNavigationItem(
-            title = "Cart",
-            selectedIcon = Icons.Default.ShoppingCart,
-            unselectedIcon = Icons.Default.ShoppingCart
+            title = "UpComing",
+            selectedIcon = Icons.Default.DateRange,
+            unselectedIcon = Icons.Default.DateRange
         ),
         ButtonNavigationItem(
             title = "Profile",
