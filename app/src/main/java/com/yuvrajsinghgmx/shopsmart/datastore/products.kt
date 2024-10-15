@@ -7,10 +7,9 @@ import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.screens.Product
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.contracts.contract
-import kotlin.text.get
+import java.io.Serializable
 
-data class Poduct(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
+data class Poduct(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Serializable = System.currentTimeMillis())
 object ShoppingList{
     val ITEMS_KEY = stringPreferencesKey("items")
 }
