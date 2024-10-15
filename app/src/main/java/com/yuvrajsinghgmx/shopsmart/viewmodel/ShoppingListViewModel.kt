@@ -11,6 +11,7 @@ import com.yuvrajsinghgmx.shopsmart.datastore.dataStore
 import com.yuvrajsinghgmx.shopsmart.datastore.getItems
 import com.yuvrajsinghgmx.shopsmart.screens.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,10 +23,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShoppingListViewModel @Inject constructor(
-    private val imageRepo: ImageRepo
+    private val imageRepo: ImageRepo,
+    @ApplicationContext context: Context
 ) : ViewModel() {
     private val _items = MutableStateFlow<List<Product>>(emptyList())
     val items: StateFlow<List<Product>> = _items.asStateFlow()
+
+    init {
+        loadItems(context)
+    }
 
     fun updateItems(newItems: List<Product>) {
         _items.value = newItems
