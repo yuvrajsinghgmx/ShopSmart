@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
+import com.yuvrajsinghgmx.shopsmart.ui.theme.dark
+import com.yuvrajsinghgmx.shopsmart.ui.theme.subHeadingColor
 
 @Composable
 fun SignUpScreen(
@@ -60,7 +62,7 @@ fun SignUpScreen(
                 .clickable {
                     onSignUpComplete()
                 }
-                .padding(top = 40.dp, end = 20.dp)
+                .padding(top = 30.dp, end = 20.dp)
                 .align(Alignment.End),
         )
 
@@ -68,7 +70,7 @@ fun SignUpScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 5.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -87,7 +89,7 @@ fun SignUpScreen(
             Text(
                 text = "ShopSmart is your one-stop solution for all your shopping needs. Sign up today to enjoy exclusive deals, personalized offers, and more!",
                 fontSize = 14.sp,
-                color = Color(0xFF888888),
+                color = subHeadingColor,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily(Font(R.font.lexend_semibold)),
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -96,7 +98,7 @@ fun SignUpScreen(
         }
 
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Column(
             modifier = Modifier
@@ -114,7 +116,7 @@ fun SignUpScreen(
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedButton(
                 onClick = {
@@ -122,7 +124,7 @@ fun SignUpScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(45.dp)
                     .padding(start = 16.dp, end = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 elevation = ButtonDefaults.buttonElevation(3.dp),
@@ -141,7 +143,7 @@ fun SignUpScreen(
                     Text(
                         text = "Continue with Google",
                         fontSize = 15.sp,
-                        color = Color.Black,
+                        color = dark,
                         fontFamily = FontFamily(Font(R.font.lexend_medium))
                     )
                 }
@@ -211,7 +213,7 @@ fun SignUpScreen(
                     Text(
                         text = "Continue with Email",
                         fontSize = 15.sp,
-                        color = Color.Black,
+                        color = dark,
                         fontFamily = FontFamily(Font(R.font.lexend_medium))
                     )
                 }
@@ -224,7 +226,7 @@ fun SignUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp)
+                .padding(bottom = 30.dp)
         ) {
 
             Row(

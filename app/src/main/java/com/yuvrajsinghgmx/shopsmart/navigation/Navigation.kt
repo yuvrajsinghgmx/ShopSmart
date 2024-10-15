@@ -46,11 +46,16 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("emailSignUpScreen") {
                 EmailSignUpScreen(
-//                    onEmailSignUpComplete = {
-//                        navController.navigate("Home") {
-//                            popUpTo("signUpScreen") { inclusive = true }
-//                        }
-//                    }
+                    onSignUpComplete = {
+                        navController.navigate("Home") {
+                            popUpTo("signUpScreen") { inclusive = true }
+                        }
+                    },
+                    onBackButtonClicked = {
+                        navController.navigate("signUpScreen"){
+                            popUpTo("signUpScreen") { inclusive = true }
+                        }
+                    }
                 )
             }
 

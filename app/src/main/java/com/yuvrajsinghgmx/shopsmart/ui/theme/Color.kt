@@ -65,3 +65,5 @@ val md_theme_dark_outlineVariant = Color(0xFF404943)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 val textColor= Color(0xFF768689)
+val subHeadingColor=Color(0xFF888888)
+val dark=Color(0xC8000000)
