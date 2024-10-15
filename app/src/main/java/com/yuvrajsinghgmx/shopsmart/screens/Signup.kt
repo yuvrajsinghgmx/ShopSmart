@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,9 +52,12 @@ fun SignUpScreen(
             color = Color(0xFF888888),
             fontSize = 14.sp,
             textAlign = TextAlign.End,
-            modifier = Modifier.clickable {
-                onSignUpComplete()
-            }.padding(top = 40.dp, end = 20.dp).align(Alignment.End),
+            modifier = Modifier
+                .clickable {
+                    onSignUpComplete()
+                }
+                .padding(top = 40.dp, end = 20.dp)
+                .align(Alignment.End),
         )
 
 
@@ -107,19 +112,19 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Button(
+            OutlinedButton(
                 onClick = {
                     onSignUpComplete()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp).padding(start = 16.dp, end=16.dp),
+                    .height(50.dp)
+                    .padding(start = 16.dp, end = 16.dp),
                 shape = RoundedCornerShape(16.dp),
+                elevation = ButtonDefaults.buttonElevation(3.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.google),
@@ -140,23 +145,51 @@ fun SignUpScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "OR",
-                fontFamily = FontFamily(Font(R.font.lexend_regular)),
-                color = Color(0xFF888888)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                HorizontalDivider(
+                    color = Color(0x9A888888),
+                    thickness = 0.6.dp,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "OR",
+                    fontFamily = FontFamily(Font(R.font.lexend_regular)),
+                    color = Color(0xFF888888),
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                )
+
+                HorizontalDivider(
+                    color = Color(0x9A888888),
+                    thickness = 0.6.dp,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
+            OutlinedButton(
                 onClick = {
                     onContinueWithEmail()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(50.dp)
+                    .padding(start = 16.dp, end = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                elevation = ButtonDefaults.buttonElevation(3.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                )
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
