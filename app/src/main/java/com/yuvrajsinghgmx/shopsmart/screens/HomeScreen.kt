@@ -139,10 +139,6 @@ fun HomeScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
 
-    LaunchedEffect(viewModel) {
-        viewModel.loadItems(context)
-    }
-
     Scaffold(
         topBar = {
             if (selectedItems.isEmpty()) {
