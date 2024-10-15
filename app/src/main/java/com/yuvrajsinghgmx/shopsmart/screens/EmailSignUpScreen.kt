@@ -142,7 +142,7 @@ fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit
 
                 OutlinedButton(
                     onClick = {
-                        //handle onClickListener
+                       //click handle
                     },
                     modifier = Modifier
                         .fillMaxWidth()
