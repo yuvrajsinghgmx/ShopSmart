@@ -67,3 +67,5 @@ val md_theme_dark_scrim = Color(0xFF000000)
 val textColor= Color(0xFF768689)
 val subHeadingColor=Color(0xFF888888)
 val dark=Color(0xC8000000)
+
+val headingColor= Color(0xFF1098F7)

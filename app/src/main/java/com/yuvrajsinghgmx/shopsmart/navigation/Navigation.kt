@@ -40,6 +40,19 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                     },
                     onContinueWithEmail = {
                         navController.navigate("emailSignUpScreen")
+                    },
+                    onTermsAndConditionsClick = {
+                        navController.navigate("TermsAndConditions")
+                    }
+                )
+            }
+
+            composable("TermsAndConditions") {
+                TermsAndConditionsScreen(
+                    onBackClick = {
+                        navController.navigate("signUpScreen"){
+                            popUpTo("signUpScreen") { inclusive = true }
+                        }
                     }
                 )
             }
@@ -53,6 +66,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                     },
                     onBackButtonClicked = {
                         navController.navigate("signUpScreen"){
+                            popUpTo("signUpScreen") { inclusive = true }
+                        }
+                    },
+                    onTermsOfUseClicked = {
+                        navController.navigate("TermsAndConditions"){
                             popUpTo("signUpScreen") { inclusive = true }
                         }
                     }
