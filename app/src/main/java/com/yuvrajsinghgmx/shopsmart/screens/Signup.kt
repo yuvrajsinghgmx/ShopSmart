@@ -50,7 +50,8 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.subHeadingColor
 @Composable
 fun SignUpScreen(
     onSignUpComplete: () -> Unit,
-    onContinueWithEmail: () -> Unit
+    onContinueWithEmail: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -276,7 +277,7 @@ fun SignUpScreen(
                         annotatedString.getStringAnnotations(tag = "terms", start = offset, end = offset)
                             .firstOrNull()?.let {
                                 // Perform the action for "Terms of Use" click
-                                Toast.makeText(context, "Terms of Use Clicked", Toast.LENGTH_SHORT).show()
+                                onTermsAndConditionsClick()
                             }
                     }
                 )
@@ -292,6 +293,6 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreenPreview() {
     ShopSmartTheme {
-        SignUpScreen(onSignUpComplete = { }, onContinueWithEmail = { })
+        SignUpScreen(onSignUpComplete = { }, onContinueWithEmail = { }, onTermsAndConditionsClick = {})
     }
 }

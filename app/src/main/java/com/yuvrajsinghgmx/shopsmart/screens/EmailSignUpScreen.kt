@@ -52,7 +52,11 @@ import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.ui.theme.dark
 
 @Composable
-fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit) {
+fun EmailSignUpScreen(
+    onSignUpComplete: () -> Unit,
+    onBackButtonClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit
+) {
     val context = LocalContext.current
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -74,14 +78,15 @@ fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit
             .padding(start = 16.dp, end = 16.dp)
     ) {
         Icon(
-            modifier = Modifier.clickable {
-                onBackButtonClicked()
-            }
+            modifier = Modifier
+                .clickable {
+                    onBackButtonClicked()
+                }
                 .padding(top = 30.dp),
             imageVector = Icons.Filled.ArrowBack,
             contentDescription = "Back",
         )
-        
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,7 +147,7 @@ fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit
 
                 OutlinedButton(
                     onClick = {
-                       //click handle
+                        //click handle
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -253,10 +258,14 @@ fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit
                                 .wrapContentWidth(),
                             onClick = { offset ->
                                 // Check if the user clicked on the "Terms of Use" part
-                                annotatedString.getStringAnnotations(tag = "terms", start = offset, end = offset)
+                                annotatedString.getStringAnnotations(
+                                    tag = "terms",
+                                    start = offset,
+                                    end = offset
+                                )
                                     .firstOrNull()?.let {
                                         // Perform the action for "Terms of Use" click
-                                        Toast.makeText(context, "Terms of Use Clicked", Toast.LENGTH_SHORT).show()
+                                        onTermsOfUseClicked()
                                     }
                             }
                         )
@@ -272,5 +281,5 @@ fun EmailSignUpScreen(onSignUpComplete: () -> Unit, onBackButtonClicked:()->Unit
 @Preview(showBackground = true, showSystemUi = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun SingUpScreenPreview() {
-  EmailSignUpScreen(onSignUpComplete = {}, onBackButtonClicked = {})
+    EmailSignUpScreen(onSignUpComplete = {}, onBackButtonClicked = {}, onTermsOfUseClicked = {})
 }
