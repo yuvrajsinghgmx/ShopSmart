@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
@@ -29,15 +31,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
+import com.yuvrajsinghgmx.shopsmart.ui.theme.dark
+import com.yuvrajsinghgmx.shopsmart.ui.theme.subHeadingColor
 
 @Composable
 fun SignUpScreen(
@@ -45,6 +53,17 @@ fun SignUpScreen(
     onContinueWithEmail: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val annotatedString = buildAnnotatedString {
+        append("By continuing, you agree to our ")
+
+        // Add "Terms of Use" as clickable text
+        pushStringAnnotation(tag = "terms", annotation = "terms_of_use")
+        withStyle(style = SpanStyle(color = Color.Blue, fontSize = 15.sp)) {
+            append("Terms of Use")
+        }
+        pop() // End the clickable part
+    }
 
     Column(
         modifier = Modifier
@@ -60,7 +79,7 @@ fun SignUpScreen(
                 .clickable {
                     onSignUpComplete()
                 }
-                .padding(top = 40.dp, end = 20.dp)
+                .padding(top = 30.dp, end = 20.dp)
                 .align(Alignment.End),
         )
 
@@ -68,7 +87,7 @@ fun SignUpScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 5.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -87,7 +106,7 @@ fun SignUpScreen(
             Text(
                 text = "ShopSmart is your one-stop solution for all your shopping needs. Sign up today to enjoy exclusive deals, personalized offers, and more!",
                 fontSize = 14.sp,
-                color = Color(0xFF888888),
+                color = subHeadingColor,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily(Font(R.font.lexend_semibold)),
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -96,7 +115,7 @@ fun SignUpScreen(
         }
 
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Column(
             modifier = Modifier
@@ -114,7 +133,7 @@ fun SignUpScreen(
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedButton(
                 onClick = {
@@ -122,7 +141,7 @@ fun SignUpScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(45.dp)
                     .padding(start = 16.dp, end = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 elevation = ButtonDefaults.buttonElevation(3.dp),
@@ -141,7 +160,7 @@ fun SignUpScreen(
                     Text(
                         text = "Continue with Google",
                         fontSize = 15.sp,
-                        color = Color.Black,
+                        color = dark,
                         fontFamily = FontFamily(Font(R.font.lexend_medium))
                     )
                 }
@@ -211,7 +230,7 @@ fun SignUpScreen(
                     Text(
                         text = "Continue with Email",
                         fontSize = 15.sp,
-                        color = Color.Black,
+                        color = dark,
                         fontFamily = FontFamily(Font(R.font.lexend_medium))
                     )
                 }
@@ -224,12 +243,11 @@ fun SignUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp)
+                .padding(bottom = 30.dp)
         ) {
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -241,31 +259,30 @@ fun SignUpScreen(
                     tint = Color.Cyan,
                     modifier = Modifier
                         .size(24.dp)
-                        .padding(end = 3.dp)
+
                 )
 
-                Text(
-                    text = "By continuing, you agree to our",
-                    fontFamily = FontFamily(Font(R.font.lexend_regular)),
-                    color = Color(0xFF888888),
-                )
-
-                Text(
-                    text = "Terms of Use",
-                    fontFamily = FontFamily(Font(R.font.lexend_regular)),
-                    color = Color.Blue,
-                    fontSize = 15.sp,
+                ClickableText(
+                    text = annotatedString,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.lexend_regular)),
+                        color = Color(0xFF888888)
+                    ),
                     modifier = Modifier
-                        .clickable {
-                            Toast
-                                .makeText(context, "Terms of Use Clicked", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        .padding(start = 5.dp)
-
+                        .padding(16.dp)
+                        .wrapContentWidth(),
+                    onClick = { offset ->
+                        // Check if the user clicked on the "Terms of Use" part
+                        annotatedString.getStringAnnotations(tag = "terms", start = offset, end = offset)
+                            .firstOrNull()?.let {
+                                // Perform the action for "Terms of Use" click
+                                Toast.makeText(context, "Terms of Use Clicked", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                 )
             }
         }
+
 
 
     }
