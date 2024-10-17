@@ -30,14 +30,12 @@ fun ContactUsScreen() {
     val data = listOf(
         ContactUsData(R.drawable.customer_care, "Customer Services") {
             Toast.makeText(
-                context,
-                "Coming soon",
-                Toast.LENGTH_SHORT
+                context, "Coming soon", Toast.LENGTH_SHORT
             ).show()
         },
 
         ContactUsData(R.drawable.whatsapp, "Whatsapp") {
-
+            Toast.makeText(context, "add whatsapp contact", Toast.LENGTH_SHORT).show()
         },
         ContactUsData(R.drawable.linkedin, "Linkedin") {
             openLink(context, "https://linkedin.com/in/yuvrajsinghgmx")
@@ -45,7 +43,11 @@ fun ContactUsScreen() {
         ContactUsData(R.drawable.instagram, "Instagram") {
             openLink(context, "https://instagram.com/yuvrajsinghgmx")
         },
-        ContactUsData(R.drawable.fb, "Facebook") {},
+        ContactUsData(R.drawable.fb, "Facebook") {
+            Toast.makeText(
+                context, "Add your facebook profile", Toast.LENGTH_SHORT
+            ).show()
+        },
         ContactUsData(R.drawable.gmail, "Gmail") {
             openLink(context, "mailto:yuvrajsinghgmx@gmail.com")
         },
@@ -60,9 +62,7 @@ fun ContactUsScreen() {
 }
 
 data class ContactUsData(
-    val icon: Int,
-    val title: String,
-    val onClick: () -> Unit
+    val icon: Int, val title: String, val onClick: () -> Unit
 )
 
 @Composable
@@ -75,8 +75,7 @@ fun ContactUsItem(contactUsData: ContactUsData) {
             .padding(bottom = 15.dp)
             .clickable {
                 contactUsData.onClick()
-            },
-        shape = RoundedCornerShape(20.dp)
+            }, shape = RoundedCornerShape(20.dp)
     ) {
         Row(
             modifier = Modifier
