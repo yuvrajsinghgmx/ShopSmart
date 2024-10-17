@@ -1,164 +1,136 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.ui.platform.LocalContext
-import android.content.Intent
-import android.content.Context
-import android.net.Uri
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.ui.theme.dark
+import kotlinx.coroutines.launch
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpS(navController: NavController) {
     val context = LocalContext.current
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Help & Support") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        },
-        content = { padding ->
-            Column(
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(pageCount = { HomeTabs.entries.size })
+    val selectedTabIndex = remember {
+        derivedStateOf { pagerState.currentPage }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp, top = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = androidx.compose.material.icons.Icons.Default.ArrowBack,
+                contentDescription = "Back",
                 modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "FAQs",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
-
-                // List of FAQs
-                LazyColumn {
-                    items(faqs) { faq ->
-                        FAQItem(faq.question, faq.answer)
+                    .clickable {
+                        navController.popBackStack()
                     }
-                }
+                    .padding(end = 10.dp)
+            )
 
-                Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Help & Support",
+                fontFamily = FontFamily(Font((R.font.lexend_semibold))),
+                fontSize = 20.sp,
+                color = dark
+            )
+        }
 
-                // Contact Us Section
-                Text(
-                    text = "Need more help?",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(bottom = 10.dp)
+        TabRow(
+            selectedTabIndex = selectedTabIndex.value,
+            contentColor = Color.White,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            HomeTabs.entries.forEachIndexed { index, tab ->
+                Tab(
+                    selected = selectedTabIndex.value == index,
+                    selectedContentColor = Color.Black,
+                    unselectedContentColor = Color.Gray,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(tab.ordinal)
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = tab.title,
+                            fontFamily = FontFamily(Font((R.font.lexend_semibold))),
+                            fontSize = 16.sp
+                        )
+                    }
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = "Contact Us",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                // Gmail
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.gmail),
-                        contentDescription = "Gmail",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                openLink(context, "mailto:example@gmail.com")
-                            }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "gmail",
-                        color = Color.Blue,
-                        modifier = Modifier.clickable {
-                            openLink(context, "mailto:example@gmail.com")
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.linkedin),
-                        contentDescription = "LinkedIn",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                openLink(context, "https://linkedin.com/in/yuvrajsinghgmx")
-                            }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "LinkedIn Profile",
-                        color = Color.Blue,
-                        modifier = Modifier.clickable {
-                            openLink(context, "https://linkedin.com/in/yuvrajsinghgmx")
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.instagram),
-                        contentDescription = "LinkedIn",
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                openLink(context, "https://instagram.com/yuvrajsinghgmx")
-                            }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Instagram Profile",
-                        color = Color.Blue,
-                        modifier = Modifier.clickable {
-                            openLink(context, "https://instagram.com/yuvrajsinghgmx")
-                        }
-                    )
-                }
-
-
             }
         }
-    )
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .padding(top = 10.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                when (HomeTabs.entries[it]) {
+                    HomeTabs.FAQ -> FAQScreen()
+                    HomeTabs.ContactUs -> ContactUsScreen()
+                }
+            }
+        }
+    }
 }
+
+enum class HomeTabs(
+    val title: String,
+    val selectedText: String
+) {
+    FAQ("FAQ", "FAQ"),
+    ContactUs("Contact Us", "Contact Us")
+}
+
 fun openLink(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -179,23 +151,10 @@ fun openLink(context: Context, url: String) {
 }
 
 
-@Composable
-fun FAQItem(question: String, answer: String) {
-    Column(modifier = Modifier.padding(bottom = 12.dp)) {
-        Text(text = question, fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = answer, color = Color.Gray)
-    }
-}
-
-// Example FAQ data
-val faqs = listOf(
-    FAQ("How do I manage my orders?", "You can manage orders by going to My Orders section."),
-    FAQ("How do I update my account settings?", "Navigate to the Settings option to update your details.")
-)
-
 data class FAQ(val question: String, val answer: String)
 
-
-
-
+@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_4)
+@Composable
+fun HelpPreview() {
+    HelpS(navController = NavController(LocalContext.current))
+}
