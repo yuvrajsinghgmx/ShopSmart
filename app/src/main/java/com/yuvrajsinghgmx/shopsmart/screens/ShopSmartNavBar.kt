@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +38,11 @@ fun ShopSmartNavBar(navController: NavHostController) {
             title = "Home",
             selectedIcon = Icons.Default.Home,
             unselectedIcon = Icons.Default.Home
+        ),
+        ButtonNavigationItem(
+            title = "List",
+            selectedIcon = Icons.Default.List,
+            unselectedIcon = Icons.Default.List
         ),
         ButtonNavigationItem(
             title = "UpComing",
