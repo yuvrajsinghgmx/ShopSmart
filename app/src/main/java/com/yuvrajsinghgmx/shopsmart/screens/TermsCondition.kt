@@ -369,7 +369,7 @@ fun TermsAndConditionsScreen(
 }
 
 
-@Preview(showBackground = true,showSystemUi = true, device = Devices.PIXEL_3)
+@Preview(showBackground = true,showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     TermsAndConditionsScreen {
