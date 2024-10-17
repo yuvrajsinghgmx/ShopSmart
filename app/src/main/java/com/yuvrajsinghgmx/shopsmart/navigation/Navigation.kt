@@ -17,7 +17,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
 
-    val showBottomBar = currentDestination in listOf("Home", "UpComing", "Profile", "MyOrders", "Help")
+    val showBottomBar = currentDestination in listOf("Home","List" ,"UpComing", "Profile", "MyOrders", "Help")
 
     Scaffold(
         bottomBar = {
@@ -78,7 +78,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("Home") {
-                HomeScreen(viewModel = viewModel, navController = navController)
+                HomeScreen(navController = navController)
+            }
+
+            composable("List") {
+                ListScreen(viewModel = viewModel, navController = navController)
             }
 
             composable("UpComing") {
