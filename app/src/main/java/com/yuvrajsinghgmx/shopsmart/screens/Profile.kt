@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
@@ -32,8 +34,6 @@ import com.yuvrajsinghgmx.shopsmart.components.ImagePreviewDialog
 import com.yuvrajsinghgmx.shopsmart.utils.ImageHelper
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.Icons
-import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

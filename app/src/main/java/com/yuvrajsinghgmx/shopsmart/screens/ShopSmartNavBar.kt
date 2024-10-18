@@ -2,6 +2,8 @@ package com.yuvrajsinghgmx.shopsmart.screens
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -43,6 +45,11 @@ fun ShopSmartNavBar(navController: NavHostController) {
             title = "List",
             selectedIcon = Icons.Default.List,
             unselectedIcon = Icons.Default.List
+        ),
+        ButtonNavigationItem(
+            title = "Favorites",
+            selectedIcon = Icons.Default.FavoriteBorder,
+            unselectedIcon = Icons.Default.FavoriteBorder
         ),
         ButtonNavigationItem(
             title = "UpComing",
