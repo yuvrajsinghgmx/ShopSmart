@@ -36,6 +36,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -85,17 +87,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
+import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
-
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
-        val orders = items.map { Poduct(it.name, it.amount, it.imageUrl) }
+        val orders = items.map { Product(it.name, it.amount, it.imageUrl) }
         if (orders.isNotEmpty()) {
             SharedPrefsHelper.saveOrders(context, orders)
             Log.d("HomeScreen", "Orders saved: ${orders.size}")
@@ -325,7 +325,8 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                         )
                     }
                 }
-            } else {
+            }
+            else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
                     val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
@@ -391,6 +392,18 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(16.dp))
+                                    //////////////////////////////////////////////////////////////////////////////////////
+                                    if(product.isFavorite) {
+                                        IconButton(onClick = { viewModel.changeFav(product) }) {
+                                            Icon(Icons.Default.Favorite, contentDescription = "", tint = Color.Red)
+                                        }
+                                    }
+                                    else {
+                                        IconButton(onClick = { viewModel.changeFav(product) }) {
+                                            Icon(Icons.Default.FavoriteBorder, contentDescription = "")
+                                        }
+                                    }
+                                    ///////////////////////////////////////////////////////////////////////////////////////
                                     Checkbox(
                                         checked = isChecked,
                                         onCheckedChange = { checked ->
@@ -532,7 +545,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         )
                                         val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
                                         viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
+                                        saveItems(context, updatedItems.map { Product(it.name, it.amount, it.imageUrl, it.dateAdded) })
                                         newItem = ""
                                         newAmount = ""
                                         isLoading = false
@@ -549,7 +562,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
         }
     }
 
-        if (showDatePicker) {
+    if (showDatePicker) {
             DatePickerModal(
                 onDateSelected = { date ->
                     selectedDate = date
@@ -558,7 +571,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                 onDismiss = { showDatePicker = false }
             )
         }
-    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
