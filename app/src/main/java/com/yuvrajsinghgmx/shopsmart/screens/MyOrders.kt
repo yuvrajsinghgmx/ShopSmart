@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 
@@ -30,6 +30,12 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
     val context = LocalContext.current
     var orders by remember { mutableStateOf(listOf<Product>()) }
     val coroutineScope = rememberCoroutineScope()
+
+//    LaunchedEffect(Unit) {
+//        loadOrders(context) { loadedOrders ->
+//            orders = loadedOrders
+//        }
+//    }
 
     LaunchedEffect(selectedItemsJson) {
         orders = Gson().fromJson(selectedItemsJson, object : TypeToken<List<Product>>() {}.type)
@@ -123,8 +129,8 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 100.dp)
             ) {
-                items(orders.size) { order ->
-                    OrderItem(orders[order])
+                items(orders) { order ->
+                    OrderItem(order)
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 }
             }

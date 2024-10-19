@@ -1,17 +1,23 @@
 package com.yuvrajsinghgmx.shopsmart.viewmodel
 
 import android.content.Context
+import androidx.compose.animation.core.copy
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.Repository.ImageRepo
-import com.yuvrajsinghgmx.shopsmart.datastore.Product
+import com.yuvrajsinghgmx.shopsmart.datastore.ShoppingList
+import com.yuvrajsinghgmx.shopsmart.datastore.dataStore
 import com.yuvrajsinghgmx.shopsmart.datastore.getItems
+import com.yuvrajsinghgmx.shopsmart.screens.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,17 +35,6 @@ class ShoppingListViewModel @Inject constructor(
 
     fun updateItems(newItems: List<Product>) {
         _items.value = newItems
-    }
-
-    fun changeFav(product: Product) {
-        _items.value = _items.value.map { listItem ->
-            if(listItem == product) {
-                listItem.copy(isFavorite = !listItem.isFavorite)
-            }
-            else {
-                listItem
-            }
-        }
     }
 
     fun loadItems(context: Context) {
