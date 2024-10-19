@@ -99,35 +99,9 @@ To get started with ShopSmart, follow these steps:
 
 ## **🤝Contributing**
 
-We’re excited for you to contribute to ShopSmart! Here’s how:
+We’re excited for you to contribute to ShopSmart! 
 
-1. 🌿 **Branch Out**: Create a new branch with a meaningful name (**MANDATORY**).
-
-   ```bash
-   $ git checkout -b <your_branch_name>
-   ```
-
-2. ✍️ **Make Changes**: Modify existing files, add new ones, or remove unnecessary ones.
-
-3. 📁 **Track Changes**: Add the changed files to the staging area.
-
-   ```bash
-   $ git add .
-   ```
-
-4. 🚚 **Commit**: Commit your changes with a descriptive message.
-
-   ```bash
-   $ git commit -m "<commit message>"
-   ```
-
-5. 🚀 **Push Changes**: Push your committed changes to your forked repository on GitHub.
-
-   ```bash
-   $ git push -u origin <your_branch_name>
-   ```
-
-6. 🌐 **Create Pull Request**: On GitHub, navigate to your forked repository and initiate a pull request by clicking "Compare & pull request".
+Please refer the [Contributors Guide](https://github.com/yuvrajsinghgmx/ShopSmart/blob/master/contributors) Before you start Contributing.
 
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
