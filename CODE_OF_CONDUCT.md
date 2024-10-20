@@ -56,6 +56,13 @@ Examples of representing our community include using an official e-mail address,
 posting via an official social media account, or acting as an appointed
 representative at an online or offline event.
 
+## Pull Request Guidelines
+
+Contributions, including pull requests, must align with this Code of Conduct. 
+All contributors are expected to submit work that fosters a positive and inclusive community. 
+Inappropriate behavior, language, or content in pull requests may result in the rejection of 
+the contribution and further enforcement actions as outlined in the guidelines.
+
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
