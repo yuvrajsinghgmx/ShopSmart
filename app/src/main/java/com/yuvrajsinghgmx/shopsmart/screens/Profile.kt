@@ -5,7 +5,7 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +33,10 @@ import com.yuvrajsinghgmx.shopsmart.utils.ImageHelper
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,7 +106,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
-                        .data(profilePhotoUri ?: R.drawable.profile)
+                        .data(profilePhotoUri ?: R.drawable.profilenewone)
                         .crossfade(true)
                         .build(),
                     contentDescription = "Profile Image",
@@ -118,8 +122,8 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                             }
                         },
                     contentScale = ContentScale.Crop,
-                    fallback = painterResource(id = R.drawable.profile),
-                    error = painterResource(id = R.drawable.profile)
+                    fallback = painterResource(id = R.drawable.profilenewone),
+                    error = painterResource(id = R.drawable.profilenewone)
                 )
                 if (isEditing) {
                     Icon(
@@ -155,7 +159,10 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         if (isNameError) {
                             Text("Name cannot be empty", color = MaterialTheme.colorScheme.error)
                         }
-                    }
+                    },
+                    colors = TextFieldDefaults.colors(
+                        Color(0xFF233b41),
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
@@ -180,7 +187,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                     userName,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
+                    color = Color(0xFF233b41)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -209,28 +216,78 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         isEditing = true
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006400))
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.13f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFFFFF)),
+                shape = RoundedCornerShape(14.dp)
             ) {
-                Text(if (isEditing) "Save Profile" else "Edit Profile")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color(0xFF637478)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(if (isEditing) "Save Profile" else "Edit Profile", color = Color(0xFF637478), fontWeight = FontWeight.Bold)
+                }
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    ProfileItem(title = "My Orders") {
-                        navController.navigate("MyOrders")
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ){
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ){
+                    Text(
+                        "Settings",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF233b41)
+                    )
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(1.dp)
+                        .align(Alignment.Start),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+
+                    ) {
+                    Column(modifier = Modifier.padding(1.dp)) {
+                        ProfileItem(title = "Notifications Settings", Icon= R.drawable.bell)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        HorizontalDivider()
+                        ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
+                            navController.navigate("MyOrders")
+                        }
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(4.dp))
+                        ProfileItem(title = "Settings", Icon = R.drawable.setting)
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(4.dp))
+                        ProfileItem(title = "Help & Support", Icon = R.drawable.help) {
+                            navController.navigate("Help")
+                        }
                     }
-                    ProfileItem(title = "Settings")
-                    ProfileItem(title = "Help & Support"){
-                        navController.navigate("Help")
-                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = {
+                        // Clear the user data and navigate to the login screen
+                    },
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFebeded)),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Log Out", color = Color(0xFF637478), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -247,15 +304,30 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
 }
 
 @Composable
-fun ProfileItem(title: String, onClick: () -> Unit = {}) {
+fun ProfileItem(title: String, Icon: Int, onClick: () -> Unit = {}) {
     TextButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF332D25)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = Icon),
+                contentDescription = "Icon",
+                modifier = Modifier.size(24.dp),
+                colorFilter = ColorFilter.tint(Color(0xFF637478))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF637478),
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
