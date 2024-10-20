@@ -101,7 +101,7 @@ To get started with ShopSmart, follow these steps:
 
 We’re excited for you to contribute to ShopSmart! 
 
-Please refer the [Contributors Guide](https://github.com/yuvrajsinghgmx/ShopSmart/blob/master/contributors) Before you start Contributing.
+Please refer the [Contributors Guide](./contributors.md) Before you start Contributing.
 
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
