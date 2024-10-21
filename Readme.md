@@ -20,6 +20,11 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
 
+## Project Structure
+
+<!-- START_STRUCTURE -->
+<!-- END_STRUCTURE -->
+
 ## **🔗 Table of Contents**
 1. [Features](#features)
 2. [Screenshots](#screenshots)
