@@ -9,7 +9,7 @@
 ├── CODE_OF_CONDUCT.md
 ├── DarkModeToggle
 ├── LICENSE
-├── Readme.md
+├── README.md
 ├── Screenshot 2024-10-03 202535.png
 ├── Screenshot 2024-10-03 202631.png
 ├── app/
