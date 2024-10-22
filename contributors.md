@@ -48,6 +48,174 @@ To get started, follow these steps:
 7. **Open a Pull Request**: Go to the original repository and open a pull request from your branch to the main repository.
 
 
+---
+
+
+## Project Structure
+
+<!-- START_STRUCTURE -->
+```
+├── Assets/
+│   ├── Pasted image.png
+│   ├── ScreenShot1.jpg
+│   ├── ScreenShot2.jpg
+│   ├── ScreenShot3.jpg
+│   ├── ScreenShot4.jpg
+│   ├── ShopSmartLogo.png
+│   └── ShopSmartLogo2.png
+├── CODE_OF_CONDUCT.md
+├── DarkModeToggle
+├── LICENSE
+├── README.md
+├── Screenshot 2024-10-03 202535.png
+├── Screenshot 2024-10-03 202631.png
+├── app/
+│   ├── build.gradle.kts
+│   ├── proguard-rules.pro
+│   └── src/
+│       ├── androidTest/
+│       │   └── java/
+│       │       └── com/
+│       │           └── yuvrajsinghgmx/
+│       │               └── shopsmart/
+│       │                   └── ExampleInstrumentedTest.kt
+│       ├── main/
+│       │   ├── AndroidManifest.xml
+│       │   ├── java/
+│       │   │   └── com/
+│       │   │       └── yuvrajsinghgmx/
+│       │   │           └── shopsmart/
+│       │   │               ├── ApiData/
+│       │   │               │   ├── Hit.kt
+│       │   │               │   └── Pics.kt
+│       │   │               ├── MainActivity.kt
+│       │   │               ├── MyApp.kt
+│       │   │               ├── Repository/
+│       │   │               │   └── ImageRepo.kt
+│       │   │               ├── api/
+│       │   │               │   └── API.kt
+│       │   │               ├── datastore/
+│       │   │               │   ├── instance.kt
+│       │   │               │   └── products.kt
+│       │   │               ├── di/
+│       │   │               │   └── NetworkModule.kt
+│       │   │               ├── navbarpr.kt
+│       │   │               ├── navigation/
+│       │   │               │   └── Navigation.kt
+│       │   │               ├── profilefeatures/
+│       │   │               │   └── ImageComponents.kt
+│       │   │               ├── screens/
+│       │   │               │   ├── ContactUsScreen.kt
+│       │   │               │   ├── EmailSignUpScreen.kt
+│       │   │               │   ├── FAQScreen.kt
+│       │   │               │   ├── HelpS.kt
+│       │   │               │   ├── HomeScreen.kt
+│       │   │               │   ├── ListScreen.kt
+│       │   │               │   ├── MyOrders.kt
+│       │   │               │   ├── Profile.kt
+│       │   │               │   ├── ShopSmartNavBar.kt
+│       │   │               │   ├── Signup.kt
+│       │   │               │   ├── TermsCondition.kt
+│       │   │               │   └── Upcoming.kt
+│       │   │               ├── ui/
+│       │   │               │   ├── Authpage.kt.txt
+│       │   │               │   └── theme/
+│       │   │               │       ├── Color.kt
+│       │   │               │       ├── Theme.kt
+│       │   │               │       └── Type.kt
+│       │   │               ├── utils/
+│       │   │               │   ├── ImageHelper.kt
+│       │   │               │   └── SharedPrefsHelper.kt
+│       │   │               └── viewmodel/
+│       │   │                   ├── HomeScreenViewModel.kt
+│       │   │                   └── ShoppingListViewModel.kt
+│       │   └── res/
+│       │       ├── drawable/
+│       │       │   ├── addicon.png
+│       │       │   ├── baseline_keyboard_voice_24.xml
+│       │       │   ├── baseline_star_24.xml
+│       │       │   ├── bell.png
+│       │       │   ├── checkout.png
+│       │       │   ├── customer_care.xml
+│       │       │   ├── edit.png
+│       │       │   ├── empty_dark.png
+│       │       │   ├── empty_light.png
+│       │       │   ├── fb.xml
+│       │       │   ├── file__1_.png
+│       │       │   ├── gmail.xml
+│       │       │   ├── google.xml
+│       │       │   ├── help.png
+│       │       │   ├── ic_launcher_background.xml
+│       │       │   ├── ic_launcher_foreground.xml
+│       │       │   ├── instagram.xml
+│       │       │   ├── linkedin.xml
+│       │       │   ├── logo1.png
+│       │       │   ├── logo2.png
+│       │       │   ├── profile.png
+│       │       │   ├── profilenewone.png
+│       │       │   ├── setting.png
+│       │       │   ├── shopinterior.jpeg
+│       │       │   ├── shoppingbag.png
+│       │       │   ├── shopsmart.png
+│       │       │   └── whatsapp.xml
+│       │       ├── font/
+│       │       │   ├── abril_fatface_regular.ttf
+│       │       │   ├── lexend_black.ttf
+│       │       │   ├── lexend_bold.ttf
+│       │       │   ├── lexend_extrabold.ttf
+│       │       │   ├── lexend_light.ttf
+│       │       │   ├── lexend_medium.ttf
+│       │       │   ├── lexend_regular.ttf
+│       │       │   ├── lexend_semibold.ttf
+│       │       │   ├── lexend_thin.ttf
+│       │       │   ├── montserrat_bold.ttf
+│       │       │   └── montserrat_regular.ttf
+│       │       ├── mipmap-anydpi/
+│       │       │   ├── ic_launcher.xml
+│       │       │   └── ic_launcher_round.xml
+│       │       ├── mipmap-hdpi/
+│       │       │   ├── ic_launcher.webp
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-mdpi/
+│       │       │   ├── ic_launcher.webp
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xhdpi/
+│       │       │   ├── ic_launcher.webp
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xxhdpi/
+│       │       │   ├── ic_launcher.webp
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xxxhdpi/
+│       │       │   ├── ic_launcher.webp
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── values/
+│       │       │   ├── colors.xml
+│       │       │   ├── strings.xml
+│       │       │   └── themes.xml
+│       │       └── xml/
+│       │           ├── backup_rules.xml
+│       │           ├── data_extraction_rules.xml
+│       │           └── file_paths.xml
+│       └── test/
+│           └── java/
+│               └── com/
+│                   └── yuvrajsinghgmx/
+│                       └── shopsmart/
+│                           └── ExampleUnitTest.kt
+├── build.gradle.kts
+├── contributors.md
+├── gradle/
+│   ├── libs.versions.toml
+│   └── wrapper/
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── repo_structure.txt
+└── settings.gradle.kts
+```
+<!-- END_STRUCTURE -->
 
 ---
 
@@ -62,3 +230,6 @@ To ensure a welcoming environment for all contributors, this project adheres to 
 A heartfelt **thank you** to everyone who has contributed to **ShopSmart**. Your input has been instrumental in shaping the project and making it better for users and developers alike. Every piece of code, bug report, or feature suggestion helps us grow and improve.
 
 We acknowledge the importance of each contribution, and we are truly grateful for your efforts. To all our contributors — your hard work does not go unnoticed. Together, we continue to make **ShopSmart** a fantastic project for everyone!
+
+
+
