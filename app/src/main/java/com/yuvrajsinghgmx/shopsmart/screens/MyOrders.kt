@@ -4,7 +4,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 
@@ -129,8 +129,8 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 100.dp)
             ) {
-                items(orders) { order ->
-                    OrderItem(order)
+                items(orders.size) { index ->
+                    OrderItem(orders[index])
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 }
             }

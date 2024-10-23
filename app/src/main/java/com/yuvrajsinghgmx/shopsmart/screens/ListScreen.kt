@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -85,17 +84,15 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
+import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
 
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
-
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
-        val orders = items.map { Poduct(it.name, it.amount, it.imageUrl) }
+        val orders = items.map { Product(it.name, it.amount, it.imageUrl) }
         if (orders.isNotEmpty()) {
             SharedPrefsHelper.saveOrders(context, orders)
             Log.d("HomeScreen", "Orders saved: ${orders.size}")
@@ -343,8 +340,8 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                 modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
                             )
                         }
-                        items(products) { product ->
-                            val isChecked = product in selectedItems
+                        items(products.size) { index ->
+                            val isChecked = products[index] in selectedItems
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -359,10 +356,10 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         .fillMaxSize()
                                         .padding(10.dp)
                                 ) {
-                                    if (product.imageUrl != null) {
+                                    if (products[index].imageUrl != null) {
                                         AsyncImage(
-                                            model = product.imageUrl,
-                                            contentDescription = product.name,
+                                            model = products[index].imageUrl,
+                                            contentDescription = products[index].name,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
                                                 .size(70.dp, 70.dp)
@@ -378,7 +375,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
 
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
-                                            text = product.name,
+                                            text = products[index].name,
                                             style = TextStyle(
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold,
@@ -386,7 +383,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
-                                            text = "₹${product.amount}",
+                                            text = "₹${products[index].amount}",
                                             style = TextStyle(fontSize = 16.sp, color = Color.Gray)
                                         )
                                     }
@@ -395,9 +392,9 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         checked = isChecked,
                                         onCheckedChange = { checked ->
                                             if (checked) {
-                                                selectedItems.add(product)
+                                                selectedItems.add(products[index])
                                             } else {
-                                                selectedItems.remove(product)
+                                                selectedItems.remove(products[index])
                                             }
                                             showDeleteButton = selectedItems.isNotEmpty()
                                             selectAll = selectedItems.size == items.value.size
@@ -532,7 +529,7 @@ fun ListScreen(viewModel: ShoppingListViewModel = hiltViewModel(), navController
                                         )
                                         val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
                                         viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Poduct(it.name, it.amount, it.imageUrl, it.dateAdded) })
+                                        saveItems(context, updatedItems.map { Product(it.name, it.amount, it.imageUrl, it.dateAdded) })
                                         newItem = ""
                                         newAmount = ""
                                         isLoading = false

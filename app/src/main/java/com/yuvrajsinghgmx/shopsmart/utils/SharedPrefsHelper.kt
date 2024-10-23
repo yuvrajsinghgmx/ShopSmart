@@ -2,10 +2,10 @@ package com.yuvrajsinghgmx.shopsmart.utils
 
 import android.content.Context
 import android.net.Uri
+import androidx.webkit.internal.ApiFeature.T
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.yuvrajsinghgmx.shopsmart.datastore.Poduct
-import com.yuvrajsinghgmx.shopsmart.screens.Product
+import com.yuvrajsinghgmx.shopsmart.datastore.Product
 
 object SharedPrefsHelper {
     private const val PREFS_NAME = "ShopSmartPrefs"
@@ -42,8 +42,7 @@ object SharedPrefsHelper {
         return if (uriString != null) Uri.parse(uriString) else null
     }
 
-    // New methods for handling orders
-    fun saveOrders(context: Context, orders: List<Poduct>) {
+    fun saveOrders(context: Context, orders: List<Product>) {
         val gson = Gson()
         val json = gson.toJson(orders)
         getPrefs(context).edit().putString(KEY_ORDERS, json).apply()
@@ -53,7 +52,7 @@ object SharedPrefsHelper {
         val gson = Gson()
         val json = getPrefs(context).getString(KEY_ORDERS, null)
         return if (json != null) {
-            val type = object : TypeToken<List<Product>>() {}.type
+            val type = object : TypeToken<Product>() {}.type
             gson.fromJson(json, type)
         } else {
             emptyList()
