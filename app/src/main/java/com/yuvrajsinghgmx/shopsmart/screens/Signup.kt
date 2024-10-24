@@ -1,6 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +21,18 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,16 +62,41 @@ fun SignUpScreen(
     onTermsAndConditionsClick: () -> Unit
 ) {
     val context = LocalContext.current
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    // Handle back press
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
 
     val annotatedString = buildAnnotatedString {
         append("By continuing, you agree to our ")
 
-        // Add "Terms of Use" as clickable text
         pushStringAnnotation(tag = "terms", annotation = "terms_of_use")
         withStyle(style = SpanStyle(color = Color.Blue, fontSize = 15.sp)) {
             append("Terms of Use")
         }
-        pop() // End the clickable part
+        pop()
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Exit App") },
+            text = { Text("Do you want to exit the app?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    (context as? Activity)?.finish()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
     }
 
     Column(
@@ -84,14 +117,12 @@ fun SignUpScreen(
                 .align(Alignment.End),
         )
 
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 5.dp, start = 16.dp, end = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Text(
                 text = "Welcome to ShopSmart",
                 fontSize = 26.sp,
@@ -112,9 +143,7 @@ fun SignUpScreen(
                 fontFamily = FontFamily(Font(R.font.lexend_semibold)),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-
         }
-
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -125,7 +154,6 @@ fun SignUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Image(
                 painter = painterResource(id = R.drawable.logo1),
                 contentDescription = "Shopping Bag",
@@ -148,8 +176,7 @@ fun SignUpScreen(
                 elevation = ButtonDefaults.buttonElevation(3.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Row(
-                ) {
+                Row {
                     Image(
                         painter = painterResource(id = R.drawable.google),
                         contentDescription = "Google Logo",
@@ -196,8 +223,6 @@ fun SignUpScreen(
                 )
             }
 
-
-
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedButton(
@@ -236,7 +261,6 @@ fun SignUpScreen(
                     )
                 }
             }
-
         }
 
         Column(
@@ -246,21 +270,17 @@ fun SignUpScreen(
                 .fillMaxSize()
                 .padding(bottom = 30.dp)
         ) {
-
             Row(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = "Info Icon",
                     tint = Color.Cyan,
-                    modifier = Modifier
-                        .size(24.dp)
-
+                    modifier = Modifier.size(24.dp)
                 )
 
                 ClickableText(
@@ -273,19 +293,14 @@ fun SignUpScreen(
                         .padding(16.dp)
                         .wrapContentWidth(),
                     onClick = { offset ->
-                        // Check if the user clicked on the "Terms of Use" part
                         annotatedString.getStringAnnotations(tag = "terms", start = offset, end = offset)
                             .firstOrNull()?.let {
-                                // Perform the action for "Terms of Use" click
                                 onTermsAndConditionsClick()
                             }
                     }
                 )
             }
         }
-
-
-
     }
 }
 
@@ -293,6 +308,10 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreenPreview() {
     ShopSmartTheme {
-        SignUpScreen(onSignUpComplete = { }, onContinueWithEmail = { }, onTermsAndConditionsClick = {})
+        SignUpScreen(
+            onSignUpComplete = { },
+            onContinueWithEmail = { },
+            onTermsAndConditionsClick = { }
+        )
     }
 }

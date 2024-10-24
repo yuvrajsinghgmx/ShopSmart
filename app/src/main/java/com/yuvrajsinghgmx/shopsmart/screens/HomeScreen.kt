@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,12 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,9 +55,37 @@ import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navController: NavController){
+fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
+    var showExitDialog by remember { mutableStateOf(false) }
     var myItems = viewModel.itemsList
+
+    // Handle back press for this screen
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
+    // Exit Dialog
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Exit App") },
+            text = { Text("Do you want to exit the app?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    // Get the activity context and finish it
+                    (navController.context as? Activity)?.finish()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)){
         Row(Modifier.fillMaxWidth()) {
