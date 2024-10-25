@@ -1,6 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
-sealed class Screen(val route: String) {
+sealed class Screen(val routes: String) {
     data object SignUp : Screen("signUpScreen")
     data object TermsAndConditions : Screen("TermsAndConditions")
     data object EmailSignUp : Screen("emailSignUpScreen")
