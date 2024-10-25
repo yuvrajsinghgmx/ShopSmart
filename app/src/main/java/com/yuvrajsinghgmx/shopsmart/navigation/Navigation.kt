@@ -17,7 +17,14 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
 
-    val showBottomBar = currentDestination in listOf("Home","List" ,"UpComing", "Profile", "MyOrders", "Help")
+    val showBottomBar = currentDestination in listOf(
+        Screen.Home.routes,
+        Screen.List.routes,
+        Screen.UpComing.routes,
+        Screen.Profile.routes,
+        Screen.MyOrders().routes,
+        Screen.Help.routes
+    )
 
     Scaffold(
         bottomBar = {
@@ -28,77 +35,77 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "signUpScreen",
+            startDestination = Screen.SignUp.routes,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("signUpScreen") {
+            composable(Screen.SignUp.routes) {
                 SignUpScreen(
                     onSignUpComplete = {
-                        navController.navigate("Home") {
-                            popUpTo("signUpScreen") { inclusive = true }
+                        navController.navigate(Screen.Home.routes) {
+                            popUpTo(Screen.SignUp.routes) { inclusive = true }
                         }
                     },
                     onContinueWithEmail = {
-                        navController.navigate("emailSignUpScreen")
+                        navController.navigate(Screen.EmailSignUp.routes)
                     },
                     onTermsAndConditionsClick = {
-                        navController.navigate("TermsAndConditions")
+                        navController.navigate(Screen.TermsAndConditions.routes)
                     }
                 )
             }
 
-            composable("TermsAndConditions") {
+            composable(Screen.TermsAndConditions.routes) {
                 TermsAndConditionsScreen(
                     onBackClick = {
-                        navController.navigate("signUpScreen"){
-                            popUpTo("signUpScreen") { inclusive = true }
+                        navController.navigate(Screen.SignUp.routes){
+                            popUpTo(Screen.SignUp.routes) { inclusive = true }
                         }
                     }
                 )
             }
 
-            composable("emailSignUpScreen") {
+            composable(Screen.EmailSignUp.routes) {
                 EmailSignUpScreen(
                     onSignUpComplete = {
-                        navController.navigate("Home") {
-                            popUpTo("signUpScreen") { inclusive = true }
+                        navController.navigate(Screen.Home.routes) {
+                            popUpTo(Screen.SignUp.routes) { inclusive = true }
                         }
                     },
                     onBackButtonClicked = {
-                        navController.navigate("signUpScreen"){
-                            popUpTo("signUpScreen") { inclusive = true }
+                        navController.navigate(Screen.SignUp.routes){
+                            popUpTo(Screen.SignUp.routes) { inclusive = true }
                         }
                     },
                     onTermsOfUseClicked = {
-                        navController.navigate("TermsAndConditions"){
-                            popUpTo("signUpScreen") { inclusive = true }
+                        navController.navigate(Screen.TermsAndConditions.routes){
+                            popUpTo(Screen.SignUp.routes) { inclusive = true }
                         }
                     }
                 )
             }
 
-            composable("Home") {
+            composable(Screen.Home.routes) {
                 HomeScreen(navController = navController)
             }
 
-            composable("List") {
+            composable(Screen.List.routes) {
                 ListScreen(viewModel = viewModel, navController = navController)
             }
 
-            composable("UpComing") {
+            composable(Screen.UpComing.routes) {
                 Upcoming(modifier = Modifier.padding(innerPadding))
             }
 
-            composable("Profile") {
+            composable(Screen.Profile.routes) {
                 Profile(navController = navController)
             }
 
-            composable("MyOrders?selectedItems={selectedItems}") { backStackEntry ->
+            composable(Screen.MyOrders().routes) { backStackEntry ->
                 val selectedItemsJson = backStackEntry.arguments?.getString("selectedItems")
                 MyOrders(navController = navController, selectedItemsJson = selectedItemsJson ?: "[]")
             }
 
-            composable("Help") {
+            composable(Screen.Help.routes) {
                 HelpS(navController = navController)
             }
         }
