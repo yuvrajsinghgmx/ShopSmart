@@ -236,14 +236,14 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
-            Column (
+            Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
-            ){
-                Row (
+            ) {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start
-                ){
+                ) {
                     Text(
                         "Settings",
                         style = MaterialTheme.typography.headlineMedium,
@@ -258,10 +258,11 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         .align(Alignment.Start),
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-
-                    ) {
+                ) {
                     Column(modifier = Modifier.padding(1.dp)) {
-                        ProfileItem(title = "Notifications Settings", Icon= R.drawable.bell)
+                        ProfileItem(title = "Notifications Settings", Icon = R.drawable.bell) {
+                            navController.navigate("notifications")  // Updated navigation
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                         HorizontalDivider()
                         ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
@@ -269,7 +270,9 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         }
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(4.dp))
-                        ProfileItem(title = "Settings", Icon = R.drawable.setting)
+                        ProfileItem(title = "Settings", Icon = R.drawable.setting) {
+                            navController.navigate("settings")  // New navigation to Settings screen
+                        }
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(4.dp))
                         ProfileItem(title = "Help & Support", Icon = R.drawable.help) {

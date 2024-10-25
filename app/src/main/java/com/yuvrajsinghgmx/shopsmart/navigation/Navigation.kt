@@ -17,13 +17,13 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
 
+    // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
-        Screen.Home.routes,
-        Screen.List.routes,
-        Screen.UpComing.routes,
-        Screen.Profile.routes,
-        Screen.MyOrders().routes,
-        Screen.Help.routes
+        "Home", "List", "UpComing", "Profile", "MyOrders", "Help",
+        "settings", "personal_info", "address_book", "payment_methods", "security",
+        "language", "theme", "notifications", "privacy", "currency",
+        "shipping_preferences", "order_notifications", "app_version",
+        "terms", "privacy_policy", "contact"
     )
 
     Scaffold(
@@ -35,78 +35,149 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.SignUp.routes,
+            startDestination = "signUpScreen",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.SignUp.routes) {
+            // Existing routes
+            composable("signUpScreen") {
                 SignUpScreen(
                     onSignUpComplete = {
-                        navController.navigate(Screen.Home.routes) {
-                            popUpTo(Screen.SignUp.routes) { inclusive = true }
+                        navController.navigate("Home") {
+                            popUpTo("signUpScreen") { inclusive = true }
                         }
                     },
                     onContinueWithEmail = {
-                        navController.navigate(Screen.EmailSignUp.routes)
+                        navController.navigate("emailSignUpScreen")
                     },
                     onTermsAndConditionsClick = {
-                        navController.navigate(Screen.TermsAndConditions.routes)
+                        navController.navigate("TermsAndConditions")
                     }
                 )
             }
 
-            composable(Screen.TermsAndConditions.routes) {
+            composable("TermsAndConditions") {
                 TermsAndConditionsScreen(
                     onBackClick = {
-                        navController.navigate(Screen.SignUp.routes){
-                            popUpTo(Screen.SignUp.routes) { inclusive = true }
+                        navController.navigate("signUpScreen"){
+                            popUpTo("signUpScreen") { inclusive = true }
                         }
                     }
                 )
             }
 
-            composable(Screen.EmailSignUp.routes) {
+            composable("emailSignUpScreen") {
                 EmailSignUpScreen(
                     onSignUpComplete = {
-                        navController.navigate(Screen.Home.routes) {
-                            popUpTo(Screen.SignUp.routes) { inclusive = true }
+                        navController.navigate("Home") {
+                            popUpTo("signUpScreen") { inclusive = true }
                         }
                     },
                     onBackButtonClicked = {
-                        navController.navigate(Screen.SignUp.routes){
-                            popUpTo(Screen.SignUp.routes) { inclusive = true }
+                        navController.navigate("signUpScreen"){
+                            popUpTo("signUpScreen") { inclusive = true }
                         }
                     },
                     onTermsOfUseClicked = {
-                        navController.navigate(Screen.TermsAndConditions.routes){
-                            popUpTo(Screen.SignUp.routes) { inclusive = true }
+                        navController.navigate("TermsAndConditions"){
+                            popUpTo("signUpScreen") { inclusive = true }
                         }
                     }
                 )
             }
 
-            composable(Screen.Home.routes) {
+            composable("Home") {
                 HomeScreen(navController = navController)
             }
 
-            composable(Screen.List.routes) {
+            composable("List") {
                 ListScreen(viewModel = viewModel, navController = navController)
             }
 
-            composable(Screen.UpComing.routes) {
+            composable("UpComing") {
                 Upcoming(modifier = Modifier.padding(innerPadding))
             }
 
-            composable(Screen.Profile.routes) {
+            composable("Profile") {
                 Profile(navController = navController)
             }
 
-            composable(Screen.MyOrders().routes) { backStackEntry ->
+            composable("MyOrders?selectedItems={selectedItems}") { backStackEntry ->
                 val selectedItemsJson = backStackEntry.arguments?.getString("selectedItems")
                 MyOrders(navController = navController, selectedItemsJson = selectedItemsJson ?: "[]")
             }
 
-            composable(Screen.Help.routes) {
+            composable("Help") {
                 HelpS(navController = navController)
+            }
+
+            // New Settings Routes
+            // Main Settings
+            composable("settings") {
+                SettingsScreen(navController = navController)
+            }
+
+            // Account Settings
+            composable("personal_info") {
+                PersonalInformationScreen(navController = navController)
+            }
+
+            composable("address_book") {
+                AddressBookScreen(navController = navController)
+            }
+
+            composable("payment_methods") {
+                PaymentMethodsScreen(navController = navController)
+            }
+
+            composable("security") {
+                SecurityScreen(navController = navController)
+            }
+
+            // App Settings
+            composable("language") {
+                LanguageScreen(navController = navController)
+            }
+
+            composable("theme") {
+                ThemeScreen(navController = navController)
+            }
+
+            composable("notifications") {
+                NotificationSettingsScreen(navController = navController)
+            }
+
+            composable("privacy") {
+                PrivacySettingsScreen(navController = navController)
+            }
+
+            // Shopping Settings
+            composable("currency") {
+                CurrencyScreen(navController = navController)
+            }
+
+            composable("shipping_preferences") {
+                ShippingPreferencesScreen(navController = navController)
+            }
+
+            composable("order_notifications") {
+                OrderNotificationsScreen(navController = navController)
+            }
+
+            // About Section
+            composable("app_version") {
+                AppVersionScreen(navController = navController)
+            }
+
+            composable("terms") {
+                TermsScreen(navController = navController)
+            }
+
+            composable("privacy_policy") {
+                PrivacyPolicyScreen(navController = navController)
+            }
+
+            composable("contact") {
+                ContactScreen(navController = navController)
             }
         }
     }
