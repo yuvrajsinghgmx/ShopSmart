@@ -18,6 +18,10 @@ val Montserrat = FontFamily(
     Font(R.font.montserrat_bold, FontWeight.Bold)
 )
 
+val LexendRegular = FontFamily(
+    Font(R.font.lexend_regular),
+)
+
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = AbrilFatface,
