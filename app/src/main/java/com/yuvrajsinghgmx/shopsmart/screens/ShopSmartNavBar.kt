@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.yuvrajsinghgmx.shopsmart.navigation.Screen
 
 data class ButtonNavigationItem(
     val title: String,
@@ -62,7 +63,8 @@ fun ShopSmartNavBar(navController: NavHostController) {
             NavigationBarItem(
                 selected = currentDestination?.route == item.title,
                 onClick = {
-                        navController.navigate(item.title) {
+                        navController.popBackStack(route = Screen.Home.routes, inclusive = false)
+                        navController.navigate(item.title){
                             launchSingleTop = true
                             restoreState = true
                         }
