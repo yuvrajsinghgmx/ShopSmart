@@ -2,10 +2,12 @@
 
 | Name                  | Logo                                                      | Purpose                                                                                                      |
 |-----------------------|-----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| GSSoC'2024-Extd       | ![GSSoC Logo](assets/GSSoC-Ext.png)             | The coding period is from October 1st to October 30th, during which contributors make contributions and earn points on the platform. |
-| Hacktoberfest 2024    | ![Hacktoberfest Logo](assets/hacktoberfest.png) | Hacktoberfest is a month-long October event welcoming all skill levels to join the open-source community.     |
+| GSSoC'2024-Extd       | ![GSSoC Logo](Assets/GSSoC-Ext.png)             | The coding period is from October 1st to October 30th, during which contributors make contributions and earn points on the platform. |
+| Hacktoberfest 2024    | ![Hacktoberfest Logo](Assets/hacktoberfest.png) | Hacktoberfest is a month-long October event welcoming all skill levels to join the open-source community.     |
 
----
+<!--Line-->
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
+
 # **ShopSmart: Your Smart Shopping Companion**
 
 **Effortless shopping, simplified.** 🛒
