@@ -4,18 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.api.API
 import com.yuvrajsinghgmx.shopsmart.navigation.Navigation
+import com.yuvrajsinghgmx.shopsmart.profilefeatures.BaseActivity
+import com.yuvrajsinghgmx.shopsmart.screens.Theme
+import com.yuvrajsinghgmx.shopsmart.screens.ThemeManager
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var ImageApi: API
@@ -24,8 +29,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
+
         setContent {
-            ShopSmartTheme {
+            val currentTheme = ThemeManager.currentTheme.collectAsState()
+
+            ShopSmartTheme(
+                darkTheme = when (currentTheme.value) {
+                    Theme.LIGHT -> false
+                    Theme.DARK -> true
+                    Theme.SYSTEM -> isSystemInDarkTheme()
+                }
+            ) {
                 val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
                 Navigation(viewModel = viewModel, navController = navController)

@@ -150,7 +150,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("notifications") {
-                NotificationSettingsScreen(navController = navController)
+                NotificationSettings(navController = navController)
             }
 
             composable("privacy") {
