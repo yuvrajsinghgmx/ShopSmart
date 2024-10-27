@@ -1,21 +1,28 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
+import android.content.SharedPreferences
+import android.os.Bundle
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.yuvrajsinghgmx.shopsmart.screens.*
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
+import androidx.preference.PreferenceManager
 
 @Composable
 fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
+    val context = LocalContext.current
+    // Obtain SharedPreferences instance
+    val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
@@ -58,7 +65,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             composable("TermsAndConditions") {
                 TermsAndConditionsScreen(
                     onBackClick = {
-                        navController.navigate("signUpScreen"){
+                        navController.navigate("signUpScreen") {
                             popUpTo("signUpScreen") { inclusive = true }
                         }
                     }
@@ -73,12 +80,12 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                         }
                     },
                     onBackButtonClicked = {
-                        navController.navigate("signUpScreen"){
+                        navController.navigate("signUpScreen") {
                             popUpTo("signUpScreen") { inclusive = true }
                         }
                     },
                     onTermsOfUseClicked = {
-                        navController.navigate("TermsAndConditions"){
+                        navController.navigate("TermsAndConditions") {
                             popUpTo("signUpScreen") { inclusive = true }
                         }
                     }
@@ -118,11 +125,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             // Account Settings
             composable("personal_info") {
-                PersonalInformationScreen(navController = navController)
+                PersonalInformationScreen(navController = navController, context = context, sharedPreferences = sharedPreferences)
             }
 
             composable("address_book") {
-                AddressBookScreen(navController = navController)
+                AddressBookScreen(navController = navController, sharedPreferences = sharedPreferences) // Pass SharedPreferences here
             }
 
             composable("payment_methods") {
@@ -130,7 +137,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("security") {
-                SecurityScreen(navController = navController)
+                SecurityScreen<Any>(navController = navController)
             }
 
             // App Settings

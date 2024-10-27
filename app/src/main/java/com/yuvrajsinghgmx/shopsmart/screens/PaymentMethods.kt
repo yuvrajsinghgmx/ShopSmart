@@ -15,27 +15,12 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodsScreen(navController: NavController) {
-    ComingSoonScreen(
-        title = "Payment Methods",
-        navController = navController
-    )
-}
-
-// Reusable Coming Soon Screen template
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ComingSoonScreen(
-    title: String,
-    navController: NavController
-) {
-    val lightBackgroundColor = Color(0xFFF6F5F3)
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        title,
+                        text = "Payment Methods",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color(0xFF332D25)
@@ -50,33 +35,67 @@ private fun ComingSoonScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
+                    containerColor = Color(0xFFF6F5F3)
                 )
             )
         },
-        containerColor = lightBackgroundColor
+        containerColor = Color(0xFFF6F5F3)
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
         ) {
+            // Sample Payment Methods List
             Text(
-                text = "To be implemented soon",
-                style = MaterialTheme.typography.headlineMedium,
-                color = Color(0xFF637478),
-                fontWeight = FontWeight.Bold
+                text = "Available Payment Methods:",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF332D25),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            // Dummy payment methods
+            val paymentMethods = listOf("Credit Card", "Debit Card", "PayPal", "Google Pay")
 
-            Text(
-                text = "This feature is currently under development",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFF637478)
-            )
+            paymentMethods.forEach { method ->
+                PaymentMethodItem(method)
+            }
+
+            Spacer(modifier = Modifier.weight(1f)) // To push content to the top
+            AddPaymentMethodButton()
         }
+    }
+}
+
+@Composable
+fun PaymentMethodItem(method: String) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        shape = MaterialTheme.shapes.medium,
+        shadowElevation = 4.dp,
+        color = Color.White
+    ) {
+        Text(
+            text = method,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Composable
+fun AddPaymentMethodButton() {
+    Button(
+        onClick = { /* Handle adding a new payment method */ },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(text = "Add New Payment Method")
     }
 }
