@@ -100,7 +100,7 @@ import kotlinx.coroutines.launch
 
 private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
     try {
-        val orders = items.map { Product(it.name, it.amount, it.imageUrl) }
+        val orders = items.map { Product(it.name, it.amount, it.no_of_items,it.imageUrl) }
         if (orders.isNotEmpty()) {
             SharedPrefsHelper.saveOrders(context, orders)
             Log.d("HomeScreen", "Orders saved: ${orders.size}")
@@ -420,7 +420,7 @@ fun ListScreen(
                                                     // Handle click event here
                                                 },
                                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.brown)) // Set background color of the Card)
+                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.decrement_icon), // Replace with your decrement icon
@@ -433,7 +433,7 @@ fun ListScreen(
                                         Spacer(modifier = Modifier.width(2.dp))
 
                                             Text(
-                                                text = products[index].amount.toString(), // Display the quantity
+                                                text = products[index].no_of_items.toString(), // Display the quantity
                                                 style = TextStyle(
                                                     fontSize = 12.sp,
                                                     fontWeight = FontWeight.Normal
@@ -453,7 +453,7 @@ fun ListScreen(
                                                     // Handle click event here
                                                 },
                                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.brown)) // Set background color of the Card)
+                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card)
                                         ) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.increment_icon), // Replace with your decrement icon
@@ -583,16 +583,18 @@ fun ListScreen(
                                     isLoading = true
                                     coroutineScope.launch {
                                         val imageUrl = viewModel.searchImage(itemName)
-                                        val amountValue = itemAmount.toIntOrNull() ?: 0
+                                        val amountValue = itemAmount.toDoubleOrNull() ?: 0.0
+                                        val noOfItems = 1
                                         val newProduct = Product(
                                             name = itemName,
                                             amount = amountValue,
+                                            noOfItems,
                                             imageUrl = imageUrl,
                                             dateAdded = selectedDate ?: System.currentTimeMillis() // Use selected date
                                         )
                                         val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
                                         viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Product(it.name, it.amount, it.imageUrl, it.dateAdded) })
+                                        saveItems(context, updatedItems.map { Product(it.name, it.amount, it.no_of_items,it.imageUrl, it.dateAdded) })
                                         newItem = ""
                                         newAmount = ""
                                         isLoading = false
@@ -648,3 +650,154 @@ fun DatePickerModal(
         DatePicker(state = datePickerState)
     }
 }
+
+//@Composable
+//fun DummyProductList() {
+//    val dummyProducts = listOf(
+//        Product("Apple", 1, "https://example.com/apple.jpg"),
+//        Product("Banana", 0, "https://example.com/banana.jpg"),
+//        Product("Cherry", 2, "https://example.com/cherry.jpg"),
+//        Product("Date", 1, "https://example.com/date.jpg")
+//    )
+//
+//    // Group the dummy products by day (for example purposes)
+//    val groupedItems = mapOf(
+//        "Today" to dummyProducts,
+//        "Tomorrow" to dummyProducts
+//    )
+//
+//    LazyColumn {
+//        groupedItems.forEach { (day, products) ->
+//            item {
+//                Text(
+//                    text = day,
+//                    style = TextStyle(
+//                        fontSize = 14.sp,
+//                        fontWeight = FontWeight.Light,
+//                    ),
+//                    modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
+//                )
+//            }
+//            items(products.size) { index ->
+//                val product = products[index]
+//                Card(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(bottom = 10.dp)
+//                        .clip(RoundedCornerShape(16.dp)),
+//                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+//                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+//                ) {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .padding(10.dp)
+//                    ) {
+//                        if (product.imageUrl != null) {
+//                            AsyncImage(
+//                                model = product.imageUrl,
+//                                contentDescription = product.name,
+//                                contentScale = ContentScale.Crop,
+//                                modifier = Modifier
+//                                    .size(65.dp, 65.dp)
+//                                    .clip(RoundedCornerShape(8.dp))
+//                                    .padding(end = 1.dp)
+//                                    .border(
+//                                        BorderStroke(1.dp, color = Color.Transparent),
+//                                        RoundedCornerShape(8.dp)
+//                                    )
+//                            )
+//                        }
+//                        Spacer(modifier = Modifier.width(10.dp))
+//
+//                        Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
+//                            Text(
+//                                text = product.name,
+//                                style = TextStyle(
+//                                    fontSize = 14.sp,
+//                                    fontWeight = FontWeight.SemiBold,
+//                                    color = Color.Black,
+//                                    fontFamily = LexendRegular
+//                                )
+//                            )
+//                            Spacer(modifier = Modifier.height(3.dp))
+//                            Text(
+//                                text = "Fresh and ripe",
+//                                style = TextStyle(fontSize = 10.sp, color = Color.Gray, fontFamily = LexendRegular)
+//                            )
+//                            Spacer(modifier = Modifier.height(3.dp))
+//                            Text(
+//                                text = "$${product.amount} each",
+//                                style = TextStyle(fontSize = 11.sp, color = Color(0xFF48BFE3), fontWeight = FontWeight.Bold, fontFamily = LexendRegular) // Adjusted color to blue
+//                            )
+//                        }
+//
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            modifier = Modifier.width(90.dp).fillMaxWidth()
+//                        ) {
+//                            Card(
+//                                shape = RoundedCornerShape(8.dp),
+//                                modifier = Modifier
+//                                    .size(35.dp)
+//                                    .padding(4.dp)
+//                                    .clickable {
+//                                        println("Decrement Clicked")
+//                                        // Handle click event here
+//                                    },
+//                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+//                                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card
+//                            ) {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.decrement_icon), // Replace with your decrement icon
+//                                    contentDescription = "Decrease quantity",
+//                                    modifier = Modifier.size(30.dp)
+//                                )
+//                            }
+//
+//                            Spacer(modifier = Modifier.width(2.dp))
+//
+//                            Text(
+//                                text = product.amount.toString(), // Display the quantity
+//                                style = TextStyle(
+//                                    fontSize = 18.sp,
+//                                    fontWeight = FontWeight.Normal
+//                                ),
+//                                modifier = Modifier.align(Alignment.CenterVertically)
+//                            )
+//
+//                            Spacer(modifier = Modifier.width(2.dp))
+//
+//                            Card(
+//                                shape = RoundedCornerShape(8.dp),
+//                                modifier = Modifier
+//                                    .size(35.dp)
+//                                    .padding(4.dp)
+//                                    .clickable {
+//                                        println("Increment Clicked")
+//                                        // Handle click event here
+//                                    },
+//                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+//                                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card
+//                            ) {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.increment_icon), // Replace with your increment icon
+//                                    contentDescription = "Increase quantity",
+//                                    modifier = Modifier.size(30.dp)
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun ShoppingListPreview() {
+//    DummyProductList()
+//}
