@@ -63,11 +63,13 @@ fun ShopSmartNavBar(navController: NavHostController) {
             NavigationBarItem(
                 selected = currentDestination?.route == item.title,
                 onClick = {
+                    if(currentDestination?.route != item.title) {
                         navController.popBackStack(route = Screen.Home.routes, inclusive = false)
-                        navController.navigate(item.title){
+                        navController.navigate(item.title) {
                             launchSingleTop = true
                             restoreState = true
                         }
+                    }
                 },
                 icon = {
                     Icon(

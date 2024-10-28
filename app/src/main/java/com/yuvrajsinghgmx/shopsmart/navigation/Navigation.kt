@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.navigation
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,7 +15,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.yuvrajsinghgmx.shopsmart.screens.*
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
-import androidx.preference.PreferenceManager
 
 @Composable
 fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
