@@ -30,7 +30,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "settings", "personal_info", "address_book", "payment_methods", "security",
         "language", "theme", "notifications", "privacy", "currency",
         "shipping_preferences", "order_notifications", "app_version",
-        "terms", "privacy_policy", "contact"
+        "terms", "privacy_policy", "contact", "faq"
     )
 
     Scaffold(
@@ -185,6 +185,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("contact") {
                 ContactScreen(navController = navController)
+            }
+            composable("faq") {
+                FAQScreen(navController = navController)
             }
         }
     }
