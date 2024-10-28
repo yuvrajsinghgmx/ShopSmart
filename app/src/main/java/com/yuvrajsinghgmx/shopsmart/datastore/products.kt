@@ -7,7 +7,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-data class Product(val name: String, val amount: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
+data class Product(val name: String, val amount: Double,var no_of_items: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
 object ShoppingList{
     val ITEMS_KEY = stringPreferencesKey("items")
 }
