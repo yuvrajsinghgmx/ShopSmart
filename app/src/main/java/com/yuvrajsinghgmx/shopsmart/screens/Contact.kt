@@ -208,17 +208,18 @@ fun ContactScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             IconButton(
-                                onClick = { /* Open Facebook */ },
+                                onClick = { openFacebook(context) },
                                 modifier = Modifier.size(48.dp)
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.facebook_24px),
                                     contentDescription = "Facebook",
-                                    tint = Color(0xFF0E8545)  // Green tint for icons
+                                    tint = Color(0xFF0E8545)
                                 )
                             }
+
                             IconButton(
-                                onClick = { /* Open Twitter */ },
+                                onClick = { openTwitter(context) },
                                 modifier = Modifier.size(48.dp)
                             ) {
                                 Icon(
@@ -227,8 +228,9 @@ fun ContactScreen(navController: NavController) {
                                     tint = Color(0xFF0E8545)
                                 )
                             }
+
                             IconButton(
-                                onClick = { /* Open Instagram */ },
+                                onClick = { openInstagram(context) },
                                 modifier = Modifier.size(48.dp)
                             ) {
                                 Icon(
@@ -273,12 +275,11 @@ fun ContactScreen(navController: NavController) {
                         }
 
                         Button(
-                            onClick = { /* Navigate to FAQ */ },
+                            onClick = { navController.navigate("faq") },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF0E8545)  // Green button
+                                containerColor = Color(0xFF0E8545)
                             ),
-                            modifier = Modifier
-                                .padding(start = 16.dp)
+                            modifier = Modifier.padding(start = 16.dp)
                         ) {
                             Text(
                                 text = "View FAQs",
@@ -368,4 +369,43 @@ private fun launchPhone(context: Context, phone: String) {
         data = Uri.parse("tel:$phone")
     }
     context.startActivity(intent)
+}
+
+private fun openSocialMedia(context: Context, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Fallback to browser if app not installed
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(browserIntent)
+    }
+}
+
+private fun openFacebook(context: Context) {
+    try {
+        context.packageManager.getPackageInfo("com.facebook.katana", 0)
+        openSocialMedia(context, "fb://page/yuvrajsinghgmx")
+    } catch (e: Exception) {
+        // Fallback to browser if Facebook app not installed
+        openSocialMedia(context, "https://www.facebook.com/yuvrajsinghgmx")
+    }
+}
+
+private fun openTwitter(context: Context) {
+    try {
+        context.packageManager.getPackageInfo("com.twitter.android", 0)
+        openSocialMedia(context, "twitter://user?screen_name=yuvrajsinghgmx")
+    } catch (e: Exception) {
+        openSocialMedia(context, "https://twitter.com/yuvrajsinghgmx")
+    }
+}
+
+private fun openInstagram(context: Context) {
+    try {
+        context.packageManager.getPackageInfo("com.instagram.android", 0)
+        openSocialMedia(context, "instagram://user?username=yuvrajsinghgmx")
+    } catch (e: Exception) {
+        openSocialMedia(context, "https://instagram.com/yuvrajsinghgmx")
+    }
 }
