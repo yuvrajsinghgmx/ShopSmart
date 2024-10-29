@@ -196,19 +196,19 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             // Personalization Settings Routes
             composable("recommendations") {
-                ComingSoonScreen("Recommendations", navController)
+                RecommendationsScreen(navController= navController)
             }
 
             composable("search_history") {
-                ComingSoonScreen("Search History", navController)
+                SearchHistoryScreen(navController= navController)
             }
 
             composable("size_preferences") {
-                ComingSoonScreen("Size Preferences", navController)
+                SizePreferencesScreen(navController= navController)
             }
 
             composable("brand_favorites") {
-                ComingSoonScreen("Brand Favorites", navController)
+                BrandFavoritesScreen(navController= navController)
             }
 
             // Support & Help Routes
