@@ -3,12 +3,31 @@ package com.yuvrajsinghgmx.shopsmart.navigation
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +49,13 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "settings", "personal_info", "address_book", "payment_methods", "security",
         "language", "theme", "notifications", "privacy", "currency",
         "shipping_preferences", "order_notifications", "app_version",
-        "terms", "privacy_policy", "contact", "faq"
+        "terms", "privacy_policy", "contact", "faq",
+        // New Personalization Settings routes
+        "recommendations", "search_history", "size_preferences", "brand_favorites",
+        // New Support & Help routes
+        "chat_support", "report_issue", "feedback",
+        // New Payment & Billing routes
+        "saved_cards", "digital_wallet", "billing_history", "refund_settings"
     )
 
     Scaffold(
@@ -117,8 +142,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 HelpS(navController = navController)
             }
 
-            // New Settings Routes
-            // Main Settings
+            // Settings Routes
             composable("settings") {
                 SettingsScreen(navController = navController)
             }
@@ -129,7 +153,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("address_book") {
-                AddressBookScreen(navController = navController, sharedPreferences = sharedPreferences) // Pass SharedPreferences here
+                AddressBookScreen(navController = navController, sharedPreferences = sharedPreferences)
             }
 
             composable("payment_methods") {
@@ -170,6 +194,57 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 OrderNotificationsScreen(navController = navController)
             }
 
+            // Personalization Settings Routes
+            composable("recommendations") {
+                ComingSoonScreen("Recommendations", navController)
+            }
+
+            composable("search_history") {
+                ComingSoonScreen("Search History", navController)
+            }
+
+            composable("size_preferences") {
+                ComingSoonScreen("Size Preferences", navController)
+            }
+
+            composable("brand_favorites") {
+                ComingSoonScreen("Brand Favorites", navController)
+            }
+
+            // Support & Help Routes
+            composable("faq") {
+                FAQScreen(navController = navController)
+            }
+
+            composable("chat_support") {
+                ComingSoonScreen("Chat Support", navController)
+            }
+
+            composable("report_issue") {
+                ComingSoonScreen("Report an Issue", navController)
+            }
+
+            composable("feedback") {
+                ComingSoonScreen("Feedback Center", navController)
+            }
+
+            // Payment & Billing Routes
+            composable("saved_cards") {
+                ComingSoonScreen("Saved Cards", navController)
+            }
+
+            composable("digital_wallet") {
+                ComingSoonScreen("Digital Wallet", navController)
+            }
+
+            composable("billing_history") {
+                ComingSoonScreen("Billing History", navController)
+            }
+
+            composable("refund_settings") {
+                ComingSoonScreen("Refund Settings", navController)
+            }
+
             // About Section
             composable("app_version") {
                 AppVersionScreen(navController = navController)
@@ -186,9 +261,62 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             composable("contact") {
                 ContactScreen(navController = navController)
             }
-            composable("faq") {
-                FAQScreen(navController = navController)
-            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ComingSoonScreen(title: String, navController: NavController) {
+    val lightBackgroundColor = Color(0xFFF6F5F3)
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        title,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = lightBackgroundColor
+                )
+            )
+        },
+        containerColor = lightBackgroundColor
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "To be implemented soon",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color(0xFF637478),
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "This feature is currently under development",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF637478)
+            )
         }
     }
 }
