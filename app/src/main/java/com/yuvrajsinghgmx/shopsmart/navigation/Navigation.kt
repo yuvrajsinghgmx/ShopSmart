@@ -10,13 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import com.yuvrajsinghgmx.shopsmart.screens.*
-import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
@@ -199,6 +196,62 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 val index = it.arguments?.getInt("itemsIndex")?:1
                 ProductDetails(index = index)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ComingSoonScreen(title: String, navController: NavController) {
+    val lightBackgroundColor = Color(0xFFF6F5F3)
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        title,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25)
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = lightBackgroundColor
+                )
+            )
+        },
+        containerColor = lightBackgroundColor
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "To be implemented soon",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color(0xFF637478),
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "This feature is currently under development",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFF637478)
+            )
         }
     }
 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -108,6 +107,60 @@ fun SettingsScreen(navController: NavController) {
                     }
                     SettingsItem(title = "Order Notifications", icon = R.drawable.orders_24px) {
                         navController.navigate("order_notifications")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Personalization Settings Section
+                SettingsSection(title = "Personalization Settings") {
+                    SettingsItem(title = "Recommendations", icon = R.drawable.recommend_24px) {
+                        navController.navigate("recommendations")
+                    }
+                    SettingsItem(title = "Search History", icon = R.drawable.history_24px) {
+                        navController.navigate("search_history")
+                    }
+                    SettingsItem(title = "Size Preferences", icon = R.drawable.straighten_24px) {
+                        navController.navigate("size_preferences")
+                    }
+                    SettingsItem(title = "Brand Favorites", icon = R.drawable.favorite_24px) {
+                        navController.navigate("brand_favorites")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Support & Help Section
+                SettingsSection(title = "Support & Help") {
+                    SettingsItem(title = "FAQ Center", icon = R.drawable.help_24px) {
+                        navController.navigate("faq")
+                    }
+                    SettingsItem(title = "Chat Support", icon = R.drawable.chat_24px) {
+                        navController.navigate("chat_support")
+                    }
+                    SettingsItem(title = "Report an Issue", icon = R.drawable.report_problem_24px) {
+                        navController.navigate("report_issue")
+                    }
+                    SettingsItem(title = "Feedback Center", icon = R.drawable.feedback_24px) {
+                        navController.navigate("feedback")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Payment & Billing Section
+                SettingsSection(title = "Payment & Billing") {
+                    SettingsItem(title = "Saved Cards", icon = R.drawable.credit_card_24px) {
+                        navController.navigate("saved_cards")
+                    }
+                    SettingsItem(title = "Digital Wallet", icon = R.drawable.account_balance_wallet_24px) {
+                        navController.navigate("digital_wallet")
+                    }
+                    SettingsItem(title = "Billing History", icon = R.drawable.receipt_24px) {
+                        navController.navigate("billing_history")
+                    }
+                    SettingsItem(title = "Refund Settings", icon = R.drawable.money_24px) {
+                        navController.navigate("refund_settings")
                     }
                 }
 
