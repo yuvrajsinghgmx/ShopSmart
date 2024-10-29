@@ -217,15 +217,25 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("chat_support") {
-                ComingSoonScreen("Chat Support", navController)
+                ChatSupportScreen(navController =  navController)
             }
 
             composable("report_issue") {
-                ComingSoonScreen("Report an Issue", navController)
+                ReportAnIssueScreen(
+                    onBackPressed = { navController.popBackStack() },
+                    onSubmitIssue = { subject, description ->
+                        // Handle additional submission logic if needed
+                    }
+                )
             }
 
             composable("feedback") {
-                ComingSoonScreen("Feedback Center", navController)
+                FeedbackScreen(
+                    onBackPressed = { navController.popBackStack() },
+                    onSubmitFeedback = { subject, description ->
+                        // Handle feedback submission logic here
+                    }
+                )
             }
 
             // Payment & Billing Routes
