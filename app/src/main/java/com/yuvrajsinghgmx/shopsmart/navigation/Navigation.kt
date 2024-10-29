@@ -191,6 +191,57 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 OrderNotificationsScreen(navController = navController)
             }
 
+            // Personalization Settings Routes
+            composable("recommendations") {
+                RecommendationsScreen(navController= navController)
+            }
+
+            composable("search_history") {
+                SearchHistoryScreen(navController= navController)
+            }
+
+            composable("size_preferences") {
+                SizePreferencesScreen(navController= navController)
+            }
+
+            composable("brand_favorites") {
+                BrandFavoritesScreen(navController= navController)
+            }
+
+            // Support & Help Routes
+            composable("faq") {
+                FAQScreen(navController = navController)
+            }
+
+            composable("chat_support") {
+                ComingSoonScreen("Chat Support", navController)
+            }
+
+            composable("report_issue") {
+                ComingSoonScreen("Report an Issue", navController)
+            }
+
+            composable("feedback") {
+                ComingSoonScreen("Feedback Center", navController)
+            }
+
+            // Payment & Billing Routes
+            composable("saved_cards") {
+                ComingSoonScreen("Saved Cards", navController)
+            }
+
+            composable("digital_wallet") {
+                ComingSoonScreen("Digital Wallet", navController)
+            }
+
+            composable("billing_history") {
+                ComingSoonScreen("Billing History", navController)
+            }
+
+            composable("refund_settings") {
+                ComingSoonScreen("Refund Settings", navController)
+            }
+
             // About Section
             composable("app_version") {
                 AppVersionScreen(navController = navController)
