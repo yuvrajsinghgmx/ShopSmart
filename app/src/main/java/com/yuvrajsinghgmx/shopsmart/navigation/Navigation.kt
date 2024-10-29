@@ -237,19 +237,19 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             // Payment & Billing Routes
             composable("saved_cards") {
-                ComingSoonScreen("Saved Cards", navController)
+                SavedCardsScreen(navController = navController)
             }
 
             composable("digital_wallet") {
-                ComingSoonScreen("Digital Wallet", navController)
+                DigitalWalletScreen(navController = navController)
             }
 
             composable("billing_history") {
-                ComingSoonScreen("Billing History", navController)
+                BillingHistoryScreen(navController = navController)
             }
 
             composable("refund_settings") {
-                ComingSoonScreen("Refund Settings", navController)
+                RefundSettingsScreen(navController = navController)
             }
 
             // About Section
