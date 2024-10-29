@@ -10,10 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.yuvrajsinghgmx.shopsmart.screens.*
+import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
@@ -188,6 +191,13 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
             composable("faq") {
                 FAQScreen(navController = navController)
+            }
+
+            composable("productDetails/{itemsIndex}", arguments = listOf(navArgument("itemsIndex"){
+                type = NavType.IntType
+            })){
+                val index = it.arguments?.getInt("itemsIndex")?:1
+                ProductDetails(index = index)
             }
         }
     }
