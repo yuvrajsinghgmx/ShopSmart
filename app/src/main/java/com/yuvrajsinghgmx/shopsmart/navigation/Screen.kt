@@ -10,4 +10,5 @@ sealed class Screen(val routes: String) {
     data object Profile : Screen("Profile")
     data class MyOrders(val selectedItems: String? = null) : Screen("MyOrders?selectedItems={selectedItems}")
     data object Help : Screen("Help")
+    data object ProductDetails : Screen("productDetails")
 }

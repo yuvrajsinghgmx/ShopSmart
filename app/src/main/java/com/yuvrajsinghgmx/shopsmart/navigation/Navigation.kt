@@ -29,9 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.yuvrajsinghgmx.shopsmart.screens.*
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
@@ -49,13 +51,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "settings", "personal_info", "address_book", "payment_methods", "security",
         "language", "theme", "notifications", "privacy", "currency",
         "shipping_preferences", "order_notifications", "app_version",
-        "terms", "privacy_policy", "contact", "faq",
-        // New Personalization Settings routes
-        "recommendations", "search_history", "size_preferences", "brand_favorites",
-        // New Support & Help routes
-        "chat_support", "report_issue", "feedback",
-        // New Payment & Billing routes
-        "saved_cards", "digital_wallet", "billing_history", "refund_settings"
+        "terms", "privacy_policy", "contact", "faq"
     )
 
     Scaffold(
@@ -142,7 +138,8 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 HelpS(navController = navController)
             }
 
-            // Settings Routes
+            // New Settings Routes
+            // Main Settings
             composable("settings") {
                 SettingsScreen(navController = navController)
             }
@@ -153,7 +150,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("address_book") {
-                AddressBookScreen(navController = navController, sharedPreferences = sharedPreferences)
+                AddressBookScreen(navController = navController, sharedPreferences = sharedPreferences) // Pass SharedPreferences here
             }
 
             composable("payment_methods") {
@@ -260,6 +257,16 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("contact") {
                 ContactScreen(navController = navController)
+            }
+            composable("faq") {
+                FAQScreen(navController = navController)
+            }
+
+            composable("productDetails/{itemsIndex}", arguments = listOf(navArgument("itemsIndex"){
+                type = NavType.IntType
+            })){
+                val index = it.arguments?.getInt("itemsIndex")?:1
+                ProductDetails(index = index)
             }
         }
     }

@@ -144,7 +144,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navContro
         LazyRow(modifier = Modifier.fillMaxWidth()) {
             items(myItems.size){
                 items->
-                CardLayout(myItems[items])
+                CardLayout(myItems[items], items, navController)
             }
         }
 
@@ -164,8 +164,14 @@ fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navContro
 
 // layout for card in LazyRow product view
 @Composable
-fun CardLayout(itemsData: ItemsData){
-    Card(shape = RoundedCornerShape(24.dp), modifier = Modifier.width(160.dp).aspectRatio(.7f).padding(8.dp)) {
+fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController){
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.width(160.dp).aspectRatio(.7f).padding(8.dp),
+        onClick = {
+            navController.navigate("productDetails/$index")
+        }
+    ) {
         Column {
             Image(
                 painter = painterResource(id = itemsData.image), // Replace with your image resource or use Coil for URL
