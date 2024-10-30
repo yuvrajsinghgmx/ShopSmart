@@ -51,7 +51,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "settings", "personal_info", "address_book", "payment_methods", "security",
         "language", "theme", "notifications", "privacy", "currency",
         "shipping_preferences", "order_notifications", "app_version",
-        "terms", "privacy_policy", "contact", "faq"
+        "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support"
     )
 
     Scaffold(
@@ -250,6 +250,41 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("refund_settings") {
                 RefundSettingsScreen(navController = navController)
+            }
+
+            composable("refund_history") {
+                RefundHistoryScreen(navController = navController)
+            }
+            composable("refund_policy") {
+                RefundPolicyScreen(navController = navController)
+            }
+
+            composable("contact_support") {
+                ContactSupportScreen(navController = navController)
+            }
+
+            composable("live_chat") {
+                ComingSoonScreen(title = "Live Chat", navController = navController)
+            }
+
+            composable("email_support") {
+                ComingSoonScreen(title = "Email Support", navController = navController)
+            }
+
+            composable("phone_support") {
+                ComingSoonScreen(title = "Phone Support", navController = navController)
+            }
+
+            composable("refund_status") {
+                ComingSoonScreen(title = "Refund Status", navController = navController)
+            }
+
+            composable("return_guidelines") {
+                ComingSoonScreen(title = "Return Guidelines", navController = navController)
+            }
+
+            composable("missing_refund") {
+                ComingSoonScreen(title = "Missing Refund", navController = navController)
             }
 
             // About Section

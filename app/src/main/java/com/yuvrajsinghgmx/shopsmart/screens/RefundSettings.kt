@@ -27,10 +27,6 @@ data class RefundMethod(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RefundSettingsScreen(navController: NavController) {
-    var showAddMethodDialog by remember { mutableStateOf(false) }
-    var selectedMethod by remember { mutableStateOf<RefundMethod?>(null) }
-
-    // Sample refund methods
     var refundMethods by remember {
         mutableStateOf(
             listOf(
@@ -41,7 +37,7 @@ fun RefundSettingsScreen(navController: NavController) {
         )
     }
 
-    val lightBackgroundColor = Color(0xFFF6F5F3)
+    val backgroundColor = Color(0xFFF6F5F3)
 
     Scaffold(
         topBar = {
@@ -63,25 +59,25 @@ fun RefundSettingsScreen(navController: NavController) {
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
+                    containerColor = backgroundColor
                 )
             )
         },
-        containerColor = lightBackgroundColor
+        containerColor = backgroundColor
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item {
                 Text(
                     "Default Refund Method",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = Color(0xFF332D25)
                 )
             }
 
@@ -95,12 +91,11 @@ fun RefundSettingsScreen(navController: NavController) {
             }
 
             item {
-                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     "Refund Preferences",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = Color(0xFF332D25)
                 )
             }
 
@@ -109,17 +104,21 @@ fun RefundSettingsScreen(navController: NavController) {
             }
 
             item {
-                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     "Additional Settings",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    color = Color(0xFF332D25)
                 )
             }
 
             item {
-                AdditionalSettingsSection()
+                AdditionalSettingsSection(navController)
+            }
+
+            // Add some bottom padding
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -130,11 +129,10 @@ private fun RefundMethodItem(
     method: RefundMethod,
     onSetDefault: (RefundMethod) -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        color = Color.White,
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(
             modifier = Modifier
@@ -143,43 +141,40 @@ private fun RefundMethodItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = method.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFF332D25)
                 )
                 Text(
                     text = method.subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = Color(0xFF637478)
                 )
             }
 
             if (method.isDefault) {
                 Surface(
-                    modifier = Modifier.height(32.dp),
                     shape = MaterialTheme.shapes.small,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    border = BorderStroke(1.dp, Color(0xFFE5E7EB))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.check_circle_24px),
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = Color(0xFF006D40)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Default",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = Color(0xFF332D25)
                         )
                     }
                 }
@@ -187,13 +182,10 @@ private fun RefundMethodItem(
                 TextButton(
                     onClick = { onSetDefault(method) },
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color(0xFF006D40) // Green color from your design
+                        contentColor = Color(0xFF006D40)
                     )
                 ) {
-                    Text(
-                        "Set as Default",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Text("Set as Default")
                 }
             }
         }
@@ -205,95 +197,105 @@ private fun RefundPreferencesSection() {
     var automaticRefunds by remember { mutableStateOf(true) }
     var refundNotifications by remember { mutableStateOf(true) }
 
-    Card(
+    Surface(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        color = Color.White,
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        "Automatic Refunds",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        "Process eligible refunds automatically",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-                Switch(
-                    checked = automaticRefunds,
-                    onCheckedChange = { automaticRefunds = it }
-                )
-            }
+            PreferenceItem(
+                title = "Automatic Refunds",
+                subtitle = "Process eligible refunds automatically",
+                checked = automaticRefunds,
+                onCheckedChange = { automaticRefunds = it }
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        "Refund Notifications",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        "Receive updates about refund status",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-                Switch(
-                    checked = refundNotifications,
-                    onCheckedChange = { refundNotifications = it }
-                )
-            }
+            PreferenceItem(
+                title = "Refund Notifications",
+                subtitle = "Receive updates about refund status",
+                checked = refundNotifications,
+                onCheckedChange = { refundNotifications = it }
+            )
         }
     }
 }
 
 @Composable
-private fun AdditionalSettingsSection() {
-    Card(
+private fun PreferenceItem(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF332D25)
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF637478)
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = Color(0xFF006D40),
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color(0xFFE5E7EB)
+            )
         )
+    }
+}
+
+@Composable
+private fun AdditionalSettingsSection(navController: NavController) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             SettingsItem(
                 title = "Refund History",
                 subtitle = "View past refund transactions",
-                onClick = { }
+                onClick = { navController.navigate("refund_history") }
             )
 
-            HorizontalDivider()
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color(0xFFE5E7EB)
+            )
 
             SettingsItem(
                 title = "Refund Policy",
                 subtitle = "Read our refund terms and conditions",
-                onClick = { }
+                onClick = { navController.navigate("refund_policy") }
             )
 
-            HorizontalDivider()
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color(0xFFE5E7EB)
+            )
 
             SettingsItem(
                 title = "Contact Support",
                 subtitle = "Get help with refunds",
-                onClick = { }
+                onClick = { navController.navigate("contact_support") }
             )
         }
     }
@@ -309,26 +311,26 @@ private fun SettingsItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF332D25)
             )
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF637478)
             )
         }
         Icon(
             painter = painterResource(id = R.drawable.arrow_forward_24px),
             contentDescription = "Navigate",
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            tint = Color(0xFF637478)
         )
     }
 }
