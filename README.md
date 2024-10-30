@@ -40,19 +40,61 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 
 ## **✨ Features**
 
-- **List Creation with Image Generation**: Users can create and add multiple shopping lists. Each list will automatically generate a relevant image for better organization.
-- **Offline Mode**: All features are available without an internet connection.
-- **Price Estimation**: Add price estimates for items to keep track of budgets.
+### Shopping & Navigation
+- **Smart Search**: Voice and text search functionality with product suggestions
+- **Personalized Categories**: Electronics, Fashion, Home & Living, Books, Sports, Beauty, Toys, and Automotive sections
+- **Shopping Interest Filters**: Customizable feeds with New Arrivals, Deals, Premium, Sustainable, Trending, Handmade, Limited Edition, and Local Sellers
+- **Featured Products**: Curated product listings with ratings, discounts, and vendor information
+- **Wishlist & Favorites**: Save items with price tracking and stock notifications
+
+### List Management
+- **Smart Shopping Lists**: Create and manage dated shopping lists with images
+- **Quantity Controls**: Easy increment/decrement buttons for item quantities
+- **Price Tracking**: Automatic total calculation and per-item pricing
+- **Empty State Handling**: User-friendly prompts to add items when lists are empty
+- **Multiple List Support**: Create and manage multiple shopping lists with dates
+
+### Order Management
+- **Comprehensive Order Tracking**: Real-time updates for order confirmation, shipping, and delivery
+- **Order Notifications**: Customizable alerts for:
+   - Order confirmation
+   - Shipping status changes
+   - Delivery updates
+   - Order cancellations
+   - Price drops on wishlist items
+   - Back-in-stock alerts
+
+### Payment & Refunds
+- **Multi-Currency Support**: USD, EUR, GBP, INR, JPY, AUD, CAD, and CNY
+- **Flexible Refund System**:
+   - Multiple refund methods (Original Payment, Store Credit, Bank Account)
+   - Automatic refund processing
+   - Refund status notifications
+   - Customizable refund preferences
+
+### User Experience
+- **Profile Management**: Customizable user profiles with profile picture
+- **Customer Support**: Multiple contact channels including:
+   - Email support (support@shopsmart.com)
+   - Sales inquiries (sales@shopsmart.com)
+   - Direct phone support
+   - In-app messaging
 
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
 
 ## **Upcoming Features**
 
-- **Item Sorting**: Items are sorted by categories for easier shopping.
-- **Voice Input**: Users can add items using voice input.
-- **Reminders**: Set reminders for shopping trips.
-- **Dark Mode**: An optional dark mode for better usability in low-light environments.
+- **Enhanced Item Sorting**: Advanced categorization and filtering options
+- **Voice Commands**: Expanded voice functionality for hands-free operation
+- **Shopping Analytics**: Personal shopping insights and trends
+- **Social Shopping**: List sharing and collaborative shopping features
+- **Dark Mode**: Enhanced visibility with dark theme option
+- **Barcode Scanner**: Quick item addition using device camera
+- **Shopping Route Optimization**: Smart shopping trip planning
+- **Budget Tracking**: Advanced budget management tools
+- **AI-Powered Recommendations**: Personalized product suggestions
+- **Seasonal Shopping Lists**: Templates for holiday and special occasions
 
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
@@ -71,13 +113,25 @@ ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Com
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
 
 ## **Screenshots**
-| App Splash Screen        | Shopping List Creation  |
-|------------------------|-------------------------|
-| ![Home Screen](./Assets/ScreenShot4.jpg) | ![List Creation](./Assets/ScreenShot2.jpg) |
+| App Splash Screen              | Shopping List Creation           |
+|--------------------------------|----------------------------------|
+| ![Home Screen](./Assets/6.jpg) | ![List Creation](./Assets/8.jpg) |
 
-| Items List    | Price Estimation Feature |
-|--------------------------|--------------------------|
-| ![Voice Input](./Assets/ScreenShot3.jpg) | ![Price Estimation](./Assets/ScreenShot1.jpg) |
+| Intuitive Checkout Screen      | Contact Us Page                     |
+|--------------------------------|-------------------------------------|
+| ![Voice Input](./Assets/3.jpg) | ![Price Estimation](./Assets/2.jpg) |
+
+| Currency Selection Screen      | Refund Settings Screen              |
+|--------------------------------|-------------------------------------|
+| ![Voice Input](./Assets/1.jpg) | ![Price Estimation](./Assets/4.jpg) |
+
+| Recommendations Screen         | Profile Screen                      |
+|--------------------------------|-------------------------------------|
+| ![Voice Input](./Assets/5.jpg) | ![Price Estimation](./Assets/9.jpg) |
+
+| Order Notifications Screen      |
+|---------------------------------|
+| ![Voice Input](./Assets/10.jpg) |
 
 <!--Line-->
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="900">
