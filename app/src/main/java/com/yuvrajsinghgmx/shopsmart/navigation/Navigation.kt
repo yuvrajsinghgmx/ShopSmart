@@ -276,15 +276,15 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("refund_status") {
-                ComingSoonScreen(title = "Refund Status", navController = navController)
+                TrackRefundScreen(navController = navController)
             }
 
             composable("return_guidelines") {
-                ComingSoonScreen(title = "Return Guidelines", navController = navController)
+                ReturnGuidelinesScreen(navController = navController)
             }
 
             composable("missing_refund") {
-                ComingSoonScreen(title = "Missing Refund", navController = navController)
+                MissingRefundScreen(navController = navController)
             }
 
             // About Section
