@@ -1,10 +1,12 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,365 +14,275 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-data class TransactionItem(
+data class PaymentTransaction(
     val id: String,
-    val type: TransactionType,
     val amount: Double,
+    val type: TransactionType,
+    val status: TransactionStatus,
+    val date: LocalDateTime,
     val description: String,
-    val date: Long,
-    val status: TransactionStatus
+    val paymentMethod: String
 )
 
 enum class TransactionType {
-    CREDIT, DEBIT, REFUND
+    PURCHASE, REFUND, PAYMENT, SUBSCRIPTION
 }
 
 enum class TransactionStatus {
-    COMPLETED, PENDING, FAILED
+    COMPLETED, PENDING, FAILED, PROCESSING
 }
 
-data class LinkedAccount(
-    val id: String,
-    val name: String,
-    val type: AccountType,
-    val lastFourDigits: String,
-    val isDefault: Boolean = false
+data class TransactionFilter(
+    val types: Set<TransactionType> = emptySet(),
+    val startDate: LocalDateTime? = null,
+    val endDate: LocalDateTime? = null,
+    val minAmount: Double? = null,
+    val maxAmount: Double? = null
 )
-
-enum class AccountType {
-    BANK_ACCOUNT, UPI, CREDIT_CARD, DEBIT_CARD
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DigitalWalletScreen(navController: NavController) {
-    val lightBackgroundColor = Color(0xFFF6F5F3)
-    var showAddAccountDialog by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableStateOf(0) }
+    var searchQuery by remember { mutableStateOf("") }
+    var showFilters by remember { mutableStateOf(false) }
+    var selectedTransaction by remember { mutableStateOf<PaymentTransaction?>(null) }
+    var filters by remember { mutableStateOf(TransactionFilter()) }
 
-    // Sample data
-    var walletBalance by remember { mutableStateOf(5000.0) }
-    var transactions by remember {
-        mutableStateOf(
-            listOf(
-                TransactionItem(
-                    "1",
-                    TransactionType.CREDIT,
-                    2500.0,
-                    "Added from bank account",
-                    System.currentTimeMillis() - 3600000,
-                    TransactionStatus.COMPLETED
-                ),
-                TransactionItem(
-                    "2",
-                    TransactionType.DEBIT,
-                    1200.0,
-                    "Purchase - Order #1234",
-                    System.currentTimeMillis() - 86400000,
-                    TransactionStatus.COMPLETED
-                ),
-                TransactionItem(
-                    "3",
-                    TransactionType.REFUND,
-                    800.0,
-                    "Refund - Order #1230",
-                    System.currentTimeMillis() - 172800000,
-                    TransactionStatus.COMPLETED
-                )
-            )
-        )
-    }
-
-    var linkedAccounts by remember {
-        mutableStateOf(
-            listOf(
-                LinkedAccount(
-                    "1",
-                    "HDFC Bank",
-                    AccountType.BANK_ACCOUNT,
-                    "4567",
-                    true
-                ),
-                LinkedAccount(
-                    "2",
-                    "Google Pay UPI",
-                    AccountType.UPI,
-                    "8901"
-                ),
-                LinkedAccount(
-                    "3",
-                    "VISA Card",
-                    AccountType.CREDIT_CARD,
-                    "1234"
-                )
+    // Sample transactions
+    val transactions = remember {
+        listOf(
+            PaymentTransaction(
+                "TRX-001",
+                299.99,
+                TransactionType.PURCHASE,
+                TransactionStatus.COMPLETED,
+                LocalDateTime.now().minusDays(1),
+                "Electronics Purchase",
+                "Credit Card ****1234"
+            ),
+            PaymentTransaction(
+                "TRX-002",
+                -49.99,
+                TransactionType.REFUND,
+                TransactionStatus.COMPLETED,
+                LocalDateTime.now().minusDays(2),
+                "Product Return Refund",
+                "Original Payment Method"
+            ),
+            PaymentTransaction(
+                "TRX-003",
+                149.99,
+                TransactionType.PAYMENT,
+                TransactionStatus.PROCESSING,
+                LocalDateTime.now().minusDays(3),
+                "Online Payment",
+                "PayPal"
+            ),
+            PaymentTransaction(
+                "TRX-004",
+                9.99,
+                TransactionType.SUBSCRIPTION,
+                TransactionStatus.PENDING,
+                LocalDateTime.now().minusDays(4),
+                "Premium Subscription",
+                "Google Pay"
             )
         )
     }
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Digital Wallet",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
+            Column {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            "Payment History",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color(0xFF332D25)
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color(0xFFF6F5F3)
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showAddAccountDialog = true }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.add_24px),
-                            contentDescription = "Add Account"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
                 )
-            )
+                SearchAndFilterBar(
+                    searchQuery = searchQuery,
+                    onSearchChange = { searchQuery = it },
+                    onFilterClick = { showFilters = !showFilters }
+                )
+            }
         },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
+        containerColor = Color(0xFFF6F5F3)
+    ) { padding ->
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(padding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Balance Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Wallet Balance",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = "₹${String.format("%.2f", walletBalance)}",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Button(
-                            onClick = { /* Add Money */ },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF0E8545)
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.add_24px),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Add Money")
-                        }
-                        OutlinedButton(
-                            onClick = { /* Send Money */ }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.send_24px),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Send Money")
-                        }
-                    }
-                }
+            // Summary Card
+            item {
+                TransactionSummaryCard(transactions)
             }
 
-            // Tabs
-            TabRow(selectedTabIndex = selectedTab) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("Transactions") }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("Linked Accounts") }
-                )
-            }
-
-            when (selectedTab) {
-                0 -> TransactionsList(transactions)
-                1 -> LinkedAccountsList(
-                    accounts = linkedAccounts,
-                    onSetDefault = { account ->
-                        linkedAccounts = linkedAccounts.map {
-                            it.copy(isDefault = it.id == account.id)
-                        }
-                    },
-                    onRemove = { account ->
-                        linkedAccounts = linkedAccounts.filter { it.id != account.id }
-                    }
+            // Transaction List
+            items(transactions.filter {
+                it.description.contains(searchQuery, ignoreCase = true) ||
+                        it.id.contains(searchQuery, ignoreCase = true)
+            }) { transaction ->
+                TransactionCard(
+                    transaction = transaction,
+                    onClick = { selectedTransaction = transaction }
                 )
             }
         }
     }
-}
 
-@Composable
-private fun TransactionsList(transactions: List<TransactionItem>) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(transactions) { transaction ->
-            TransactionItem(transaction)
-        }
-    }
-}
-
-@Composable
-private fun TransactionItem(transaction: TransactionItem) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+    // Transaction Details Dialog
+    selectedTransaction?.let { transaction ->
+        TransactionDetailsDialog(
+            transaction = transaction,
+            onDismiss = { selectedTransaction = null }
         )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(
-                        id = when (transaction.type) {
-                            TransactionType.CREDIT -> R.drawable.arrow_downward_24px
-                            TransactionType.DEBIT -> R.drawable.arrow_upward_24px
-                            TransactionType.REFUND -> R.drawable.refresh_24px
-                        }
-                    ),
-                    contentDescription = null,
-                    tint = when (transaction.type) {
-                        TransactionType.CREDIT -> Color(0xFF0E8545)
-                        TransactionType.DEBIT -> MaterialTheme.colorScheme.error
-                        TransactionType.REFUND -> MaterialTheme.colorScheme.tertiary
-                    }
-                )
-                Column {
-                    Text(
-                        text = transaction.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
-                            .format(Date(transaction.date)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            }
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(
-                    text = when (transaction.type) {
-                        TransactionType.CREDIT -> "+₹${String.format("%.2f", transaction.amount)}"
-                        TransactionType.DEBIT -> "-₹${String.format("%.2f", transaction.amount)}"
-                        TransactionType.REFUND -> "+₹${String.format("%.2f", transaction.amount)}"
-                    },
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = when (transaction.type) {
-                        TransactionType.CREDIT -> Color(0xFF0E8545)
-                        TransactionType.DEBIT -> MaterialTheme.colorScheme.error
-                        TransactionType.REFUND -> MaterialTheme.colorScheme.tertiary
-                    }
-                )
-                AssistChip(
-                    onClick = { },
-                    label = { Text(transaction.status.name) },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = when (transaction.status) {
-                            TransactionStatus.COMPLETED -> Color(0xFF0E8545).copy(alpha = 0.1f)
-                            TransactionStatus.PENDING -> MaterialTheme.colorScheme.primaryContainer
-                            TransactionStatus.FAILED -> MaterialTheme.colorScheme.errorContainer
-                        }
-                    )
-                )
-            }
-        }
     }
-}
 
-@Composable
-private fun LinkedAccountsList(
-    accounts: List<LinkedAccount>,
-    onSetDefault: (LinkedAccount) -> Unit,
-    onRemove: (LinkedAccount) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        items(accounts) { account ->
-            LinkedAccountItem(
-                account = account,
-                onSetDefault = { onSetDefault(account) },
-                onRemove = { onRemove(account) }
-            )
-        }
+    // Filter Sheet
+    if (showFilters) {
+        FilterBottomSheet(
+            currentFilter = filters,
+            onFilterChange = { filters = it },
+            onDismiss = { showFilters = false }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LinkedAccountItem(
-    account: LinkedAccount,
-    onSetDefault: () -> Unit,
-    onRemove: () -> Unit
+private fun SearchAndFilterBar(
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
+    onFilterClick: () -> Unit
 ) {
-    Card(
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchChange,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            .padding(horizontal = 16.dp),
+        placeholder = { Text("Search transactions") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = Color(0xFF637478)
+            )
+        },
+        trailingIcon = {
+            IconButton(onClick = onFilterClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.filter_list_24px),
+                    contentDescription = "Filter",
+                    tint = Color(0xFF637478)
+                )
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color(0xFF006D40),
+            unfocusedBorderColor = Color(0xFFE5E7EB)
+        ),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun TransactionSummaryCard(transactions: List<PaymentTransaction>) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = Color(0xFFE7F5EC)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            SummaryItem(
+                title = "Total Spent",
+                value = "₹${transactions.filter { it.type == TransactionType.PURCHASE }
+                    .sumOf { it.amount }}",
+                icon = R.drawable.orders_24px
+            )
+            SummaryItem(
+                title = "Refunds",
+                value = "₹${transactions.filter { it.type == TransactionType.REFUND }
+                    .sumOf { -it.amount }}",
+                icon = R.drawable.receipt_long_24px
+            )
+            SummaryItem(
+                title = "Pending",
+                value = transactions.count { it.status == TransactionStatus.PENDING }.toString(),
+                icon = R.drawable.brand_sports_24px
+            )
+        }
+    }
+}
+
+@Composable
+private fun SummaryItem(
+    title: String,
+    value: String,
+    icon: Int
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = Color(0xFF006D40),
+            modifier = Modifier.size(24.dp)
         )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF006D40)
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF006D40)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TransactionCard(
+    transaction: PaymentTransaction,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White
     ) {
         Row(
             modifier = Modifier
@@ -379,49 +291,202 @@ private fun LinkedAccountItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(
-                        id = when (account.type) {
-                            AccountType.BANK_ACCOUNT -> R.drawable.account_balance_24px
-                            AccountType.UPI -> R.drawable.payment_24px
-                            AccountType.CREDIT_CARD -> R.drawable.credit_card_24px
-                            AccountType.DEBIT_CARD -> R.drawable.credit_card_24px
-                        }
-                    ),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = transaction.description,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
                 )
-                Column {
-                    Text(
-                        text = account.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
+                Text(
+                    text = transaction.date.format(
+                        DateTimeFormatter.ofPattern("dd MMM, yyyy HH:mm")
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF637478)
+                )
+                Text(
+                    text = transaction.paymentMethod,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF637478)
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = if (transaction.type == TransactionType.REFUND)
+                        "-₹${String.format("%.2f", -transaction.amount)}"
+                    else
+                        "₹${String.format("%.2f", transaction.amount)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (transaction.type == TransactionType.REFUND)
+                        Color(0xFF006D40)
+                    else
+                        Color(0xFF332D25)
+                )
+                StatusChip(transaction.status)
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(status: TransactionStatus) {
+    val (backgroundColor, textColor) = when (status) {
+        TransactionStatus.COMPLETED -> Color(0xFFE7F5EC) to Color(0xFF006D40)
+        TransactionStatus.PENDING -> Color(0xFFFFF7E6) to Color(0xFFB25E02)
+        TransactionStatus.PROCESSING -> Color(0xFFE5F6FF) to Color(0xFF0073CC)
+        TransactionStatus.FAILED -> Color(0xFFFFEBEB) to Color(0xFFCC0000)
+    }
+
+    Surface(
+        color = backgroundColor,
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(
+            text = status.name.lowercase().capitalize(),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = textColor
+        )
+    }
+}
+
+@Composable
+private fun TransactionDetailsDialog(
+    transaction: PaymentTransaction,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                "Transaction Details",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                DetailItem("Transaction ID", transaction.id)
+                DetailItem("Amount",
+                    if (transaction.type == TransactionType.REFUND)
+                        "-₹${String.format("%.2f", -transaction.amount)}"
+                    else
+                        "₹${String.format("%.2f", transaction.amount)}"
+                )
+                DetailItem("Type", transaction.type.name)
+                DetailItem("Status", transaction.status.name)
+                DetailItem("Date", transaction.date.format(
+                    DateTimeFormatter.ofPattern("dd MMM, yyyy HH:mm")
+                ))
+                DetailItem("Payment Method", transaction.paymentMethod)
+                DetailItem("Description", transaction.description)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DetailItem(
+    label: String,
+    value: String
+) {
+    Column {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF637478)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterBottomSheet(
+    currentFilter: TransactionFilter,
+    onFilterChange: (TransactionFilter) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedTypes by remember { mutableStateOf(currentFilter.types) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                "Filter Transactions",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                "Transaction Type",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Medium
+            )
+
+            TransactionType.values().forEach { type ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = type in selectedTypes,
+                        onCheckedChange = {
+                            selectedTypes = if (it) {
+                                selectedTypes + type
+                            } else {
+                                selectedTypes - type
+                            }
+                        }
                     )
-                    Text(
-                        text = "••••${account.lastFourDigits}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
+                    Text(type.name.lowercase().capitalize())
                 }
             }
-            Row {
-                if (!account.isDefault) {
-                    TextButton(onClick = onSetDefault) {
-                        Text("Set Default")
-                    }
-                }
-                IconButton(onClick = onRemove) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.delete_24px),
-                        contentDescription = "Remove",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
+
+            Button(
+                onClick = {
+                    onFilterChange(currentFilter.copy(types = selectedTypes))
+                    onDismiss()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF006D40)
+                )
+            ) {
+                Text("Apply Filters")
             }
+
+            TextButton(
+                onClick = {
+                    selectedTypes = emptySet()
+                    onFilterChange(TransactionFilter())
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Clear Filters")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
