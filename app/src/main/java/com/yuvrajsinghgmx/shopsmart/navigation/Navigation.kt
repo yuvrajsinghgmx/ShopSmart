@@ -49,7 +49,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     val showBottomBar = currentDestination in listOf(
         "Home", "List", "UpComing", "Profile", "MyOrders", "Help",
         "settings", "personal_info", "address_book", "payment_methods", "security",
-        "language", "theme", "notifications", "privacy", "currency",
+        "language", "theme", "notifications", "privacy", "currency", "coming_soon",
         "shipping_preferences", "order_notifications", "app_version",
         "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support"
     )
@@ -233,6 +233,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                         // Handle feedback submission logic here
                     }
                 )
+            }
+
+            //coming soon screen
+            composable("coming_soon") {
+                ComingSoonScreen(title = "Coming Soon", navController = navController)
             }
 
             // Payment & Billing Routes
