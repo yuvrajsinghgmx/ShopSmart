@@ -264,15 +264,15 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("live_chat") {
-                ComingSoonScreen(title = "Live Chat", navController = navController)
+                LiveChatScreen(navController = navController)
             }
 
             composable("email_support") {
-                ComingSoonScreen(title = "Email Support", navController = navController)
+                EmailSupportScreen(navController = navController)
             }
 
             composable("phone_support") {
-                ComingSoonScreen(title = "Phone Support", navController = navController)
+                CallSupportScreen(navController = navController)
             }
 
             composable("refund_status") {
