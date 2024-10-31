@@ -188,17 +188,17 @@ private fun QuickActionsSection(navController: NavController) {
             QuickActionButton(
                 icon = R.drawable.history_24px,
                 text = "Payment\nHistory",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("transaction_history") }
             )
             QuickActionButton(
                 icon = R.drawable.receipt_long_24px,
                 text = "View\nStatements",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("view_statements") }
             )
             QuickActionButton(
                 icon = R.drawable.analytics_24px,
                 text = "Spending\nAnalytics",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("spending_analytics") }
             )
         }
     }
