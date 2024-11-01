@@ -47,7 +47,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
-        "Home", "List", "UpComing", "Profile", "MyOrders", "Help",
+        "Home", "List", "UpComing", "Profile", "MyOrders", "Help", "add_saved_card",
         "settings", "personal_info", "address_book", "payment_methods", "security",
         "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics",
         "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements",
@@ -167,6 +167,10 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("spending_analytics") {
                 SpendingAnalyticsScreen(navController = navController)
+            }
+
+            composable("add_saved_card") {
+                AddSavedCardScreen(navController = navController)
             }
 
             composable("security") {
