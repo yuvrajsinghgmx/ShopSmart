@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -164,45 +165,56 @@ fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navContro
 
 // layout for card in LazyRow product view
 @Composable
-fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController){
+fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
     Card(
-        shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.width(160.dp).aspectRatio(.7f).padding(8.dp),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .width(180.dp)
+            .aspectRatio(0.70f)
+            .padding(8.dp),
         onClick = {
             navController.navigate("productDetails/$index")
         }
     ) {
-        Column {
-            Image(
-                painter = painterResource(id = itemsData.image), // Replace with your image resource or use Coil for URL
-                contentDescription = "iPhone 13",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxHeight(.45f)
-            )
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(12.dp)
+        ) {
+            Column {
+                Image(
+                    painter = painterResource(id = itemsData.image), // Replace with your image resource or use Coil for URL
+                    contentDescription = "Product Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.5f)
+                        .clip(RoundedCornerShape(12.dp))
+                )
 
-            Row (modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween){
-                Column(modifier = Modifier.padding(8.dp)) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        modifier = Modifier.padding(start = 5.dp),
                         text = itemsData.name,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 4.dp)
                     )
 
                     Text(
-                        modifier = Modifier.padding(start = 5.dp),
                         text = itemsData.platform,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(horizontal = 4.dp)
                     )
 
-//                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Row(
-                        modifier = Modifier.padding(start = 5.dp),
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -211,54 +223,67 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController){
                             tint = Color(0xFFFFD700),
                             modifier = Modifier.size(16.dp)
                         )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = itemsData.rating.toString(),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
                         )
                     }
 
-//                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        modifier = Modifier.background(
-                            color = Color(0xFFFFA500),
-                            shape = RoundedCornerShape(8.dp)
-                            )
-                            .padding(1.dp),
                         text = "${itemsData.discount}% OFF",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.labelMedium
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .background(Color(0xFFFFA500), shape = RoundedCornerShape(8.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
-                    
-                    Row {
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
                         Text(
                             text = "\u20B9 ${itemsData.currentPrice}",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Red
+                            color = Color.Red,
+                            fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = itemsData.originalPrice.toString(),
+                            text = "\u20B9 ${itemsData.originalPrice}",
                             style = MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.LineThrough),
-                            color = Color.Gray,
-                            modifier = Modifier.align(Alignment.Bottom).padding(start = 4.dp)
+                            color = Color.Gray
                         )
                     }
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { /* Handle like action */ }) {
-                        Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-                    Text(
-                        text = "Like",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+            }
+
+            // "Like" button positioned at the bottom-end corner of the Box
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
+            ) {
+                IconButton(onClick = { /* Handle like action */ }) {
+                    Icon(
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = "Like",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
+                Text(
+                    text = "Like",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
             }
         }
     }

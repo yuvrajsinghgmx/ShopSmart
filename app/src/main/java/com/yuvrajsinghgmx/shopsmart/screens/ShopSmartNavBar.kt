@@ -81,7 +81,7 @@ fun ShopSmartNavBar(navController: NavHostController) {
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onBackground,
                     selectedTextColor = Color.Unspecified,
-                    indicatorColor = MaterialTheme.colorScheme.surfaceTint
+                    indicatorColor = Color(0xFFff9c86)
                 )
             )
         }
