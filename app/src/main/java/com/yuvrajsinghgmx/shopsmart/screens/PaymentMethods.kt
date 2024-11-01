@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.profilefeatures.SavedCardsManager
 
 data class PaymentMethodInfo(
     val title: String,
@@ -27,20 +28,7 @@ data class PaymentMethodInfo(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodsScreen(navController: NavController) {
-    val savedCards = listOf(
-        PaymentMethodInfo(
-            "•••• •••• •••• 1234",
-            "Expires 12/25",
-            R.drawable.credit_card_24px,
-            "saved_cards"
-        ),
-        PaymentMethodInfo(
-            "•••• •••• •••• 5678",
-            "Expires 09/24",
-            R.drawable.credit_card_24px,
-            "saved_cards"
-        )
-    )
+    val savedCards by remember { mutableStateOf(SavedCardsManager.savedCards) }
 
     val digitalWallets = listOf(
         PaymentMethodInfo("Google Pay", null, R.drawable.google_pay_24px, "google_pay_setup"),
@@ -124,7 +112,7 @@ fun PaymentMethodsScreen(navController: NavController) {
                     onItemClick = { route ->
                         route?.let { navController.navigate(it) }
                     },
-                    onAddClick = { navController.navigate("coming_soon") }
+                    onAddClick = { navController.navigate("add_saved_card") }  // Changed from "coming_soon" to "add_saved_card"
                 )
             }
 
@@ -248,26 +236,69 @@ private fun PaymentMethodSection(
             color = Color(0xFF332D25)
         )
 
-        items.forEach { item ->
-            PaymentMethodItem(item = item, onClick = { onItemClick(item.route) })
-        }
-
-        if (showAddButton && onAddClick != null) {
-            OutlinedButton(
-                onClick = onAddClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color(0xFF006D40)
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Add ${title.dropLast(1)}")
+        if (items.isEmpty() && title == "Saved Cards") {
+            EmptyCardsMessage(onAddCard = onAddClick ?: {})
+        } else {
+            items.forEach { item ->
+                PaymentMethodItem(item = item, onClick = { onItemClick(item.route) })
             }
+
+            if (showAddButton && onAddClick != null) {
+                OutlinedButton(
+                    onClick = onAddClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color(0xFF006D40)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add ${title.dropLast(1)}")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyCardsMessage(onAddCard: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.credit_card_24px),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp),
+            tint = Color(0xFF637478)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            "No saved cards",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = onAddCard,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF006D40)
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Add Card")
         }
     }
 }
