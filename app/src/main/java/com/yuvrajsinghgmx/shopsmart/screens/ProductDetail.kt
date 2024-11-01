@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.widget.ScrollView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
@@ -86,12 +88,13 @@ fun ProductDetails(index: Int){
                     )
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
 
                 Text(
                     text = itemsData.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.ExtraBold,
+//                    fontSize = 30.sp
                 )
 
                 Text(
@@ -100,28 +103,32 @@ fun ProductDetails(index: Int){
                     fontWeight = FontWeight.SemiBold
                 )
 
+                Spacer(Modifier.height(24.dp))
+
                 LazyColumn(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
                     items(listedSites.size) { index ->
                         ListedSitesListLayout(listedSites[index].name, listedSites[index].price)
                     }
                 }
+                Spacer(Modifier.height(24.dp))
 
                 Text(
-                    text = itemsData.name,
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "Product Description",
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.ExtraBold
                 )
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = itemsData.description
+                    text = itemsData.description,
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
 
                 Text(
                     text = "Key Features",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.ExtraBold
                 )
                 Spacer(Modifier.height(8.dp))
@@ -142,7 +149,10 @@ fun ProductDetails(index: Int){
                     .padding(16.dp)
                     .zIndex(1f)
             ) {
-                Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         Icons.Default.ShoppingCart,
                         contentDescription = "shopping Cart"
@@ -227,6 +237,6 @@ fun ListedSitesListLayout(name:String = "Amazon", price: Float = 145.0f){
 @Preview(showBackground = true)
 @Composable
 fun ProductDetailsPreview(){
-//    ProductDetails(HomeScreenViewModel().itemsList[0])
+    ProductDetails(0)
 //    ListedSitesListLayout()
 }
