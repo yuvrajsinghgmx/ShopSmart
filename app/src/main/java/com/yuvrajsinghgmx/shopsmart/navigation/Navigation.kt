@@ -47,11 +47,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
-        "Home", "List", "UpComing", "Profile", "MyOrders", "Help", "add_saved_card",
-        "settings", "personal_info", "address_book", "payment_methods", "security",
+        "Home", "List", "UpComing", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup",
+        "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup",
         "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics",
         "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements",
-        "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support"
+        "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
 
     Scaffold(
@@ -171,6 +171,22 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("add_saved_card") {
                 AddSavedCardScreen(navController = navController)
+            }
+
+            composable("google_pay_setup") {
+                GooglePaySetupScreen(navController = navController)
+            }
+
+            composable("paypal_settings") {
+                PayPalSetupScreen(navController = navController)
+            }
+
+            composable("apple_pay_setup") {
+                ApplePaySetupScreen(navController = navController)
+            }
+
+            composable("add_digital_wallet") {
+                AddDigitalWalletScreen(navController = navController)
             }
 
             composable("security") {

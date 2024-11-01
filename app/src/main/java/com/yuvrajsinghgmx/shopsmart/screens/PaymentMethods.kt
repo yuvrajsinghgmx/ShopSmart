@@ -122,9 +122,9 @@ fun PaymentMethodsScreen(navController: NavController) {
                     title = "Digital Wallets",
                     items = digitalWallets,
                     onItemClick = { route ->
-                        route?.let { navController.navigate("coming_soon") }
+                        route?.let { navController.navigate(it) }
                     },
-                    onAddClick = { navController.navigate("coming_soon") }
+                    onAddClick = { navController.navigate("add_digital_wallet") } // New route for adding digital wallet
                 )
             }
 
