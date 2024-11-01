@@ -22,6 +22,7 @@ composeBom = "2024.09.03"
 navigationCompose = "2.8.2"
 playServicesAuth = "21.2.0"
 webkit = "1.12.1"
+uiTestAndroid = "1.7.3"
 
 
 
@@ -63,6 +64,7 @@ kotlinx-coroutines-android-v139 = { module = "org.jetbrains.kotlinx:kotlinx-coro
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterGson" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
