@@ -569,19 +569,20 @@ fun EmptyListContent() {
 fun AddItemDialog(
     onDismiss: () -> Unit,
     onAddItem: (name: String, amount: Double, date: Long) -> Unit
-) {var itemName by remember { mutableStateOf("") }
-var itemAmount by remember { mutableStateOf("") }
-var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) } // Default to current date
-var showDatePicker by remember { mutableStateOf(false) }
-var showError by remember { mutableStateOf(false) }
-val datePickerState = rememberDatePickerState()
+) {
+    var itemName by remember { mutableStateOf("") }
+    var itemAmount by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) } // Default to current date
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
 
-androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .padding(16.dp)
-            .background(Color.Transparent),
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .background(Color.Transparent),
         colors = CardDefaults.cardColors(
             containerColor = Color(rgb(234, 235, 230))
         )
@@ -625,11 +626,9 @@ androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
             OutlinedTextField(
                 value = itemAmount,
                 onValueChange = { newValue ->
-                    // **Prevent negative amounts and invalid characters:**
-                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) { // Allow only digits
+                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
                         itemAmount = newValue
-                        showError = false
-                    }
+                        showError = false }
                 },
                 label = { Text("Amount (optional)", color = Color.Black) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -666,6 +665,7 @@ androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
                 modifier = Modifier.padding(bottom = 16.dp),
                 color = Color(0xFF006D3B)
             )
+
 
             if (showError) {
                 Text(
@@ -709,6 +709,7 @@ androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
             }
         }
     }
+
 
     if (showDatePicker) {
         DatePickerDialog(
