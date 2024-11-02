@@ -4,6 +4,9 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
@@ -31,7 +36,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +49,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,12 +63,17 @@ import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
-
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navController: NavController) {
     var searchQuery by remember { mutableStateOf("") }
     var showExitDialog by remember { mutableStateOf(false) }
     var myItems = viewModel.itemsList
+    val scrollState = rememberScrollState()
+    var placeholderText by remember { mutableStateOf("ShopSmart") }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    if(isFocused) placeholderText = "Search for products" else placeholderText = "ShopSmart"
 
     // Handle back press for this screen
     BackHandler(enabled = true) {
@@ -88,78 +102,99 @@ fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navContro
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)){
-        Row(Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                modifier = Modifier.weight(1f),
-                value = searchQuery,
-                onValueChange  = {searchQuery = it},
-                shape = RoundedCornerShape(20.dp),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "search Icon") },
-                singleLine = true,
-                placeholder = { Text("Search for products") }
+    Column {
+            Row(Modifier.fillMaxWidth().padding(bottom = 4.dp, start = 4.dp)) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    interactionSource = interactionSource,
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Search Icon"
+                        )
+                    },
+                    singleLine = true,
+                    placeholder = { Text(placeholderText) },
+                )
+
+                IconButton(onClick = {}) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_keyboard_voice_24),
+                        contentDescription = "mike Icon"
+                    )
+                }
+            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 0.dp, bottom = 0.dp)
+                .verticalScroll(scrollState)
+        ) {
+
+//            Spacer(modifier = Modifier.height(10.dp))
+
+            Box {
+                Image(
+                    painter = painterResource(R.drawable.shopinterior),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.colorMatrix(
+                        ColorMatrix().apply {
+                            setToScale(0.7f, 0.7f, 0.7f, 1f)
+                        }
+                    )
+                )
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(6.dp, bottom = 0.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        text = "Welcome to ShopSmart",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Text(
+                        text = "Your one-stop shop for everything",
+                        color = Color.White,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Text(
+                text = "Featured",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
             )
 
-            IconButton(onClick = {}) {
-                Icon(painter = painterResource(R.drawable.baseline_keyboard_voice_24), contentDescription = "mike Icon")
+            LazyRow(modifier = Modifier.fillMaxWidth()) {
+                items(myItems.size) { items ->
+                    CardLayout(myItems[items], items, navController)
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box{
-            Image(
-                painter = painterResource(R.drawable.shopinterior),
-                contentDescription = "",
-                colorFilter = ColorFilter.colorMatrix(
-                    ColorMatrix().apply {
-                        setToScale(0.7f, 0.7f, 0.7f, 1f)
-                    }
-                )
-            )
-            Column(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)) {
+            Spacer(Modifier.height(8.dp))
+            Column(Modifier.padding(12.dp, 0.dp)) {
                 Text(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    text = "Welcome to ShopSmart",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
+                    text = "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app..."
                 )
-                Text(
-                    text = "Your one-stop shop for everything",
-                    color = Color.White,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp
-                )
+                Spacer(Modifier.height(10.dp))
+
+                Text("\"At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...\"")
+                Spacer(Modifier.height(10.dp))
+                Text("\"At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...\"")
+
+
             }
+
         }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(
-            text = "Featured",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 18.sp
-        )
-
-        LazyRow(modifier = Modifier.fillMaxWidth()) {
-            items(myItems.size){
-                items->
-                CardLayout(myItems[items], items, navController)
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = "Featured Products",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 24.sp
-        )
-
-        Text(
-            text = "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app..."
-        )
     }
 }
 
@@ -290,9 +325,10 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
 }
 
 
-//
+
 //@Preview(showBackground = true)
 //@Composable
 //fun HomePagePreview(){
+//    context = LocalContext.current
 //    HomeScreen()
 //}

@@ -240,17 +240,17 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Start
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        "Settings",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF233b41)
-                    )
-                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start
+//                ) {
+//                    Text(
+//                        "Settings",
+//                        style = MaterialTheme.typography.headlineMedium,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color(0xFF233b41)
+//                    )
+//                }
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
