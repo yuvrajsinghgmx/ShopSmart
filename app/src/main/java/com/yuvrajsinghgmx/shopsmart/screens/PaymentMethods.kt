@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.profilefeatures.BankAccountManager
 import com.yuvrajsinghgmx.shopsmart.profilefeatures.SavedCardsManager
 
 data class PaymentMethodInfo(
@@ -28,6 +29,7 @@ data class PaymentMethodInfo(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodsScreen(navController: NavController) {
+    val savedBankAccounts by remember { mutableStateOf(BankAccountManager.savedAccounts) }
     val savedCards by remember { mutableStateOf(SavedCardsManager.savedCards) }
 
     val digitalWallets = listOf(
@@ -36,14 +38,14 @@ fun PaymentMethodsScreen(navController: NavController) {
         PaymentMethodInfo("Apple Pay", null, R.drawable.apple_pay_24px, "apple_pay_setup")
     )
 
-    val bankAccounts = listOf(
+    val bankAccounts = savedBankAccounts.map { account ->
         PaymentMethodInfo(
-            "•••• 4321",
-            "Savings Account",
-            R.drawable.account_balance_24px,
-            "bank_account_details"
+            title = "•••• ${account.accountNumber.takeLast(4)}",
+            subtitle = "${account.bankName} - ${account.accountType} Account",
+            icon = R.drawable.account_balance_24px,
+            route = "bank_account_details/${account.accountNumber}"
         )
-    )
+    }
 
     val paymentSettings = listOf(
         PaymentMethodInfo(
@@ -134,9 +136,9 @@ fun PaymentMethodsScreen(navController: NavController) {
                     title = "Bank Accounts",
                     items = bankAccounts,
                     onItemClick = { route ->
-                        route?.let { navController.navigate("coming_soon") }
+                        route?.let { navController.navigate(it) }
                     },
-                    onAddClick = { navController.navigate("coming_soon") }
+                    onAddClick = { navController.navigate("add_bank_account") }
                 )
             }
 
@@ -236,8 +238,144 @@ private fun PaymentMethodSection(
             color = Color(0xFF332D25)
         )
 
-        if (items.isEmpty() && title == "Saved Cards") {
-            EmptyCardsMessage(onAddCard = onAddClick ?: {})
+        if (items.isEmpty()) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                color = Color.White
+            ) {
+                when (title) {
+                    "Saved Cards" -> EmptyCardsMessage(onAddCard = onAddClick ?: {})
+                    "Bank Accounts" -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.account_balance_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color(0xFF637478)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No Bank Accounts Added",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                "Add your bank account for easy transfers",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF637478),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            OutlinedButton(
+                                onClick = onAddClick ?: {},
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFF006D40)
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Add Bank Account")
+                            }
+                        }
+                    }
+                    "Digital Wallets" -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.payments_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color(0xFF637478)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No Digital Wallets Connected",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                "Connect your preferred digital payment method",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF637478),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            OutlinedButton(
+                                onClick = onAddClick ?: {},
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFF006D40)
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Add Digital Wallet")
+                            }
+                        }
+                    }
+                    else -> {
+                        // Default empty state
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.payments_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color(0xFF637478)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No Items Added",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (showAddButton && onAddClick != null) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                OutlinedButton(
+                                    onClick = onAddClick,
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = Color(0xFF006D40)
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Add ${title.dropLast(1)}")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         } else {
             items.forEach { item ->
                 PaymentMethodItem(item = item, onClick = { onItemClick(item.route) })
