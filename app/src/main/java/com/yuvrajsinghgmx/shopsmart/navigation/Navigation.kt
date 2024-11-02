@@ -50,8 +50,8 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup",
         "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup",
         "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics",
-        "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements",
-        "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
+        "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account",
+        "bank_account_details", "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
 
     Scaffold(
@@ -187,6 +187,22 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("add_digital_wallet") {
                 AddDigitalWalletScreen(navController = navController)
+            }
+
+            composable("add_bank_account") {
+                AddBankAccountScreen(navController = navController)
+            }
+
+            // Bank Account Details Screen
+            composable(
+                route = "bank_account_details/{accountNumber}",
+                arguments = listOf(navArgument("accountNumber") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val accountNumber = backStackEntry.arguments?.getString("accountNumber") ?: ""
+                BankAccountDetailsScreen(
+                    navController = navController,
+                    accountNumber = accountNumber
+                )
             }
 
             composable("security") {
