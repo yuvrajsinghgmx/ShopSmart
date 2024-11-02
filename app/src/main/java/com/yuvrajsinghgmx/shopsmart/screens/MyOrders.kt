@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,7 @@ import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yuvrajsinghgmx.shopsmart.datastore.Product
+import com.yuvrajsinghgmx.shopsmart.ui.theme.LexendRegular
 import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import kotlinx.coroutines.launch
 
@@ -31,26 +33,36 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
     var orders by remember { mutableStateOf(listOf<Product>()) }
     val coroutineScope = rememberCoroutineScope()
 
-//    LaunchedEffect(Unit) {
-//        loadOrders(context) { loadedOrders ->
-//            orders = loadedOrders
-//        }
-//    }
-
     LaunchedEffect(selectedItemsJson) {
-        orders = Gson().fromJson(selectedItemsJson, object : TypeToken<List<Product>>() {}.type)
+        orders = try {
+            Gson().fromJson(selectedItemsJson, object : TypeToken<List<Product>>() {}.type)
+        } catch (e: Exception) {
+            Log.e("MyOrders", "Error parsing orders", e)
+            emptyList()
+        }
     }
 
+    val totalAmount = orders.sumOf { it.amount * it.no_of_items }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Orders") },
+                title = {
+                    Text(
+                        "My Orders",
+                        style = TextStyle(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = LexendRegular
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color.Black
                         )
                     }
                 },
@@ -65,73 +77,116 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Clear Orders"
+                            contentDescription = "Clear Orders",
+                            tint = Color.Black
                         )
                     }
                 }
             )
-        },
-        bottomBar = {
-            if (orders.isNotEmpty()) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                "Total:",
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Text(
-                                "₹${orders.sumOf { it.amount }}",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { /* No functionality added */ },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006400))
-                        ) {
-                            Text("Proceed to Payment", fontSize = 18.sp, color = Color.White)
-                        }
-                    }
-                }
-            }
         }
     ) { innerPadding ->
-        if (orders.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No orders yet. Start shopping!")
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 100.dp)
-            ) {
-                items(orders.size) { index ->
-                    OrderItem(orders[index])
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (orders.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "No orders yet. Start shopping!",
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = LexendRegular,
+                            color = Color.Gray
+                        )
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        items(orders.size) { index ->
+                            OrderItem(orders[index])
+                            if (index < orders.size - 1) {
+                                Divider(
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    color = Color.LightGray.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF98F9B3)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Total:",
+                                    style = TextStyle(
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        fontFamily = LexendRegular,
+                                        color = Color.Black
+                                    )
+                                )
+                                Text(
+                                    "₹${String.format("%.1f", totalAmount)}",
+                                    style = TextStyle(
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = LexendRegular,
+                                        color = Color.Black
+                                    )
+                                )
+                            }
+
+                            Button(
+                                onClick = { /* Implement payment logic */ },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF006D3B)
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    "Proceed to Payment",
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = LexendRegular,
+                                        color = Color.White
+                                    ),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -139,13 +194,17 @@ fun MyOrders(navController: NavController, selectedItemsJson: String) {
 }
 
 @Composable
-fun OrderItem(order: Product) {
+private fun OrderItem(order: Product) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(8.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF3F0F7)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
     ) {
         Row(
             modifier = Modifier
@@ -157,36 +216,33 @@ fun OrderItem(order: Product) {
             Column {
                 Text(
                     text = order.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = LexendRegular,
+                        color = Color.Black
+                    )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Quantity: 1", // Assuming quantity is 1, adjust if needed
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "Quantity: ${order.no_of_items}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontFamily = LexendRegular
+                    )
                 )
             }
             Text(
-                text = "₹${order.amount}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                text = "₹${String.format("%.1f", order.amount * order.no_of_items)}",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = LexendRegular,
+                    color = Color(0xFF006D3B)
+                )
             )
         }
-    }
-}
-
-private suspend fun loadOrders(context: android.content.Context, onOrdersLoaded: (List<Product>) -> Unit) {
-    try {
-        val loadedOrders = SharedPrefsHelper.getOrders(context)
-        Log.d("MyOrders", "Orders loaded: ${loadedOrders.size}")
-        Toast.makeText(context, "Orders loaded: ${loadedOrders.size}", Toast.LENGTH_SHORT).show()
-        onOrdersLoaded(loadedOrders)
-    } catch (e: Exception) {
-        Log.e("MyOrders", "Error loading orders", e)
-        Toast.makeText(context, "Error loading orders", Toast.LENGTH_SHORT).show()
-        onOrdersLoaded(emptyList())
     }
 }
 

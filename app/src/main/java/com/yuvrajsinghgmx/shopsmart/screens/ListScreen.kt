@@ -1,72 +1,17 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import android.content.Context
 import android.graphics.Color.rgb
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,65 +22,68 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.datastore.Product
 import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LexendRegular
-import com.yuvrajsinghgmx.shopsmart.utils.SharedPrefsHelper
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-
-private fun saveOrdersToSharedPreferences(context: Context, items: List<Product>) {
-    try {
-        val orders = items.map { Product(it.name, it.amount, it.no_of_items,it.imageUrl) }
-        if (orders.isNotEmpty()) {
-            SharedPrefsHelper.saveOrders(context, orders)
-            Log.d("HomeScreen", "Orders saved: ${orders.size}")
-            Toast.makeText(context, "Orders saved successfully", Toast.LENGTH_SHORT).show()
-        } else {
-            SharedPrefsHelper.saveOrders(context, emptyList())
-            Log.d("HomeScreen", "No orders to save, cleared existing orders")
-            Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show()
-        }
-    } catch (e: Exception) {
-        Log.e("HomeScreen", "Error saving orders", e)
-        Toast.makeText(context, "Error saving orders", Toast.LENGTH_SHORT).show()
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     viewModel: ShoppingListViewModel = hiltViewModel(),
-               navController: NavController) {
+    navController: NavController
+) {
     val context = LocalContext.current
     val items = viewModel.items.collectAsState(initial = emptyList())
-    var newItem by remember { mutableStateOf("") }
-    var newAmount by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
-    val selectedItems = remember { mutableStateListOf<Product>() }
-    var showDeleteButton by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var productToDelete by remember { mutableStateOf<Product?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
-
     var isSearching by remember { mutableStateOf(false) }
     var searchKeyword by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var showDatePicker by remember { mutableStateOf(false) }
+    val selectedItems = remember { mutableStateListOf<Product>() }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Calculate total for selected items
+    val totalAmount = selectedItems.sumOf { it.amount * it.no_of_items }
+
+    // Function to update item quantity
+    fun updateItemQuantity(product: Product, newQuantity: Int) {
+        if (newQuantity <= 0) {
+            showDeleteDialog = true
+            productToDelete = product
+            return
+        }
+
+        coroutineScope.launch {
+            val updatedItems = items.value.map {
+                if (it == product) {
+                    it.copy(no_of_items = newQuantity)
+                } else {
+                    it
+                }
+            }
+            viewModel.updateItems(updatedItems)
+            saveItems(context, updatedItems)
+
+            // Update selected items if the modified item is selected
+            val selectedIndex = selectedItems.indexOf(product)
+            if (selectedIndex != -1) {
+                selectedItems[selectedIndex] = selectedItems[selectedIndex].copy(no_of_items = newQuantity)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -155,14 +103,19 @@ fun ListScreen(
                                     viewModel.search(searchKeyword)
                                 },
                                 leadingIcon = {
-                                    IconButton(onClick = { isSearching = false }) {
+                                    IconButton(onClick = {
+                                        isSearching = false
+                                        searchKeyword = ""
+                                        viewModel.search("")
+                                    }) {
                                         Icon(
-                                            imageVector = Icons.Default.ArrowBack,
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                             contentDescription = "Back Arrow"
                                         )
                                     }
                                 },
-                                shape = RoundedCornerShape(25.dp)
+                                shape = RoundedCornerShape(25.dp),
+                                modifier = Modifier.fillMaxWidth()
                             )
                         } else {
                             Text(
@@ -173,9 +126,7 @@ fun ListScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = {
-                            isSearching = true
-                        }) {
+                        IconButton(onClick = { isSearching = true }) {
                             Icon(Icons.Default.Search, contentDescription = "Search Icon")
                         }
                         Checkbox(
@@ -183,12 +134,11 @@ fun ListScreen(
                             onCheckedChange = { checked ->
                                 selectAll = checked
                                 if (checked) {
-                                    selectedItems.clear() // Clear to avoid duplicates
+                                    selectedItems.clear()
                                     selectedItems.addAll(items.value)
                                 } else {
                                     selectedItems.clear()
                                 }
-                                showDeleteButton = selectedItems.isNotEmpty()
                             },
                             modifier = Modifier.padding(end = 8.dp)
                         )
@@ -200,7 +150,6 @@ fun ListScreen(
                         IconButton(onClick = {
                             selectedItems.clear()
                             selectAll = false
-                            showDeleteButton = false
                         }) {
                             Icon(Icons.Default.Close, contentDescription = "Close Icon")
                         }
@@ -213,75 +162,104 @@ fun ListScreen(
                         )
                     },
                     actions = {
-                        if (showDeleteButton) {
-                            IconButton(onClick = {
-                                coroutineScope.launch {
-                                    val updatedItems = items.value.toMutableList().apply {
-                                        removeAll(selectedItems)
-                                    }
-                                    viewModel.updateItems(updatedItems)
-                                    selectedItems.clear()
-                                    selectAll = false
-                                    showDeleteButton = false
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                val updatedItems = items.value.toMutableList().apply {
+                                    removeAll(selectedItems)
                                 }
-                            }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                                viewModel.updateItems(updatedItems)
+                                saveItems(context, updatedItems)
+                                selectedItems.clear()
+                                selectAll = false
                             }
+                        }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
                         }
                     }
                 )
             }
         },
-
-        floatingActionButton = {
-            val subtotal = selectedItems.sumOf { it.amount }
-            val deliveryFee = 0
-            val discount = 0
-            val total = subtotal + deliveryFee - discount
+        bottomBar = {
             if (selectedItems.isNotEmpty()) {
-                FloatingActionButton(
-                    onClick = {
-                        val selectedItemsJson = Gson().toJson(selectedItems)
-                        navController.navigate("MyOrders?selectedItems=$selectedItemsJson")
-                    }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF98F9B3)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(5.dp).width(150.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "Total:"
+                                "Total:",
+                                style = TextStyle(
+                                    fontSize = 20.sp,
+                                    fontFamily = LexendRegular,
+                                    color = Color.Black
+                                )
                             )
-
                             Text(
-                                "₹${total}",
+                                "₹${String.format("%.1f", totalAmount)}",
+                                style = TextStyle(
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = LexendRegular,
+                                    color = Color.Black
+                                )
                             )
                         }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                        Button(
+                            onClick = {
+                                val selectedItemsJson = Gson().toJson(selectedItems)
+                                navController.navigate("checkout?selectedItems=$selectedItemsJson")
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF006D3B)
+                            ),
+                            shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("Checkout", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Checkout",
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = LexendRegular,
+                                    color = Color.White
+                                ),
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
-
                     }
                 }
-            } else {
+            }
+        },
+        floatingActionButton = {
+            if (selectedItems.isEmpty()) {
                 FloatingActionButton(
                     onClick = { showDialog = true },
-                    modifier = Modifier.padding(5.dp, 0.dp)
+                    containerColor = Color(0xFF98F9B3),
+                    modifier = Modifier.padding(16.dp)
                 ) {
                     Icon(
                         Icons.Default.Add,
                         contentDescription = "Add Item",
+                        tint = Color.Black
                     )
                 }
             }
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -290,55 +268,18 @@ fun ListScreen(
                 .padding(horizontal = 16.dp)
         ) {
             if (items.value.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        val infiniteTransition = rememberInfiniteTransition()
-                        val scale by infiniteTransition.animateFloat(
-                            initialValue = 1f,
-                            targetValue = 1.1f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(1000, easing = LinearEasing),
-                                repeatMode = RepeatMode.Reverse
-                            ), label = ""
-                        )
-
-                        Image(
-                            painter = painterResource(id = if (isSystemInDarkTheme()) R.drawable.empty_dark else R.drawable.empty_light),
-                            contentDescription = "Empty List",
-                            modifier = Modifier
-                                .size(200.dp)
-                                .scale(scale)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Your shopping list is empty.",
-                            style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "Add items using the  button below.",
-                            style = TextStyle(fontSize = 16.sp, color = Color.Gray)
-                        )
-                    }
-                }
+                EmptyListContent()
             } else {
                 val groupedItems = items.value.groupBy { product ->
                     val date = java.util.Date(product.dateAdded)
                     val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
                     dateFormat.format(date)
                 }
-                LazyColumn(modifier = Modifier.weight(1f)) {
+
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(bottom = if (selectedItems.isNotEmpty()) 90.dp else 0.dp)
+                ) {
                     groupedItems.forEach { (day, products) ->
                         item {
                             Text(
@@ -351,121 +292,22 @@ fun ListScreen(
                             )
                         }
                         items(products.size) { index ->
-                            val isChecked = products[index] in selectedItems
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                                    .clip(RoundedCornerShape(16.dp)),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(10.dp)
-                                ) {
-                                    if (products[index].imageUrl != null) {
-                                        AsyncImage(
-                                            model = products[index].imageUrl,
-                                            contentDescription = products[index].name,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(65.dp, 65.dp)
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .padding(end = 1.dp)
-                                                .border(
-                                                    BorderStroke(1.dp, color = Color.Transparent),
-                                                    RoundedCornerShape(8.dp)
-                                                )
-                                        )
+                            ProductCard(
+                                product = products[index],
+                                isSelected = products[index] in selectedItems,
+                                onQuantityChange = { product, newQuantity ->
+                                    updateItemQuantity(product, newQuantity)
+                                },
+                                onSelect = { product ->
+                                    if (product in selectedItems) {
+                                        selectedItems.remove(product)
+                                        selectAll = false
+                                    } else {
+                                        selectedItems.add(product)
+                                        selectAll = selectedItems.size == items.value.size
                                     }
-                                    Spacer(modifier = Modifier.width(10.dp))
-
-                                    Column(modifier = Modifier.weight(0.3f).padding(end = 10.dp)) {
-                                        Text(
-                                            text = products[index].name,
-                                            style = TextStyle(
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.Black,
-                                                fontFamily = LexendRegular
-                                            )
-                                        )
-                                        Spacer(modifier = Modifier.height(3.dp))
-                                        Text(
-                                            text = "Fresh and ripe",
-                                            style = TextStyle(fontSize = 10.sp, color = Color.Gray,fontFamily = LexendRegular)
-                                        )
-                                        Spacer(modifier = Modifier.height(3.dp))
-                                        Text(
-                                            text =  "$${products[index].amount} each",
-                                            style = TextStyle(fontSize = 11.sp, color = Color(0xFF48BFE3), fontWeight = FontWeight.Bold, fontFamily = LexendRegular) // Adjusted color to blue
-                                        )
-                                    }
-
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.width(90.dp).fillMaxWidth()
-                                    ){
-                                        Card(
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier
-                                                .size(35.dp)
-                                                .padding(4.dp)
-                                                .clickable {
-                                                    println("Decrement Clicked")
-                                                    // Handle click event here
-                                                },
-                                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card)
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.decrement_icon), // Replace with your decrement icon
-                                                contentDescription = "Decrease quantity",
-                                                modifier = Modifier.size(30.dp)
-                                            )
-
-                                        }
-
-                                        Spacer(modifier = Modifier.width(2.dp))
-
-                                            Text(
-                                                text = products[index].no_of_items.toString(), // Display the quantity
-                                                style = TextStyle(
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.Normal
-                                                ),
-                                                modifier = Modifier.align(Alignment.CenterVertically)
-                                            )
-
-                                        Spacer(modifier = Modifier.width(2.dp))
-
-                                        Card(
-                                            shape = RoundedCornerShape(8.dp),
-                                            modifier = Modifier
-                                                .size(35.dp)
-                                                .padding(4.dp)
-                                                .clickable {
-                                                    println("Increment Clicked")
-                                                    // Handle click event here
-                                                },
-                                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card)
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.increment_icon), // Replace with your decrement icon
-                                                contentDescription = "Decrease quantity",
-                                                modifier = Modifier.size(30.dp)
-                                            )
-
-                                        }
-                                    }
-
                                 }
-                            }
+                            )
                         }
                     }
                 }
@@ -473,331 +315,425 @@ fun ListScreen(
         }
     }
 
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Remove Item") },
+            text = { Text("Do you want to remove this item from your list?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    productToDelete?.let { product ->
+                        coroutineScope.launch {
+                            val updatedItems = items.value.toMutableList()
+                            updatedItems.remove(product)
+                            viewModel.updateItems(updatedItems)
+                            saveItems(context, updatedItems)
+                            selectedItems.remove(product)
+                        }
+                    }
+                    showDeleteDialog = false
+                    productToDelete = null
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    productToDelete?.let { product ->
+                        updateItemQuantity(product, 1)
+                    }
+                    showDeleteDialog = false
+                    productToDelete = null
+                }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+
+    // Add item dialog
     if (showDialog) {
-        Dialog(onDismissRequest = { showDialog = false }) {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.Transparent),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(rgb(234, 235, 230))
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .fillMaxWidth()
-                ) {
-                    var itemName by remember { mutableStateOf("") }
-                    var itemAmount by remember { mutableStateOf("") }
-
-                    Text(
-                        "Add New Item",
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                        modifier = Modifier.padding(bottom = 16.dp)
+        AddItemDialog(
+            onDismiss = { showDialog = false },
+            onAddItem = { name, amount, date ->
+                coroutineScope.launch {
+                    val imageUrl = viewModel.searchImage(name)
+                    val newProduct = Product(
+                        name = name,
+                        amount = amount,
+                        no_of_items = 1,
+                        imageUrl = imageUrl,
+                        dateAdded = date
                     )
-
-                    OutlinedTextField(
-                        value = itemName,
-                        onValueChange = { itemName = it },
-                        label = { Text("Item Name", color = Color.Black) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color(0xFF332D25),
-                            focusedBorderColor = Color(0xFF332D25),
-                            unfocusedBorderColor = Color(0xFFDBD6CA),
-                            focusedTextColor = Color(0xFF332D25),
-                            unfocusedTextColor = Color(0xFF332D25)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                    )
-
-                    OutlinedTextField(
-                        value = itemAmount,
-                        onValueChange = { itemAmount = it },
-                        label = { Text("Amount", color = Color.Black) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color(0xFF332D25),
-                            focusedBorderColor = Color(0xFF332D25),
-                            unfocusedBorderColor = Color(0xFFDBD6CA),
-                            focusedTextColor = Color(0xFF332D25),
-                            unfocusedTextColor = Color(0xFF332D25)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-
-                    Button(
-                        onClick = { showDatePicker = true },
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    ) {
-                        Text("Select Date")
-                    }
-
-                    selectedDate?.let {
-                        Text("Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(it)}", modifier = Modifier.padding(bottom = 16.dp))
-                    }
-
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(
-                            onClick = {
-                                showDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF332D25)),
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
-                            Text("Cancel", color = Color.White)
-                        }
-
-                        Button(
-                            onClick = {
-                                if (itemName.isBlank() && itemAmount.isBlank()) {
-                                    Toast.makeText(context, "Please Enter valid Data", Toast.LENGTH_SHORT).show()
-                                } else if (itemName.isBlank()) {
-                                    Toast.makeText(context, "Please Enter a valid Name", Toast.LENGTH_SHORT).show()
-                                } else if (itemAmount.isBlank()) {
-                                    Toast.makeText(context, "Please Enter a valid Amount", Toast.LENGTH_SHORT).show()
-                                } else if (selectedDate == null) {
-                                    Toast.makeText(context, "Please Select a Date", Toast.LENGTH_SHORT).show()
-                                }
-
-                                if (itemName.isNotBlank() && itemAmount.isNotBlank() && selectedDate != null) {
-                                    isLoading = true
-                                    coroutineScope.launch {
-                                        val imageUrl = viewModel.searchImage(itemName)
-                                        val amountValue = itemAmount.toDoubleOrNull() ?: 0.0
-                                        val noOfItems = 1
-                                        val newProduct = Product(
-                                            name = itemName,
-                                            amount = amountValue,
-                                            noOfItems,
-                                            imageUrl = imageUrl,
-                                            dateAdded = selectedDate ?: System.currentTimeMillis() // Use selected date
-                                        )
-                                        val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
-                                        viewModel.updateItems(updatedItems)
-                                        saveItems(context, updatedItems.map { Product(it.name, it.amount, it.no_of_items,it.imageUrl, it.dateAdded) })
-                                        newItem = ""
-                                        newAmount = ""
-                                        isLoading = false
-                                        showDialog = false
-                                    }
-                                }
-                            }
-                        ) {
-                            Text("Add")
-                        }
-                    }
+                    val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
+                    viewModel.updateItems(updatedItems)
+                    saveItems(context, updatedItems)
                 }
+                showDialog = false
             }
-        }
-    }
-
-        if (showDatePicker) {
-            DatePickerModal(
-                onDateSelected = { date ->
-                    selectedDate = date
-                    showDatePicker = false
-                },
-                onDismiss = { showDatePicker = false }
-            )
-        }
-    }
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
+        )
     }
 }
 
-//@Composable
-//fun DummyProductList() {
-//    val dummyProducts = listOf(
-//        Product("Apple", 1, "https://example.com/apple.jpg"),
-//        Product("Banana", 0, "https://example.com/banana.jpg"),
-//        Product("Cherry", 2, "https://example.com/cherry.jpg"),
-//        Product("Date", 1, "https://example.com/date.jpg")
-//    )
-//
-//    // Group the dummy products by day (for example purposes)
-//    val groupedItems = mapOf(
-//        "Today" to dummyProducts,
-//        "Tomorrow" to dummyProducts
-//    )
-//
-//    LazyColumn {
-//        groupedItems.forEach { (day, products) ->
-//            item {
-//                Text(
-//                    text = day,
-//                    style = TextStyle(
-//                        fontSize = 14.sp,
-//                        fontWeight = FontWeight.Light,
-//                    ),
-//                    modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
-//                )
-//            }
-//            items(products.size) { index ->
-//                val product = products[index]
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(bottom = 10.dp)
-//                        .clip(RoundedCornerShape(16.dp)),
-//                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-//                ) {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(10.dp)
-//                    ) {
-//                        if (product.imageUrl != null) {
-//                            AsyncImage(
-//                                model = product.imageUrl,
-//                                contentDescription = product.name,
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(65.dp, 65.dp)
-//                                    .clip(RoundedCornerShape(8.dp))
-//                                    .padding(end = 1.dp)
-//                                    .border(
-//                                        BorderStroke(1.dp, color = Color.Transparent),
-//                                        RoundedCornerShape(8.dp)
-//                                    )
-//                            )
-//                        }
-//                        Spacer(modifier = Modifier.width(10.dp))
-//
-//                        Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
-//                            Text(
-//                                text = product.name,
-//                                style = TextStyle(
-//                                    fontSize = 14.sp,
-//                                    fontWeight = FontWeight.SemiBold,
-//                                    color = Color.Black,
-//                                    fontFamily = LexendRegular
-//                                )
-//                            )
-//                            Spacer(modifier = Modifier.height(3.dp))
-//                            Text(
-//                                text = "Fresh and ripe",
-//                                style = TextStyle(fontSize = 10.sp, color = Color.Gray, fontFamily = LexendRegular)
-//                            )
-//                            Spacer(modifier = Modifier.height(3.dp))
-//                            Text(
-//                                text = "$${product.amount} each",
-//                                style = TextStyle(fontSize = 11.sp, color = Color(0xFF48BFE3), fontWeight = FontWeight.Bold, fontFamily = LexendRegular) // Adjusted color to blue
-//                            )
-//                        }
-//
-//                        Row(
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            modifier = Modifier.width(90.dp).fillMaxWidth()
-//                        ) {
-//                            Card(
-//                                shape = RoundedCornerShape(8.dp),
-//                                modifier = Modifier
-//                                    .size(35.dp)
-//                                    .padding(4.dp)
-//                                    .clickable {
-//                                        println("Decrement Clicked")
-//                                        // Handle click event here
-//                                    },
-//                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-//                                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card
-//                            ) {
-//                                Icon(
-//                                    painter = painterResource(id = R.drawable.decrement_icon), // Replace with your decrement icon
-//                                    contentDescription = "Decrease quantity",
-//                                    modifier = Modifier.size(30.dp)
-//                                )
-//                            }
-//
-//                            Spacer(modifier = Modifier.width(2.dp))
-//
-//                            Text(
-//                                text = product.amount.toString(), // Display the quantity
-//                                style = TextStyle(
-//                                    fontSize = 18.sp,
-//                                    fontWeight = FontWeight.Normal
-//                                ),
-//                                modifier = Modifier.align(Alignment.CenterVertically)
-//                            )
-//
-//                            Spacer(modifier = Modifier.width(2.dp))
-//
-//                            Card(
-//                                shape = RoundedCornerShape(8.dp),
-//                                modifier = Modifier
-//                                    .size(35.dp)
-//                                    .padding(4.dp)
-//                                    .clickable {
-//                                        println("Increment Clicked")
-//                                        // Handle click event here
-//                                    },
-//                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-//                                colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey)) // Set background color of the Card
-//                            ) {
-//                                Icon(
-//                                    painter = painterResource(id = R.drawable.increment_icon), // Replace with your increment icon
-//                                    contentDescription = "Increase quantity",
-//                                    modifier = Modifier.size(30.dp)
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun ShoppingListPreview() {
-//    DummyProductList()
-//}
+@Composable
+fun ProductCard(
+    product: Product,
+    isSelected: Boolean,
+    onQuantityChange: (Product, Int) -> Unit,
+    onSelect: (Product) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onSelect(product) },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected)
+                MaterialTheme.colorScheme.primaryContainer
+            else
+                MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            if (product.imageUrl != null) {
+                AsyncImage(
+                    model = product.imageUrl,
+                    contentDescription = product.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(65.dp, 65.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(
+                            BorderStroke(1.dp, color = Color.Transparent),
+                            RoundedCornerShape(8.dp)
+                        )
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = product.name,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black,
+                        fontFamily = LexendRegular
+                    )
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Text(
+                    text = "Fresh and ripe",
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        color = Color.Gray,
+                        fontFamily = LexendRegular
+                    )
+                )
+                Spacer(modifier = Modifier.height(3.dp))
+                Text(
+                    text = "₹${String.format("%.1f", product.amount * product.no_of_items)}",
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        color = Color(0xFF48BFE3),
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = LexendRegular
+                    )
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .width(90.dp)
+                    .padding(start = 8.dp)
+            ) {
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(4.dp)
+                        .clickable {
+                            onQuantityChange(product, product.no_of_items - 1)
+                        },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey))
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.decrement_icon),
+                            contentDescription = "Decrease quantity",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = product.no_of_items.toString(),
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(4.dp)
+                        .clickable {
+                            onQuantityChange(product, product.no_of_items + 1)
+                        },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey))
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.increment_icon),
+                            contentDescription = "Increase quantity",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EmptyListContent() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val infiniteTransition = rememberInfiniteTransition()
+        val scale by infiniteTransition.animateFloat(
+            initialValue = 1f,
+            targetValue = 1.1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = ""
+        )
+
+        Image(
+            painter = painterResource(
+                id = if (isSystemInDarkTheme()) R.drawable.empty_dark
+                else R.drawable.empty_light
+            ),
+            contentDescription = "Empty List",
+            modifier = Modifier
+                .size(200.dp)
+                .scale(scale)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            "Your shopping list is empty.",
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            "Add items using the + button below.",
+            style = TextStyle(
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddItemDialog(
+    onDismiss: () -> Unit,
+    onAddItem: (name: String, amount: Double, date: Long) -> Unit
+) {
+    var itemName by remember { mutableStateOf("") }
+    var itemAmount by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .background(Color.Transparent),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(rgb(234, 235, 230))
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    "Add New Item",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = itemName,
+                    onValueChange = {
+                        itemName = it
+                        showError = false
+                    },
+                    label = { Text("Item Name", color = Color.Black) },
+                    shape = RoundedCornerShape(8.dp),
+                    isError = showError && itemName.isBlank(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color(0xFF006D3B),
+                        focusedBorderColor = Color(0xFF006D3B),
+                        unfocusedBorderColor = Color(0xFFDBD6CA),
+                        focusedTextColor = Color(0xFF332D25),
+                        unfocusedTextColor = Color(0xFF332D25),
+                        errorBorderColor = Color.Red
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                )
+
+                OutlinedTextField(
+                    value = itemAmount,
+                    onValueChange = {
+                        itemAmount = it
+                        showError = false
+                    },
+                    label = { Text("Amount", color = Color.Black) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(8.dp),
+                    isError = showError && (itemAmount.toDoubleOrNull() ?: 0.0) <= 0,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color(0xFF006D3B),
+                        focusedBorderColor = Color(0xFF006D3B),
+                        unfocusedBorderColor = Color(0xFFDBD6CA),
+                        focusedTextColor = Color(0xFF332D25),
+                        unfocusedTextColor = Color(0xFF332D25),
+                        errorBorderColor = Color.Red
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Button(
+                    onClick = { showDatePicker = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF006D3B)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Select Date")
+                }
+
+                selectedDate?.let {
+                    Text(
+                        "Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(it)}",
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = Color(0xFF006D3B)
+                    )
+                }
+
+                if (showError) {
+                    Text(
+                        text = "Please fill all fields correctly",
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF332D25)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Cancel", color = Color.White)
+                    }
+
+                    Button(
+                        onClick = {
+                            val amount = itemAmount.toDoubleOrNull() ?: 0.0
+                            if (itemName.isBlank() || amount <= 0 || selectedDate == null) {
+                                showError = true
+                            } else {
+                                onAddItem(itemName, amount, selectedDate!!)
+                                onDismiss()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF006D3B)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Add")
+                    }
+                }
+            }
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        selectedDate = datePickerState.selectedDateMillis
+                        showDatePicker = false
+                        showError = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState
+            )
+        }
+    }
+}
