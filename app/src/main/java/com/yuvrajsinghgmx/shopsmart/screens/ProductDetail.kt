@@ -1,61 +1,40 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import android.widget.ScrollView
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
-
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetails(index: Int){
-    var itemsData = HomeScreenViewModel().itemsList[index]
-    var listedSites = itemsData.listedSites
-    var features = itemsData.features
-
-
+fun ProductDetails(
+    index: Int,
+    navController: NavController
+) {
+    val itemsData = HomeScreenViewModel().itemsList[index]
+    val listedSites = itemsData.listedSites
+    val features = itemsData.features
+    val scrollState = rememberLazyListState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = {Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "back arrow Icon")},
                 title = {
                     Text(
                         text = "ShopSmart",
@@ -63,127 +42,195 @@ fun ProductDetails(index: Int){
                         style = MaterialTheme.typography.headlineMedium
                     )
                 },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.arrow_back_24px),
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
-                    IconButton(
-                        onClick = {/*ToDo*/}
-                    ){
-                        Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorite Icon")
+                    IconButton(onClick = { /*ToDo*/ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.favorite_border_24px),
+                            contentDescription = "Favorite"
+                        )
                     }
                 }
             )
         }
-    ) {innerPadding->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Column(
+            LazyColumn(
+                state = scrollState,
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(horizontal = 16.dp)
+                    .padding(bottom = 80.dp)
             ) {
-                Card {
-                    Image(
-                        painter = painterResource(itemsData.image),
-                        contentDescription = "Product Image"
-                    )
-                }
-
-                Spacer(Modifier.height(24.dp))
-
-                Text(
-                    text = itemsData.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold,
-//                    fontSize = 30.sp
-                )
-
-                Text(
-                    text = "₹ ${itemsData.currentPrice}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                LazyColumn(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
-                    items(listedSites.size) { index ->
-                        ListedSitesListLayout(listedSites[index].name, listedSites[index].price)
-                    }
-                }
-                Spacer(Modifier.height(24.dp))
-
-                Text(
-                    text = "Product Description",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    text = itemsData.description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                Text(
-                    text = "Key Features",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Spacer(Modifier.height(8.dp))
-
-                LazyColumn {
-                    items(features.size) { index ->
-                        Text(
-                            text = "- ${features[index]}"
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(itemsData.image),
+                            contentDescription = "Product Image",
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Text(
+                        text = itemsData.name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "₹ ${itemsData.currentPrice}",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        Text(
+                            text = "₹ ${itemsData.currentPrice * 1.2}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textDecoration = TextDecoration.LineThrough,
+                            color = Color.Gray
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "20% OFF",
+                            color = Color.Green,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.star_rate_24px),
+                                contentDescription = "Rating",
+                                tint = Color(0xFFFFB800)
+                            )
+                            Text(
+                                text = "4.5 (2.3k reviews)",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+                }
+
+                items(listedSites.size) { index ->
+                    ListedSitesListLayout(
+                        name = listedSites[index].name,
+                        price = listedSites[index].price
+                    )
+                }
+
+                item {
+                    Text(
+                        text = "Product Description",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = itemsData.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        lineHeight = 24.sp
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Text(
+                        text = "Key Features",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                items(features.size) { index ->
+                    Text(
+                        text = "• ${features[index]}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
 
-            FloatingActionButton(
-                onClick = { /*ToDo*/ },
+            Surface(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-                    .zIndex(1f)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 8.dp
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(
-                        Icons.Default.ShoppingCart,
-                        contentDescription = "shopping Cart"
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Text(
-                        text = "Add to Cart",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+                    Button(
+                        onClick = { /* Add to cart logic */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.shopping_cart_24px),
+                                contentDescription = "Add to Cart"
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text("Add to Cart", fontWeight = FontWeight.Bold)
+                        }
+                    }
 
-            FloatingActionButton(
-                onClick = { /* ToDo */ },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-                    .zIndex(1f)
-            ) {
-                Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
-                    Icon(
-                        painter = painterResource(R.drawable.payments_24px),
-                        contentDescription = "shopping Cart"
-                    )
-                    Spacer(Modifier.width(16.dp))
-                    Text(
-                        text = "Buy Now",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Button(
+                        onClick = { /* Buy now logic */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.payments_24px),
+                                contentDescription = "Buy Now"
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text("Buy Now", fontWeight = FontWeight.Bold)
+                        }
+                    }
                 }
             }
         }
@@ -191,19 +238,21 @@ fun ProductDetails(index: Int){
 }
 
 @Composable
-fun ListedSitesListLayout(name:String = "Amazon", price: Float = 145.0f){
-    Row(modifier = Modifier.fillMaxWidth(),
+fun ListedSitesListLayout(name: String = "Amazon", price: Float = 145.0f) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly){
-        Card(){
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Card {
             Icon(
-                Icons.Default.ShoppingCart,
+                painter = painterResource(R.drawable.shopping_cart_24px),
                 contentDescription = "shopping cart Icon",
                 modifier = Modifier.padding(10.dp)
             )
         }
 
-        Column{
+        Column {
             Text(
                 text = name,
                 style = MaterialTheme.typography.bodyLarge,
@@ -218,7 +267,7 @@ fun ListedSitesListLayout(name:String = "Amazon", price: Float = 145.0f){
         Spacer(Modifier.width(18.dp))
 
         Button(
-            onClick = {/*ToDo*/},
+            onClick = { /*ToDo*/ },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.LightGray,
@@ -236,7 +285,11 @@ fun ListedSitesListLayout(name:String = "Amazon", price: Float = 145.0f){
 
 @Preview(showBackground = true)
 @Composable
-fun ProductDetailsPreview(){
-    ProductDetails(0)
-//    ListedSitesListLayout()
+fun ProductDetailsPreview() {
+    // Create a preview-specific NavController
+    val previewNavController = rememberNavController()
+    ProductDetails(
+        index = 0,
+        navController = previewNavController
+    )
 }

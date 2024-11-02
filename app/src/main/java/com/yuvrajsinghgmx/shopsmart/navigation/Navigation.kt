@@ -348,7 +348,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 type = NavType.IntType
             })){
                 val index = it.arguments?.getInt("itemsIndex")?:1
-                ProductDetails(index = index)
+                ProductDetails(index = index, navController = navController)
             }
         }
     }
