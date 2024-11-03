@@ -47,9 +47,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
-        "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup","payment_security","auto_pay_settings",
+        "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup",
         "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup",
-        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics","payment_limits",
+        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics",
         "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account",
         "bank_account_details", "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
@@ -201,18 +201,6 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("add_bank_account") {
                 AddBankAccountScreen(navController = navController)
-            }
-
-            composable("payment_security") {
-                PaymentSecurityScreen(navController = navController)
-            }
-
-            composable("auto_pay_settings") {
-                AutoPayScreen(navController = navController)
-            }
-
-            composable("payment_limits") {
-                PaymentLimitsScreen(navController = navController)
             }
 
             // Bank Account Details Screen
