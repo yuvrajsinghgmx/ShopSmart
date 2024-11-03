@@ -148,7 +148,7 @@ fun PaymentMethodsScreen(navController: NavController) {
                     title = "Payment Settings",
                     items = paymentSettings,
                     onItemClick = { route ->
-                        route?.let { navController.navigate("coming_soon") }
+                        route?.let { navController.navigate(it) }
                     },
                     showAddButton = false
                 )
