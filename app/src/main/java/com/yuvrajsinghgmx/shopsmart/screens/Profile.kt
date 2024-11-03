@@ -10,8 +10,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,7 +38,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.BeyondBoundsLayout
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +58,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
     var showImagePreview by remember { mutableStateOf(false) }
     var isNameError by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     // Fetch data once when composable is first composed
     LaunchedEffect(Unit) {
@@ -79,6 +84,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.padding(0.dp),
                 title = {
                     Text(
                         "Profile",
@@ -98,6 +104,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

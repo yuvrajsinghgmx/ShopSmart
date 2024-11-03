@@ -1,12 +1,23 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -15,6 +26,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -32,20 +44,19 @@ data class ButtonNavigationItem(
 
 @Composable
 fun ShopSmartNavBar(navController: NavHostController) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
     val items = listOf(
         ButtonNavigationItem(
             title = "Home",
-            selectedIcon = Icons.Default.Home,
-            unselectedIcon = Icons.Default.Home
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home
         ),
         ButtonNavigationItem(
             title = "List",
-            selectedIcon = Icons.Default.List,
-            unselectedIcon = Icons.Default.List
+            selectedIcon = Icons.Filled.List,
+            unselectedIcon = Icons.Outlined.Menu
         ),
         ButtonNavigationItem(
             title = "Favorites",
@@ -54,18 +65,19 @@ fun ShopSmartNavBar(navController: NavHostController) {
         ),
         ButtonNavigationItem(
             title = "Profile",
-            selectedIcon = Icons.Default.Person,
-            unselectedIcon = Icons.Default.Person
+            selectedIcon = Icons.Filled.Person,
+            unselectedIcon = Icons.Outlined.Person
         )
     )
-    var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
 
-    NavigationBar(tonalElevation = 4.dp) {
-        items.forEachIndexed { index, item ->
+    NavigationBar(tonalElevation = 0.dp, containerColor = Color.Transparent,windowInsets = WindowInsets.navigationBars
+    ) {
+        items.forEach { item ->
+            val isSelected = currentDestination?.route == item.title
             NavigationBarItem(
-                selected = currentDestination?.route == item.title,
+                selected = isSelected,
                 onClick = {
-                    if(currentDestination?.route != item.title) {
+                    if (!isSelected) {
                         navController.popBackStack(route = Screen.Home.routes, inclusive = false)
                         navController.navigate(item.title) {
                             launchSingleTop = true
@@ -75,15 +87,16 @@ fun ShopSmartNavBar(navController: NavHostController) {
                 },
                 icon = {
                     Icon(
-                        imageVector = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
+                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
                         contentDescription = item.title
                     )
                 },
-                label = { Text(item.title) },
+//                label = { Text(item.title) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     selectedTextColor = Color.Unspecified,
-                    indicatorColor = Color(0xFFff9c86)
+                    indicatorColor = Color.Transparent
                 )
             )
         }

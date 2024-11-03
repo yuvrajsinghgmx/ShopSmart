@@ -55,6 +55,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     )
 
     Scaffold(
+        Modifier.padding(0.dp),
         bottomBar = {
             if (showBottomBar) {
                 ShopSmartNavBar(navController)

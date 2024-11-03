@@ -89,6 +89,7 @@ fun ListScreen(
         topBar = {
             if (selectedItems.isEmpty()) {
                 TopAppBar(
+                    modifier = Modifier.padding(0.dp),
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu Icon")
