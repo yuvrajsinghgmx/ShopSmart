@@ -36,6 +36,7 @@ import androidx.navigation.navArgument
 import com.yuvrajsinghgmx.shopsmart.screens.appinfo.AppVersionScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.EmailSignUpScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.SignUpScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.FavoriteScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ListScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopSmartNavBar
@@ -175,10 +176,6 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("List") {
                 ListScreen(viewModel = viewModel, navController = navController)
-            }
-
-            composable("Favorites") {
-                ComingSoonScreen("Favorites",navController)
             }
 
             composable("Profile") {
@@ -430,6 +427,10 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             })){
                 val index = it.arguments?.getInt("itemsIndex")?:1
                 ProductDetails(index = index, navController = navController)
+            }
+
+            composable("Favorites"){
+                FavoriteScreen()
             }
         }
     }
