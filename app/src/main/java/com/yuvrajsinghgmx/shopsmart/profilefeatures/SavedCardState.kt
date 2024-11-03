@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.profilefeatures
 
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.screens.PaymentMethodInfo
+import com.yuvrajsinghgmx.shopsmart.screens.payments.PaymentMethodInfo
 
 object SavedCardsManager {
     private val _savedCards = mutableListOf(
