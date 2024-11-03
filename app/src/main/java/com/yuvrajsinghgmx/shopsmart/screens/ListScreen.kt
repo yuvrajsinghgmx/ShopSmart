@@ -572,7 +572,7 @@ fun AddItemDialog(
 ) {
     var itemName by remember { mutableStateOf("") }
     var itemAmount by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) } // Default to current date
     var showDatePicker by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
@@ -583,133 +583,133 @@ fun AddItemDialog(
             modifier = Modifier
                 .padding(16.dp)
                 .background(Color.Transparent),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(rgb(234, 235, 230))
-            )
+        colors = CardDefaults.cardColors(
+            containerColor = Color(rgb(234, 235, 230))
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth()
         ) {
-            Column(
+            Text(
+                "Add New Item",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            OutlinedTextField(
+                value = itemName,
+                onValueChange = {
+                    itemName = it
+                    showError = false
+                },
+                label = { Text("Item Name", color = Color.Black) },
+                shape = RoundedCornerShape(8.dp),
+                isError = showError && itemName.isBlank(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = Color(0xFF006D3B),
+                    focusedBorderColor = Color(0xFF006D3B),
+                    unfocusedBorderColor = Color(0xFFDBD6CA),
+                    focusedTextColor = Color(0xFF332D25),
+                    unfocusedTextColor = Color(0xFF332D25),
+                    errorBorderColor = Color.Red
+                ),
                 modifier = Modifier
-                    .padding(24.dp)
                     .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+            )
+
+            OutlinedTextField(
+                value = itemAmount,
+                onValueChange = { newValue ->
+                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                        itemAmount = newValue
+                        showError = false }
+                },
+                label = { Text("Amount (optional)", color = Color.Black) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                shape = RoundedCornerShape(8.dp),
+                isError = showError && (itemAmount.isNotBlank() && itemAmount.toDoubleOrNull() == null),
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = Color(0xFF006D3B),
+                    focusedBorderColor = Color(0xFF006D3B),
+                    unfocusedBorderColor = Color(0xFFDBD6CA),
+                    focusedTextColor = Color(0xFF332D25),
+                    unfocusedTextColor = Color(0xFF332D25),
+                    errorBorderColor = Color.Red
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+
+            Button(
+                onClick = { showDatePicker = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF006D3B)
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) {
+                Text("Select Date")
+            }
+
+            Text(
+                "Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(selectedDate)}",
+                modifier = Modifier.padding(bottom = 16.dp),
+                color = Color(0xFF006D3B)
+            )
+
+
+            if (showError) {
                 Text(
-                    "Add New Item",
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    text = "Please fill all fields correctly",
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
+            }
 
-                OutlinedTextField(
-                    value = itemName,
-                    onValueChange = {
-                        itemName = it
-                        showError = false
-                    },
-                    label = { Text("Item Name", color = Color.Black) },
-                    shape = RoundedCornerShape(8.dp),
-                    isError = showError && itemName.isBlank(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color(0xFF006D3B),
-                        focusedBorderColor = Color(0xFF006D3B),
-                        unfocusedBorderColor = Color(0xFFDBD6CA),
-                        focusedTextColor = Color(0xFF332D25),
-                        unfocusedTextColor = Color(0xFF332D25),
-                        errorBorderColor = Color.Red
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF332D25)
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                )
-
-                OutlinedTextField(
-                    value = itemAmount,
-                    onValueChange = {
-                        itemAmount = it
-                        showError = false
-                    },
-                    label = { Text("Amount", color = Color.Black) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = RoundedCornerShape(8.dp),
-                    isError = showError && (itemAmount.toDoubleOrNull() ?: 0.0) <= 0,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color(0xFF006D3B),
-                        focusedBorderColor = Color(0xFF006D3B),
-                        unfocusedBorderColor = Color(0xFFDBD6CA),
-                        focusedTextColor = Color(0xFF332D25),
-                        unfocusedTextColor = Color(0xFF332D25),
-                        errorBorderColor = Color.Red
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                )
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Cancel", color = Color.White)
+                }
 
                 Button(
-                    onClick = { showDatePicker = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                    onClick = {
+                        val amount = itemAmount.toDoubleOrNull() ?: 0.0
+                        if (itemName.isBlank()|| (amount != null && amount < 0)) {
+                            showError = true
+                        } else {
+                            onAddItem(itemName, amount ?:0.0, selectedDate!!)
+                            onDismiss()
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF006D3B)
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Select Date")
-                }
-
-                selectedDate?.let {
-                    Text(
-                        "Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(it)}",
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        color = Color(0xFF006D3B)
-                    )
-                }
-
-                if (showError) {
-                    Text(
-                        text = "Please fill all fields correctly",
-                        color = Color.Red,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Button(
-                        onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF332D25)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("Cancel", color = Color.White)
-                    }
-
-                    Button(
-                        onClick = {
-                            val amount = itemAmount.toDoubleOrNull() ?: 0.0
-                            if (itemName.isBlank() || amount <= 0 || selectedDate == null) {
-                                showError = true
-                            } else {
-                                onAddItem(itemName, amount, selectedDate!!)
-                                onDismiss()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF006D3B)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("Add")
-                    }
+                    Text("Add")
                 }
             }
         }
     }
+
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -717,7 +717,7 @@ fun AddItemDialog(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        selectedDate = datePickerState.selectedDateMillis
+                        selectedDate = datePickerState.selectedDateMillis ?: System.currentTimeMillis() // Default to current date if null
                         showDatePicker = false
                         showError = false
                     }
@@ -736,4 +736,4 @@ fun AddItemDialog(
             )
         }
     }
-}
+}}
