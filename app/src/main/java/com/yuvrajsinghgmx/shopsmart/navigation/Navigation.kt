@@ -39,6 +39,9 @@ import com.yuvrajsinghgmx.shopsmart.screens.auth.SignUpScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.FavoriteScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ListScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.SecurityScanScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.ChangePasswordScreen
+import com.yuvrajsinghgmx.shopsmart.screens.policies.PrivacyCheckScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopSmartNavBar
 import com.yuvrajsinghgmx.shopsmart.screens.orders.ApplePaySetupScreen
 import com.yuvrajsinghgmx.shopsmart.screens.orders.MissingRefundScreen
@@ -107,9 +110,9 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
         "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup","payment_security","auto_pay_settings",
-        "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup",
-        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics","payment_limits",
-        "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account",
+        "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup","security_scan",
+        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics","payment_limits","change_password",
+        "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account","privacy_check",
         "bank_account_details", "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
 
@@ -268,6 +271,18 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("payment_limits") {
                 PaymentLimitsScreen(navController = navController)
+            }
+
+            composable("security_scan") {
+                SecurityScanScreen(navController = navController)
+            }
+
+            composable("change_password") {
+                ChangePasswordScreen(navController = navController)
+            }
+
+            composable("privacy_check") {
+                PrivacyCheckScreen(navController = navController)
             }
 
             // Bank Account Details Screen
