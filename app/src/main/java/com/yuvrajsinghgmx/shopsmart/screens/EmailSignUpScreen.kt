@@ -50,9 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.ui.theme.dark
+import kotlin.Unit
 
 @Composable
 fun EmailSignUpScreen(
+    onGoogleSignInClick: () -> Unit,
     onSignUpComplete: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onTermsOfUseClicked: () -> Unit
@@ -196,7 +198,7 @@ fun EmailSignUpScreen(
 
                 OutlinedButton(
                     onClick = {
-                        onSignUpComplete()
+                            onGoogleSignInClick()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -281,5 +283,5 @@ fun EmailSignUpScreen(
 @Preview(showBackground = true, showSystemUi = true, device = "spec:width=411dp,height=891dp")
 @Composable
 fun SingUpScreenPreview() {
-    EmailSignUpScreen(onSignUpComplete = {}, onBackButtonClicked = {}, onTermsOfUseClicked = {})
+    EmailSignUpScreen(onSignUpComplete = {}, onBackButtonClicked = {}, onTermsOfUseClicked = {}, onGoogleSignInClick = {})
 }
