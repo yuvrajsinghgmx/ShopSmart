@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,189 +56,210 @@ import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
-    @Composable
-    fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navController: NavController) {
-        var searchQuery by remember { mutableStateOf("") }
-        var showExitDialog by remember { mutableStateOf(false) }
-        val myItems = viewModel.itemsList
-        val scrollState = rememberScrollState()
-        var placeholderText by remember { mutableStateOf("ShopSmart") }
-        val interactionSource = remember { MutableInteractionSource() }
-        val isFocused by interactionSource.collectIsFocusedAsState()
 
-        placeholderText = if (isFocused) "Search for products" else "ShopSmart"
 
-        // Exit Dialog
-        if (showExitDialog) {
-            AlertDialog(
-                onDismissRequest = { showExitDialog = false },
-                title = { Text("Exit App") },
-                text = { Text("Do you want to exit the app?") },
-                confirmButton = {
-                    TextButton(onClick = { (navController.context as? Activity)?.finish() }) {
-                        Text("Yes")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showExitDialog = false }) {
-                        Text("No")
-                    }
+@Composable
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = HomeScreenViewModel(),
+    navController: NavController
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    var showExitDialog by remember { mutableStateOf(false) }
+    val myItems = viewModel.itemsList.collectAsState()
+    val scrollState = rememberScrollState()
+    var placeholderText by remember { mutableStateOf("ShopSmart") }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    placeholderText = if (isFocused) "Search for products" else "ShopSmart"
+
+    // Exit Dialog
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Exit App") },
+            text = { Text("Do you want to exit the app?") },
+            confirmButton = {
+                TextButton(onClick = { (navController.context as? Activity)?.finish() }) {
+                    Text("Yes")
                 }
-            )
-        }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
 
-        Column(Modifier.padding(16.dp, bottom = 0.dp)) {
-            Row(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
-                        .shadow(4.dp),
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    interactionSource = interactionSource,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
-                    singleLine = true,
-                    placeholder = { Text(placeholderText) },
-                    colors = TextFieldDefaults.colors(
+    Column(Modifier.padding(16.dp, bottom = 0.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .shadow(4.dp),
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                interactionSource = interactionSource,
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+                singleLine = true,
+                placeholder = { Text(placeholderText) },
+                colors = TextFieldDefaults.colors(
 //                  Adding colors
-                    )
                 )
-                IconButton(onClick = {}) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_keyboard_voice_24),
-                        contentDescription = "Voice Search Icon",
-                        tint = MaterialTheme.colorScheme.primary
+            )
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_keyboard_voice_24),
+                    contentDescription = "Voice Search Icon",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF6F6F6))
+                .verticalScroll(scrollState)
+        ) {
+            // Search Bar
+
+            // Welcome Section
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
+                Image(
+                    painter = painterResource(R.drawable.shopinterior),
+                    contentDescription = "Shop Interior",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Crop,
+                    colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
+                        setToScale(
+                            0.7f,
+                            0.7f,
+                            0.7f,
+                            1f
+                        )
+                    })
+                )
+                Column(modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)) {
+                    Text(
+                        "Welcome to ShopSmart",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Your one-stop shop for everything",
+                        color = Color.White,
+                        fontSize = 14.sp
                     )
                 }
             }
-            Column(
-                modifier = Modifier.fillMaxSize().background(Color(0xFFF6F6F6))
-                    .verticalScroll(scrollState)
-            ) {
-                // Search Bar
 
-                // Welcome Section
-                Box(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                    Image(
-                        painter = painterResource(R.drawable.shopinterior),
-                        contentDescription = "Shop Interior",
-                        modifier = Modifier.fillMaxWidth(),
-                        contentScale = ContentScale.Crop,
-                        colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                            setToScale(
-                                0.7f,
-                                0.7f,
-                                0.7f,
-                                1f
-                            )
-                        })
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Featured Section
+            Text("Featured", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+            LazyRow(modifier = Modifier.fillMaxWidth()) {
+                items(myItems.value.size) { index ->
+                    CardLayout(myItems.value[index], index, navController)
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Description Section
+            Column(Modifier.padding(8.dp)) {
+                Text(
+                    "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+// Card Layout for LazyRow items
+@Composable
+fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .width(180.dp)
+            .aspectRatio(0.70f)
+            .padding(8.dp)
+            .shadow(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = { navController.navigate("productDetails/$index") }
+    ) {
+        Box(
+            Modifier
+                .background(Color.White)
+                .padding(8.dp)) {
+            Column {
+                Image(
+                    painter = painterResource(id = itemsData.image),
+                    contentDescription = "Product Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.5f)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    itemsData.name,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(itemsData.platform, color = Color.Gray, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "Rating",
+                        tint = Color(0xFFFFD700),
+                        modifier = Modifier.size(16.dp)
                     )
-                    Column(modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)) {
-                        Text(
-                            "Welcome to ShopSmart",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "Your one-stop shop for everything",
-                            color = Color.White,
-                            fontSize = 14.sp
-                        )
-                    }
+                    Spacer(Modifier.width(4.dp))
+                    Text(text = "${itemsData.rating}", fontWeight = FontWeight.Medium)
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Featured Section
-                Text("Featured", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
-                    items(myItems.size) { index ->
-                        CardLayout(myItems[index], index, navController)
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                // Description Section
-                Column(Modifier.padding(8.dp)) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "${itemsData.discount}% OFF",
+                    color = Color.White,
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                        .padding(6.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row {
                     Text(
-                        "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "\u20B9 ${itemsData.currentPrice}",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Red
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        "\u20B9 ${itemsData.originalPrice}",
+                        textDecoration = TextDecoration.LineThrough,
                         color = Color.Gray
                     )
                 }
             }
         }
     }
-
-    // Card Layout for LazyRow items
-    @Composable
-    fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .width(180.dp)
-                .aspectRatio(0.70f)
-                .padding(8.dp)
-                .shadow(8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            onClick = { navController.navigate("productDetails/$index") }
-        ) {
-            Box(Modifier.background(Color.White).padding(8.dp)) {
-                Column {
-                    Image(
-                        painter = painterResource(id = itemsData.image),
-                        contentDescription = "Product Image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1.5f)
-                            .clip(RoundedCornerShape(12.dp))
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(itemsData.name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(itemsData.platform, color = Color.Gray, fontSize = 12.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_star_24),
-                            contentDescription = "Rating",
-                            tint = Color(0xFFFFD700),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(text = "${itemsData.rating}", fontWeight = FontWeight.Medium)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "${itemsData.discount}% OFF",
-                        color = Color.White,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                            .padding(6.dp)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row {
-                        Text(
-                            "\u20B9 ${itemsData.currentPrice}",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Red
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            "\u20B9 ${itemsData.originalPrice}",
-                            textDecoration = TextDecoration.LineThrough,
-                            color = Color.Gray
-                        )
-                    }
-                }
-            }
-        }
-    }
-
+}
 
 
 //@Preview(showBackground = true)
