@@ -269,7 +269,7 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         Spacer(modifier = Modifier.height(4.dp))
                         HorizontalDivider()
                         ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
-                            navController.navigate("MyOrders")
+                            navController.navigate("coming_soon")
                         }
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(4.dp))
