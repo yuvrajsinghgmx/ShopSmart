@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,62 +34,63 @@ fun ProductDetails(
     val features = itemsData.features
     val scrollState = rememberLazyListState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "ShopSmart",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            painter = painterResource(R.drawable.arrow_back_24px),
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /*ToDo*/ }) {
-                        Icon(
-                            painter = painterResource(R.drawable.favorite_border_24px),
-                            contentDescription = "Favorite"
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Box(
+    // Outer Box to hold the scrollable content and fixed bottom buttons
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Scrollable Column content inside LazyColumn
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(bottom = 72.dp) // Space for the bottom buttons
         ) {
-            LazyColumn(
-                state = scrollState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 80.dp)
-            ) {
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(300.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(itemsData.image),
-                            contentDescription = "Product Image",
-                            modifier = Modifier.fillMaxSize()
+            // Top Bar Section
+            item {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "ShopSmart",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineMedium
                         )
-                    }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.arrow_back_24px),
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /*ToDo*/ }) {
+                            Icon(
+                                painter = painterResource(R.drawable.favorite_border_24px),
+                                contentDescription = "Favorite"
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
-                    Spacer(Modifier.height(24.dp))
+            // Product Image Section
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .padding(16.dp)
+                ) {
+                    Image(
+                        painter = painterResource(itemsData.image),
+                        contentDescription = "Product Image",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
 
+            // Product Title and Pricing
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = itemsData.name,
                         style = MaterialTheme.typography.headlineLarge,
@@ -138,18 +140,20 @@ fun ProductDetails(
                             )
                         }
                     }
-
-                    Spacer(Modifier.height(24.dp))
                 }
+            }
 
-                items(listedSites.size) { index ->
-                    ListedSitesListLayout(
-                        name = listedSites[index].name,
-                        price = listedSites[index].price
-                    )
-                }
+            // Listed Sites Section
+            items(listedSites.size) { index ->
+                ListedSitesListLayout(
+                    name = listedSites[index].name,
+                    price = listedSites[index].price
+                )
+            }
 
-                item {
+            // Product Description and Features
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = "Product Description",
                         style = MaterialTheme.typography.titleLarge,
@@ -174,63 +178,56 @@ fun ProductDetails(
 
                     Spacer(Modifier.height(8.dp))
                 }
-
-                items(features.size) { index ->
-                    Text(
-                        text = "• ${features[index]}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
             }
 
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 8.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { /* Add to cart logic */ },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.shopping_cart_24px),
-                                contentDescription = "Add to Cart"
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text("Add to Cart", fontWeight = FontWeight.Bold)
-                        }
-                    }
+            // Features List
+            items(features.size) { index ->
+                Text(
+                    text = "• ${features[index]}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+        }
 
-                    Button(
-                        onClick = { /* Buy now logic */ },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.payments_24px),
-                                contentDescription = "Buy Now"
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text("Buy Now", fontWeight = FontWeight.Bold)
-                        }
+        // Bottom Row for Add to Cart and Buy Now Buttons
+        Column(
+            modifier = Modifier.fillMaxSize(), // Fill the available space
+            verticalArrangement = Arrangement.SpaceBetween // Space the items evenly
+        ) {
+            // Other content can go here if needed
+
+            Spacer(modifier = Modifier.weight(1f)) // This pushes the buttons to the bottom
+
+            Row(
+                modifier = Modifier.fillMaxWidth(), // Ensures the buttons take up the full width
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Button(
+                    onClick = { /* Add to cart logic */ },
+                    modifier = Modifier.weight(1f).padding(start = 8.dp, end = 8.dp) // No bottom padding
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.shopping_cart_24px),
+                            contentDescription = "Add to Cart"
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Add to Cart", fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                Button(
+                    onClick = { /* Buy now logic */ },
+                    modifier = Modifier.weight(1f).padding(start = 8.dp, end = 8.dp) // No bottom padding
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.payments_24px),
+                            contentDescription = "Buy Now"
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Buy Now", fontWeight = FontWeight.Bold)
                     }
                 }
             }
