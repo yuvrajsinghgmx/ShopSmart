@@ -12,8 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.api.API
 import com.yuvrajsinghgmx.shopsmart.navigation.Navigation
 import com.yuvrajsinghgmx.shopsmart.profilefeatures.BaseActivity
-import com.yuvrajsinghgmx.shopsmart.screens.Theme
-import com.yuvrajsinghgmx.shopsmart.screens.ThemeManager
+import com.yuvrajsinghgmx.shopsmart.screens.settings.Theme
+import com.yuvrajsinghgmx.shopsmart.screens.settings.ThemeManager
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import dagger.hilt.android.AndroidEntryPoint

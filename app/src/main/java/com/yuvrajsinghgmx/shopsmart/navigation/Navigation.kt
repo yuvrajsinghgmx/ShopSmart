@@ -1,6 +1,5 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
-
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.compose.foundation.layout.Arrangement
@@ -38,27 +37,85 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
+import com.yuvrajsinghgmx.shopsmart.screens.appinfo.AppVersionScreen
+import com.yuvrajsinghgmx.shopsmart.screens.auth.EmailSignUpScreen
+import com.yuvrajsinghgmx.shopsmart.screens.auth.SignUpScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.FavoriteScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.ListScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.ShopSmartNavBar
+import com.yuvrajsinghgmx.shopsmart.screens.orders.ApplePaySetupScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.MissingRefundScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.MyOrders
+import com.yuvrajsinghgmx.shopsmart.screens.orders.OrderNotificationsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.ProductDetails
+import com.yuvrajsinghgmx.shopsmart.screens.payments.AutoPayScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.PaymentLimitsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.PaymentSecurityScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.RefundHistoryScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.RefundPolicyScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.RefundSettingsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.ReturnGuidelinesScreen
+import com.yuvrajsinghgmx.shopsmart.screens.orders.TrackRefundScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.AddBankAccountScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.AddDigitalWalletScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.AddSavedCardScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.BankAccountDetailsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.BillingHistoryScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.DigitalWalletScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.GooglePaySetupScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.PayPalSetupScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.PaymentMethodsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.SavedCardsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.SecurityScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.TransactionHistoryScreen
+import com.yuvrajsinghgmx.shopsmart.screens.payments.ViewStatementsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.policies.PrivacyPolicyScreen
+import com.yuvrajsinghgmx.shopsmart.screens.policies.TermsAndConditionsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.policies.TermsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.AddressBookScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.BrandFavoritesScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.CurrencyScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.LanguageScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.SearchHistoryScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.ShippingPreferencesScreen
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.SizePreferencesScreen
+import com.yuvrajsinghgmx.shopsmart.screens.profile.ContactScreen
+import com.yuvrajsinghgmx.shopsmart.screens.profile.PersonalInformationScreen
+import com.yuvrajsinghgmx.shopsmart.screens.profile.Profile
+import com.yuvrajsinghgmx.shopsmart.screens.profile.RecommendationsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.profile.SpendingAnalyticsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.settings.NotificationSettings
+import com.yuvrajsinghgmx.shopsmart.screens.settings.PrivacySettingsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.settings.SettingsScreen
+import com.yuvrajsinghgmx.shopsmart.screens.settings.ThemeScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.CallSupportScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.ChatSupportScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.ContactSupportScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.EmailSupportScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.FAQScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.FeedbackScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.HelpS
+import com.yuvrajsinghgmx.shopsmart.screens.support.LiveChatScreen
+import com.yuvrajsinghgmx.shopsmart.screens.support.ReportAnIssueScreen
+import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import com.yuvrajsinghgmx.shopsmart.GoogleAuth.GoogleSignInViewModel
 import com.yuvrajsinghgmx.shopsmart.GoogleAuth.User
-import com.yuvrajsinghgmx.shopsmart.screens.*
-import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
 fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
     val context = LocalContext.current
-
     val googleSignInViewModel: GoogleSignInViewModel = hiltViewModel()
-
     // Obtain SharedPreferences instance
     val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     // Add all settings screens to bottom bar visible screens
     val showBottomBar = currentDestination in listOf(
-        "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup",
+        "Home", "List", "Favorites", "Profile", "MyOrders", "Help", "add_saved_card","google_pay_setup","payment_security","auto_pay_settings",
         "settings", "personal_info", "address_book", "payment_methods", "security","paypal_settings","apple_pay_setup",
-        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics",
+        "language", "theme", "notifications", "privacy", "currency", "coming_soon","spending_analytics","payment_limits",
         "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account",
         "bank_account_details", "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
@@ -73,6 +130,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     val startDestination = if (user.value == null) "signUpScreen" else "Home"
 
     Scaffold(
+        Modifier.padding(0.dp),
         bottomBar = {
             if (showBottomBar) {
                 ShopSmartNavBar(navController)
@@ -98,7 +156,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                     onTermsAndConditionsClick = {
                         navController.navigate("TermsAndConditions")
                     },
-                    onGoogleSignInClick = {
+                    onGoogleSignInClick= {
                         googleSignInViewModel.handleGoogleSignIn(context, navController)
                     }
 
@@ -130,10 +188,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                     onTermsOfUseClicked = {
                         navController.navigate("TermsAndConditions") {
                             popUpTo("signUpScreen") { inclusive = true }
-                        }},
-                        onGoogleSignInClick= {
-                            googleSignInViewModel.handleGoogleSignIn(context, navController)
                         }
+                    },
+                    onGoogleSignInClick= {
+                        googleSignInViewModel.handleGoogleSignIn(context, navController)
+                    }
 
                 )
             }
@@ -144,10 +203,6 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("List") {
                 ListScreen(viewModel = viewModel, navController = navController)
-            }
-
-            composable("Favorites") {
-                ComingSoonScreen("Favorites",navController)
             }
 
             composable("Profile") {
@@ -225,6 +280,18 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
 
             composable("add_bank_account") {
                 AddBankAccountScreen(navController = navController)
+            }
+
+            composable("payment_security") {
+                PaymentSecurityScreen(navController = navController)
+            }
+
+            composable("auto_pay_settings") {
+                AutoPayScreen(navController = navController)
+            }
+
+            composable("payment_limits") {
+                PaymentLimitsScreen(navController = navController)
             }
 
             // Bank Account Details Screen
@@ -400,13 +467,12 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 val index = it.arguments?.getInt("itemsIndex")?:1
                 ProductDetails(index = index, navController = navController)
             }
+
+            composable("Favorites"){
+                FavoriteScreen()
+            }
         }
     }
-}
-
-@Composable
-fun FeedbackScreen(onBackPressed: () -> Boolean, onSubmitFeedback: (String, String) -> Unit) {
-    TODO("Not yet implemented")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -455,6 +521,7 @@ fun ComingSoonScreen(title: String, navController: NavController) {
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "This feature is currently under development",
                 style = MaterialTheme.typography.bodyLarge,
