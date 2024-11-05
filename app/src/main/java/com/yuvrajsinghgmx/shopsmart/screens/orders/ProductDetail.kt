@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
@@ -27,7 +28,7 @@ fun ProductDetails(
     index: Int,
     navController: NavController
 ) {
-    val itemsData = HomeScreenViewModel().itemsList[index]
+    val itemsData = HomeScreenViewModel().itemsList.collectAsState().value[index]
     val listedSites = itemsData.listedSites
     val features = itemsData.features
     val scrollState = rememberLazyListState()

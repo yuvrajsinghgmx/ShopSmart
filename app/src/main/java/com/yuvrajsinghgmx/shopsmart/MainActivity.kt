@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
@@ -17,6 +18,8 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
+
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
@@ -32,7 +35,9 @@ class MainActivity : BaseActivity() {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
 
-        setContent {
+
+
+            setContent {
             val currentTheme = ThemeManager.currentTheme.collectAsState()
 
             ShopSmartTheme(
@@ -45,6 +50,9 @@ class MainActivity : BaseActivity() {
                 val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
                 Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
+
+
+
             }
         }
     }

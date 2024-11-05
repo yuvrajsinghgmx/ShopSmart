@@ -33,6 +33,10 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
+            <meta-data
+                android:name="com.google.android.gms.default_web_client_id"
+                android:value="@string/web_client_id" />
+
         </provider>
         <activity
             android:name=".MainActivity"

@@ -21,6 +21,12 @@ object SharedPrefsHelper {
         getPrefs(context).edit().putString(KEY_USER_NAME, name).apply()
     }
 
+    fun clearUserData(context: Context) {
+        val editor = getPrefs(context).edit()
+        editor.clear()
+        editor.apply()
+    }
+
     fun saveUserEmail(context: Context, email: String) {
         getPrefs(context).edit().putString(KEY_USER_EMAIL, email).apply()
     }
