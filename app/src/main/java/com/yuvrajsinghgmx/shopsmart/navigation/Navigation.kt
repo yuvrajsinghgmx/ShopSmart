@@ -39,6 +39,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.auth.SignUpScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ListScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopSmartNavBar
+import com.yuvrajsinghgmx.shopsmart.VoiceTextParser
 import com.yuvrajsinghgmx.shopsmart.screens.orders.ApplePaySetupScreen
 import com.yuvrajsinghgmx.shopsmart.screens.orders.MissingRefundScreen
 import com.yuvrajsinghgmx.shopsmart.screens.orders.MyOrders
@@ -93,7 +94,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.support.ReportAnIssueScreen
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @Composable
-fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
+fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController, voiceToTextParser: VoiceTextParser) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
     val context = LocalContext.current
@@ -170,7 +171,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("Home") {
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController,voiceToTextParser = voiceToTextParser)
             }
 
             composable("List") {
