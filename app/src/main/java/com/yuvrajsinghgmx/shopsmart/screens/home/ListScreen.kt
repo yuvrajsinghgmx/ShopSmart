@@ -55,6 +55,12 @@ fun ListScreen(
     val selectedItems = remember { mutableStateListOf<Product>() }
     val coroutineScope = rememberCoroutineScope()
 
+    // for search bar entry animation
+    val animatedSize by animateFloatAsState(
+        targetValue = if (isSearching) 1f else 0f,
+        animationSpec = tween(durationMillis = 300), label = "" // Adjust duration as needed
+    )
+
     // Calculate total for selected items
     val totalAmount = selectedItems.sumOf { it.amount * it.no_of_items }
 
@@ -89,10 +95,9 @@ fun ListScreen(
         topBar = {
             if (selectedItems.isEmpty()) {
                 TopAppBar(
-                    modifier = Modifier.padding(0.dp),
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu Icon")
+                            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "back Icon", tint = Color(0xFF98F9B3))
                         }
                     },
                     title = {
@@ -111,24 +116,39 @@ fun ListScreen(
                                     }) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back Arrow"
+                                            contentDescription = "Back Arrow",
+                                            tint = Color(0xFF98F9B3)
                                         )
                                     }
                                 },
                                 shape = RoundedCornerShape(25.dp),
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().scale(animatedSize),
+                                placeholder = {Text("Search")}
                             )
                         } else {
                             Text(
-                                text = "ShopSmart",
-                                fontWeight = FontWeight.Bold,
+                                text = "Shopping List",
+                                fontWeight = FontWeight.SemiBold,
                                 style = MaterialTheme.typography.headlineMedium
                             )
                         }
                     },
                     actions = {
-                        IconButton(onClick = { isSearching = true }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search Icon")
+                        if(!isSearching) {
+                            IconButton(
+                                onClick = { isSearching = true },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = Color(
+                                        0xAB98F9B3
+                                    )
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = "Search Icon",
+                                    tint = Color(0xFF006D3B)
+                                )
+                            }
                         }
                         Checkbox(
                             checked = selectAll,
@@ -141,7 +161,8 @@ fun ListScreen(
                                     selectedItems.clear()
                                 }
                             },
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            colors = CheckboxDefaults.colors(uncheckedColor = Color(0xFF98F9B3))
                         )
                     }
                 )
