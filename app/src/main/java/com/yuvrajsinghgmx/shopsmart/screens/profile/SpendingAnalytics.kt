@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -55,37 +56,37 @@ fun SpendingAnalyticsScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Spending Analytics",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = "Back",
-                            tint = Color(0xFF332D25)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ){
+
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    "Spending Analytics",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF332D25)
                 )
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_back_24px),
+                        contentDescription = "Back",
+                        tint = Color(0xFF332D25)
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = Color(0xFFF6F5F3)
             )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
+        )
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
+                .fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

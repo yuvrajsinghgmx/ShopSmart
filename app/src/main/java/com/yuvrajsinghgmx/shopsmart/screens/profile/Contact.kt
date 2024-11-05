@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.profile
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,8 +18,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.R
 
 data class ContactMethodInfo(
@@ -58,37 +61,35 @@ fun ContactScreen(navController: NavController) {
     }
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Contact Us",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ){
+          CenterAlignedTopAppBar(
+              title = {
+                  Text(
+                      "Contact Us",
+                      fontWeight = FontWeight.Bold,
+                      style = MaterialTheme.typography.headlineMedium,
+                      color = Color(0xFF332D25)
+                  )
+              },
+              navigationIcon = {
+                  IconButton(onClick = { navController.navigateUp() }) {
+                      Icon(
+                          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                          contentDescription = "Back"
+                      )
+                  }
+              },
+              colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                  containerColor = lightBackgroundColor
+              )
+          )
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
             item {
                 // Header Card
