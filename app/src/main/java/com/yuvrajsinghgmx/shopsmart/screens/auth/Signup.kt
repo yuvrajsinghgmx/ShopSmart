@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,9 +57,11 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.subHeadingColor
 
 @Composable
 fun SignUpScreen(
+    onGoogleSignInClick: () -> Unit,
     onSignUpComplete: () -> Unit,
     onContinueWithEmail: () -> Unit,
-    onTermsAndConditionsClick: () -> Unit
+    onTermsAndConditionsClick: () -> Unit,
+
 ) {
     val context = LocalContext.current
     var showExitDialog by remember { mutableStateOf(false) }
@@ -67,6 +70,8 @@ fun SignUpScreen(
     BackHandler(enabled = true) {
         showExitDialog = true
     }
+
+
 
     val annotatedString = buildAnnotatedString {
         append("By continuing, you agree to our ")
@@ -97,6 +102,7 @@ fun SignUpScreen(
             }
         )
     }
+
 
     Column(
         modifier = Modifier
@@ -165,7 +171,7 @@ fun SignUpScreen(
 
             OutlinedButton(
                 onClick = {
-                    onSignUpComplete()
+                        onGoogleSignInClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -303,14 +309,15 @@ fun SignUpScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground =true, showSystemUi = true)
 @Composable
 fun SignUpScreenPreview() {
     ShopSmartTheme {
         SignUpScreen(
             onSignUpComplete = { },
             onContinueWithEmail = { },
-            onTermsAndConditionsClick = { }
+            onTermsAndConditionsClick = { },
+            onGoogleSignInClick={ }
         )
     }
 }

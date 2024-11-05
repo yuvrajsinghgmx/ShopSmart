@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +47,8 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val lightBackgroundColor = Color(0xFFF6F5F3)
     var isEditing by remember { mutableStateOf(false) }
+
+
 
     // Initialize state variables
     var userName by remember { mutableStateOf("") }
@@ -77,31 +80,35 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(lightBackgroundColor)
-    ) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                modifier = Modifier.padding(0.dp),
+                title = {
+                    Text(
+                        "Profile",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25)
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = lightBackgroundColor
+                )
+            )
+        },
+        containerColor = lightBackgroundColor
+    ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState),
+                .padding(innerPadding)
+                .verticalScroll(scrollState)
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Title
-            Text(
-                "Profile",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color(0xFF332D25),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 16.dp, bottom = 24.dp)
-            )
-
-            // Profile Image Section
             Box(
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier.size(150.dp)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -110,9 +117,9 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         .build(),
                     contentDescription = "Profile Image",
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(150.dp)
                         .clip(CircleShape)
-                        .border(2.dp, Color(0xFFE0E0E0), CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape)
                         .clickable {
                             if (isEditing) {
                                 launcher.launch("image/*")
@@ -141,148 +148,139 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Name and Email Section
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (isEditing) {
-                    // Existing TextField implementations
-                    TextField(
-                        value = userName,
-                        onValueChange = {
-                            userName = it
-                            isNameError = it.isEmpty()
-                        },
-                        label = { Text("Name") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = isNameError,
-                        supportingText = {
-                            if (isNameError) {
-                                Text("Name cannot be empty", color = MaterialTheme.colorScheme.error)
-                            }
-                        },
-                        colors = TextFieldDefaults.colors(Color(0xFF233b41))
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = userEmail,
-                        onValueChange = {
-                            userEmail = it
-                            isEmailError = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
-                        },
-                        label = { Text("Email") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = isEmailError,
-                        supportingText = {
-                            if (isEmailError) {
-                                Text("Invalid email address format", color = MaterialTheme.colorScheme.error)
-                            }
-                        }
-                    )
-                } else {
-                    Text(
-                        userName,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF233b41)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        userEmail,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color(0xFF637478)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Settings Section
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                // Edit Profile Button
-                Button(
-                    onClick = {
-                        if (isEditing) {
-                            isNameError = userName.isEmpty()
-                            isEmailError = !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()
-
-                            if (!isNameError && !isEmailError) {
-                                SharedPrefsHelper.saveUserName(context, userName)
-                                SharedPrefsHelper.saveUserEmail(context, userEmail)
-                                Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
-                                isEditing = false
-                            } else {
-                                Toast.makeText(context, "Please correct the errors", Toast.LENGTH_SHORT).show()
-                            }
-                        } else {
-                            isEditing = true
+            if (isEditing) {
+                TextField(
+                    value = userName,
+                    onValueChange = {
+                        userName = it
+                        // Re-validate the name field as the user types
+                        isNameError = it.isEmpty()
+                    },
+                    label = { Text("Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = isNameError,  // If there's an error, highlight the text field
+                    supportingText = {
+                        if (isNameError) {
+                            Text("Name cannot be empty", color = MaterialTheme.colorScheme.error)
                         }
                     },
+                    colors = TextFieldDefaults.colors(
+                        Color(0xFF233b41),
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TextField(
+                    value = userEmail,
+                    onValueChange = {
+                        userEmail = it
+                        // Re-validate the email field as the user types
+                        isEmailError = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
+                    },
+                    label = { Text("Email") },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(0.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile",
-                            tint = Color(0xFF637478)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            if (isEditing) "Save Profile" else "Edit Profile",
-                            color = Color(0xFF637478),
-                            fontWeight = FontWeight.Bold
-                        )
+                    isError = isEmailError,  // If there's an error, highlight the text field
+                    supportingText = {
+                        if (isEmailError) {
+                            Text("Invalid email address format", color = MaterialTheme.colorScheme.error)
+                        }
                     }
-                }
+                )
+            } else {
+                Text(
+                    userName,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF233b41)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    userEmail,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    if (isEditing) {
+                        isNameError = userName.isEmpty()
+                        isEmailError = !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Settings Card
-                Card(
+                        if (!isNameError && !isEmailError) {
+                            SharedPrefsHelper.saveUserName(context, userName)
+                            SharedPrefsHelper.saveUserEmail(context, userEmail)
+                            Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
+                            isEditing = false
+                            // No need to refreshProfileData here
+                        } else {
+                            Toast.makeText(context, "Please correct the errors", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        isEditing = true
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.13f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFFFFF)),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(0.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    Column {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color(0xFF637478)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(if (isEditing) "Save Profile" else "Edit Profile", color = Color(0xFF637478), fontWeight = FontWeight.Bold)
+                }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start
+//                ) {
+//                    Text(
+//                        "Settings",
+//                        style = MaterialTheme.typography.headlineMedium,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color(0xFF233b41)
+//                    )
+//                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(1.dp)
+                        .align(Alignment.Start),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                ) {
+                    Column(modifier = Modifier.padding(1.dp)) {
                         ProfileItem(title = "Notifications Settings", Icon = R.drawable.bell) {
-                            navController.navigate("notifications")
+                            navController.navigate("notifications")  // Updated navigation
                         }
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color(0xFFE0E0E0)
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        HorizontalDivider()
                         ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
-                            navController.navigate("MyOrders")
+                            navController.navigate("coming_soon")
                         }
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color(0xFFE0E0E0)
-                        )
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(4.dp))
                         ProfileItem(title = "Settings", Icon = R.drawable.setting) {
-                            navController.navigate("settings")
+                            navController.navigate("settings")  // New navigation to Settings screen
                         }
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color(0xFFE0E0E0)
-                        )
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(4.dp))
                         ProfileItem(title = "Help & Support", Icon = R.drawable.help) {
                             navController.navigate("Help")
                         }
@@ -290,24 +288,21 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Logout Button
                 Button(
-                    onClick = { /* Existing logout logic */ },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.buttonElevation(0.dp)
-                ) {
-                    Text(
-                        "Log Out",
-                        color = Color(0xFF637478),
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
+                    onClick = {
+                        // Clear the user data and navigate to the login screen
+                        SharedPrefsHelper.clearUserData(context)
+                        navController.navigate("signUpScreen") {
+                            popUpTo("Profile") { inclusive = true } // Clear back stack
+                        }
 
-                Spacer(modifier = Modifier.height(80.dp))
+                    },
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFebeded)),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text("Log Out", color = Color(0xFF637478), fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
