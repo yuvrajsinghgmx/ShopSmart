@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +47,8 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val lightBackgroundColor = Color(0xFFF6F5F3)
     var isEditing by remember { mutableStateOf(false) }
+
+
 
     // Initialize state variables
     var userName by remember { mutableStateOf("") }
@@ -288,6 +291,11 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                 Button(
                     onClick = {
                         // Clear the user data and navigate to the login screen
+                        SharedPrefsHelper.clearUserData(context)
+                        navController.navigate("signUpScreen") {
+                            popUpTo("Profile") { inclusive = true } // Clear back stack
+                        }
+
                     },
                     modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFebeded)),

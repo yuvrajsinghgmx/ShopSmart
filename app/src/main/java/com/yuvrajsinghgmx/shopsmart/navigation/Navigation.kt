@@ -20,12 +20,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -33,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.google.firebase.auth.FirebaseAuth
 import com.yuvrajsinghgmx.shopsmart.screens.appinfo.AppVersionScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.EmailSignUpScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.SignUpScreen
@@ -95,12 +99,15 @@ import com.yuvrajsinghgmx.shopsmart.screens.support.HelpS
 import com.yuvrajsinghgmx.shopsmart.screens.support.LiveChatScreen
 import com.yuvrajsinghgmx.shopsmart.screens.support.ReportAnIssueScreen
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
+import com.yuvrajsinghgmx.shopsmart.GoogleAuth.GoogleSignInViewModel
+import com.yuvrajsinghgmx.shopsmart.GoogleAuth.User
 
 @Composable
 fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
     val context = LocalContext.current
+    val googleSignInViewModel: GoogleSignInViewModel = hiltViewModel()
     // Obtain SharedPreferences instance
     val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -112,6 +119,15 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
         "shipping_preferences", "order_notifications", "app_version","transaction_history","view_statements", "add_bank_account",
         "bank_account_details", "terms", "privacy_policy", "contact", "faq" , "refund_history", "refund_policy", "contact_support","add_digital_wallet"
     )
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val currentUser = firebaseAuth.currentUser
+    val user = remember { mutableStateOf<User?>(null) }
+
+    if (currentUser != null) {
+        user.value = User(currentUser.uid, currentUser.displayName ?: "", currentUser.photoUrl.toString(), currentUser.email ?: "")
+    }
+
+    val startDestination = if (user.value == null) "signUpScreen" else "Home"
 
     Scaffold(
         Modifier.padding(0.dp),
@@ -123,7 +139,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "signUpScreen",
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             // Existing routes
@@ -139,7 +155,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                     },
                     onTermsAndConditionsClick = {
                         navController.navigate("TermsAndConditions")
+                    },
+                    onGoogleSignInClick= {
+                        googleSignInViewModel.handleGoogleSignIn(context, navController)
                     }
+
                 )
             }
 
@@ -169,7 +189,11 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                         navController.navigate("TermsAndConditions") {
                             popUpTo("signUpScreen") { inclusive = true }
                         }
+                    },
+                    onGoogleSignInClick= {
+                        googleSignInViewModel.handleGoogleSignIn(context, navController)
                     }
+
                 )
             }
 
