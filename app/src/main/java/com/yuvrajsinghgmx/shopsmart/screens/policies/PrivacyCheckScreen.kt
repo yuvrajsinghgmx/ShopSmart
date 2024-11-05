@@ -73,6 +73,7 @@ fun PrivacyCheckScreen(navController: NavController) {
         )
     }
 
+    //delay
     fun startPrivacyCheck() {
         coroutineScope.launch {
             scanStarted = true

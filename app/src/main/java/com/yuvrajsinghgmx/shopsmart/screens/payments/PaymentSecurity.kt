@@ -301,6 +301,7 @@ private fun SecurityQuickActions(navController: NavController) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            //updated the routes
             QuickActionButton(
                 icon = R.drawable.admin_panel_settings_24px,
                 text = "Security\nScan",

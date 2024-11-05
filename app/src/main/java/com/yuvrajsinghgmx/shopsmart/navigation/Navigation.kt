@@ -297,6 +297,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
                 PaymentLimitsScreen(navController = navController)
             }
 
+            //added the security screen
             composable("security_scan") {
                 SecurityScanScreen(navController = navController)
             }

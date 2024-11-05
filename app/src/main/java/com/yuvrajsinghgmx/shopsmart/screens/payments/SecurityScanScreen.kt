@@ -75,7 +75,7 @@ fun SecurityScanScreen(navController: NavController) {
             )
         )
     }
-
+    // Delay
     fun startSecurityScan() {
         coroutineScope.launch {
             scanStarted = true
