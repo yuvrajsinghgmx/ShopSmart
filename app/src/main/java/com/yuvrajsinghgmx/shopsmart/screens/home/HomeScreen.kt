@@ -156,7 +156,7 @@ fun HomeScreen(
                 }
             }
             Column(
-                modifier = Modifier.fillMaxSize().background(Color(0xFFF6F6F6))
+                modifier = Modifier.fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
                 // Search Bar
