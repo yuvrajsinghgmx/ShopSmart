@@ -80,29 +80,28 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.padding(0.dp),
-                title = {
-                    Text(
-                        "Profile",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ){
+        CenterAlignedTopAppBar(
+            modifier = Modifier.padding(0.dp),
+            title = {
+                Text(
+                    "Profile",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF332D25)
                 )
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = lightBackgroundColor
             )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
+        )
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
