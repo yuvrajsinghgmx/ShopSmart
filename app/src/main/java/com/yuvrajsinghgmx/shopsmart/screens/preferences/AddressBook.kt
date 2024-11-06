@@ -1,13 +1,14 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
 import android.content.SharedPreferences
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,92 +29,128 @@ data class AddressEntry(val name: String, val address: String)
 @Composable
 fun AddressBookScreen(navController: NavController, sharedPreferences: SharedPreferences) {
     val viewModel = remember { AddressViewModel(sharedPreferences) } // Pass SharedPreferences to ViewModel
+    val backgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Address Book",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = backgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            var name by remember { mutableStateOf(TextFieldValue("")) }
-            var address by remember { mutableStateOf(TextFieldValue("")) }
 
-            // Input fields for name and address
-            TextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { /* Handle next action */ })
-            )
-
-            TextField(
-                value = address,
-                onValueChange = { address = it },
-                label = { Text("Address") },
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { /* Handle done action */ })
-            )
-
-            Button(
-                onClick = {
-                    if (name.text.isNotBlank() && address.text.isNotBlank()) {
-                        viewModel.addAddress(name.text, address.text)
-                        name = TextFieldValue("") // Clear the input fields
-                        address = TextFieldValue("")
-                    }
-                },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("Add Address")
+                    Text(
+                        text = "Address Book",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // Main Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                var name by remember { mutableStateOf(TextFieldValue("")) }
+                var address by remember { mutableStateOf(TextFieldValue("")) }
 
-            // Display list of addresses
-            if (viewModel.addresses.isNotEmpty()) {
-                LazyColumn {
-                    items(viewModel.addresses) { entry ->
-                        AddressItem(entry) {
-                            viewModel.removeAddress(entry)
+                // Input Fields
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(onNext = { /* Handle next action */ })
+                )
+
+                TextField(
+                    value = address,
+                    onValueChange = { address = it },
+                    label = { Text("Address") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { /* Handle done action */ })
+                )
+
+                Button(
+                    onClick = {
+                        if (name.text.isNotBlank() && address.text.isNotBlank()) {
+                            viewModel.addAddress(name.text, address.text)
+                            name = TextFieldValue("")
+                            address = TextFieldValue("")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Add Address")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Address List
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    if (viewModel.addresses.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 80.dp) // Space for bottom navigation
+                        ) {
+                            items(viewModel.addresses) { entry ->
+                                AddressItem(entry) {
+                                    viewModel.removeAddress(entry)
+                                }
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No addresses added yet",
+                                color = Color(0xFF637478)
+                            )
                         }
                     }
                 }
-            } else {
-                Text("No addresses added yet", color = Color(0xFF637478))
             }
         }
     }

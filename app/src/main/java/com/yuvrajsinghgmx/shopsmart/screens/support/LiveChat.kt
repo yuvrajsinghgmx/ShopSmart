@@ -63,11 +63,39 @@ fun LiveChatScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = backgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             "Live Chat",
                             fontWeight = FontWeight.Bold,
@@ -80,80 +108,59 @@ fun LiveChatScreen(navController: NavController) {
                             color = Color(0xFF637478)
                         )
                     }
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                }
+            }
+
+            // Chat Messages
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(messages) { message ->
+                        ChatBubble(message = message)
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = backgroundColor
-                )
-            )
-        },
-        bottomBar = {
+
+                    if (isAgentTyping) {
+                        item {
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                TypingIndicator()
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Chat Input
             ChatInput(
                 value = inputText,
                 onValueChange = { inputText = it },
                 onSend = {
                     if (inputText.isNotBlank()) {
-                        // Add user message
                         messages = messages + ChatMessage(inputText, true)
                         inputText = ""
                         isAgentTyping = true
 
                         coroutineScope.launch {
-                            // Scroll to bottom
                             listState.animateScrollToItem(messages.size - 1)
-
-                            // Simulate agent typing
                             delay(2000)
-
-                            // Add agent response
                             val response = getAutomatedResponse(messages.last().content)
                             messages = messages + ChatMessage(response, false)
                             isAgentTyping = false
-
-                            // Scroll to bottom again
                             delay(100)
                             listState.animateScrollToItem(messages.size - 1)
                         }
                     }
                 }
             )
-        },
-        containerColor = backgroundColor
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(messages) { message ->
-                    ChatBubble(message = message)
-                }
-
-                item {
-                    AnimatedVisibility(
-                        visible = isAgentTyping,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        TypingIndicator()
-                    }
-                }
-            }
         }
     }
 }

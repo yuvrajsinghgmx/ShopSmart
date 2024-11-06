@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.settings
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -84,131 +85,144 @@ fun PrivacySettingsScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Privacy Settings",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            item {
-                // Data Collection Section
-                SectionTitle("Data Collection")
 
-                PrivacyListItem(
-                    title = "Data Collection",
-                    subtitle = "Allow app to collect usage data for better service",
-                    iconResId = R.drawable.analytics_24px,
-                    checked = dataCollectionEnabled,
-                    onCheckedChange = {
-                        dataCollectionEnabled = it
-                        privacyPrefs.setDataCollection(it)
-                    }
-                )
+                    Text(
+                        text = "Privacy Settings",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+            }
 
-                PrivacyListItem(
-                    title = "Personalized Ads",
-                    subtitle = "Allow personalized ads based on your preferences",
-                    iconResId = R.drawable.ad_24px,
-                    checked = personalizedAdsEnabled,
-                    onCheckedChange = {
-                        personalizedAdsEnabled = it
-                        privacyPrefs.setPersonalizedAds(it)
-                    }
-                )
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    // Data Collection Section
+                    SectionTitle("Data Collection")
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    PrivacyListItem(
+                        title = "Data Collection",
+                        subtitle = "Allow app to collect usage data for better service",
+                        iconResId = R.drawable.analytics_24px,
+                        checked = dataCollectionEnabled,
+                        onCheckedChange = {
+                            dataCollectionEnabled = it
+                            privacyPrefs.setDataCollection(it)
+                        }
+                    )
 
-                // Location & Tracking Section
-                SectionTitle("Location & Tracking")
+                    PrivacyListItem(
+                        title = "Personalized Ads",
+                        subtitle = "Allow personalized ads based on your preferences",
+                        iconResId = R.drawable.ad_24px,
+                        checked = personalizedAdsEnabled,
+                        onCheckedChange = {
+                            personalizedAdsEnabled = it
+                            privacyPrefs.setPersonalizedAds(it)
+                        }
+                    )
 
-                PrivacyListItem(
-                    title = "Location Tracking",
-                    subtitle = "Allow app to access your location",
-                    iconResId = R.drawable.distance_24px,
-                    checked = locationTrackingEnabled,
-                    onCheckedChange = {
-                        locationTrackingEnabled = it
-                        privacyPrefs.setLocationTracking(it)
-                    }
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                Divider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    // Location & Tracking Section
+                    SectionTitle("Location & Tracking")
 
-                // App Analytics Section
-                SectionTitle("App Analytics")
+                    PrivacyListItem(
+                        title = "Location Tracking",
+                        subtitle = "Allow app to access your location",
+                        iconResId = R.drawable.distance_24px,
+                        checked = locationTrackingEnabled,
+                        onCheckedChange = {
+                            locationTrackingEnabled = it
+                            privacyPrefs.setLocationTracking(it)
+                        }
+                    )
 
-                PrivacyListItem(
-                    title = "Usage Statistics",
-                    subtitle = "Share app usage statistics for improvements",
-                    iconResId = R.drawable.query_stats_24px,
-                    checked = usageStatsEnabled,
-                    onCheckedChange = {
-                        usageStatsEnabled = it
-                        privacyPrefs.setUsageStats(it)
-                    }
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                PrivacyListItem(
-                    title = "Crash Reports",
-                    subtitle = "Send crash reports to improve app stability",
-                    iconResId = R.drawable.bug_report_24px,
-                    checked = crashReportsEnabled,
-                    onCheckedChange = {
-                        crashReportsEnabled = it
-                        privacyPrefs.setCrashReports(it)
-                    }
-                )
+                    // App Analytics Section
+                    SectionTitle("App Analytics")
 
-                // Privacy Links Section
-                SectionTitle("Privacy Information")
+                    PrivacyListItem(
+                        title = "Usage Statistics",
+                        subtitle = "Share app usage statistics for improvements",
+                        iconResId = R.drawable.query_stats_24px,
+                        checked = usageStatsEnabled,
+                        onCheckedChange = {
+                            usageStatsEnabled = it
+                            privacyPrefs.setUsageStats(it)
+                        }
+                    )
 
-                PrivacyListLinkItem(
-                    title = "Privacy Policy",
-                    subtitle = "Read our privacy policy",
-                    iconResId = R.drawable.verified_user_24px,
-                    onClick = { navController.navigate("privacy_policy") }
-                )
+                    PrivacyListItem(
+                        title = "Crash Reports",
+                        subtitle = "Send crash reports to improve app stability",
+                        iconResId = R.drawable.bug_report_24px,
+                        checked = crashReportsEnabled,
+                        onCheckedChange = {
+                            crashReportsEnabled = it
+                            privacyPrefs.setCrashReports(it)
+                        }
+                    )
 
-                PrivacyListLinkItem(
-                    title = "Terms of Service",
-                    subtitle = "View terms of service",
-                    iconResId = R.drawable.gavel_24px,
-                    onClick = { navController.navigate("terms") }
-                )
+                    // Privacy Links Section
+                    SectionTitle("Privacy Information")
 
-                // Bottom Spacing
-                Spacer(modifier = Modifier.height(16.dp))
+                    PrivacyListLinkItem(
+                        title = "Privacy Policy",
+                        subtitle = "Read our privacy policy",
+                        iconResId = R.drawable.verified_user_24px,
+                        onClick = { navController.navigate("privacy_policy") }
+                    )
+
+                    PrivacyListLinkItem(
+                        title = "Terms of Service",
+                        subtitle = "View terms of service",
+                        iconResId = R.drawable.gavel_24px,
+                        onClick = { navController.navigate("terms") }
+                    )
+
+                    // Bottom Spacing
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
     }
