@@ -1,10 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import android.app.Activity
-import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -40,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +66,7 @@ import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = HomeScreenViewModel(),
-    navController: NavController
+    navController: NavController, voiceToTextParser: VoiceTextParser
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showExitDialog by remember { mutableStateOf(false) }
