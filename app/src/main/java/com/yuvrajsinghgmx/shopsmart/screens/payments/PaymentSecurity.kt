@@ -301,20 +301,21 @@ private fun SecurityQuickActions(navController: NavController) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            //updated the routes
             QuickActionButton(
                 icon = R.drawable.admin_panel_settings_24px,
                 text = "Security\nScan",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("security_scan") }
             )
             QuickActionButton(
                 icon = R.drawable.password_24px,
                 text = "Change\nPassword",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("change_password") }
             )
             QuickActionButton(
                 icon = R.drawable.verified_user_24px,
                 text = "Privacy\nCheck",
-                onClick = { navController.navigate("coming_soon") }
+                onClick = { navController.navigate("privacy_check") }
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -71,9 +72,13 @@ fun HomeScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
+    // Add back handler
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
     placeholderText = if (isFocused) "Search for products" else "ShopSmart"
 
-    // Exit Dialog
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
@@ -92,63 +97,66 @@ fun HomeScreen(
         )
     }
 
-    Column(Modifier.padding(16.dp, bottom = 0.dp)) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .shadow(4.dp),
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                interactionSource = interactionSource,
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
-                singleLine = true,
-                placeholder = { Text(placeholderText) },
-                colors = TextFieldDefaults.colors(
-//                  Adding colors
-                )
-            )
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_keyboard_voice_24),
-                    contentDescription = "Voice Search Icon",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F6F6))
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF6F6F6))
                 .verticalScroll(scrollState)
         ) {
             // Search Bar
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .shadow(4.dp),
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    interactionSource = interactionSource,
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
+                    singleLine = true,
+                    placeholder = { Text(placeholderText) },
+                    colors = TextFieldDefaults.colors()
+                )
+                IconButton(onClick = {}) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_keyboard_voice_24),
+                        contentDescription = "Voice Search Icon",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
             // Welcome Section
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 Image(
                     painter = painterResource(R.drawable.shopinterior),
                     contentDescription = "Shop Interior",
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                        setToScale(
-                            0.7f,
-                            0.7f,
-                            0.7f,
-                            1f
-                        )
+                        setToScale(0.7f, 0.7f, 0.7f, 1f)
                     })
                 )
-                Column(modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                ) {
                     Text(
                         "Welcome to ShopSmart",
                         color = Color.White,
@@ -166,29 +174,34 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Featured Section
-            Text("Featured", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                "Featured",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
-            LazyRow(modifier = Modifier.fillMaxWidth()) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
                 items(myItems.value.size) { index ->
                     CardLayout(myItems.value[index], index, navController)
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-
             // Description Section
-            Column(Modifier.padding(8.dp)) {
-                Text(
-                    "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
+            Text(
+                "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }
 
-// Card Layout for LazyRow items
 @Composable
 fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
     Card(
@@ -204,7 +217,8 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
         Box(
             Modifier
                 .background(Color.White)
-                .padding(8.dp)) {
+                .padding(8.dp)
+        ) {
             Column {
                 Image(
                     painter = painterResource(id = itemsData.image),
@@ -222,7 +236,11 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(itemsData.platform, color = Color.Gray, fontSize = 12.sp)
+                Text(
+                    itemsData.platform,
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -232,7 +250,10 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(4.dp))
-                    Text(text = "${itemsData.rating}", fontWeight = FontWeight.Medium)
+                    Text(
+                        text = "${itemsData.rating}",
+                        fontWeight = FontWeight.Medium
+                    )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -260,7 +281,6 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
         }
     }
 }
-
 
 //@Preview(showBackground = true)
 //@Composable
