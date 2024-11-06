@@ -1,7 +1,10 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import android.app.Activity
-import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,6 +25,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -34,7 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,9 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.VoiceTextParser
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
-
 
 @Composable
 fun HomeScreen(
@@ -97,22 +102,32 @@ fun HomeScreen(
         )
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF6F6F6))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-        ) {
-            // Search Bar
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
+        var canRecord by remember{
+            mutableStateOf(false)
+        }
+
+        val recordAudioLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                canRecord = isGranted
+            }
+        )
+
+        LaunchedEffect(key1 = recordAudioLauncher){
+            recordAudioLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+        }
+
+        val state by voiceToTextParser.state.collectAsState()
+
+        LaunchedEffect(state.spokenText){
+            if(state.spokenText.isNotBlank()){
+                searchQuery = state.spokenText
+            }
+        }
+
+        Column(Modifier.padding(16.dp, bottom = 0.dp)) {
+            Row(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+
                 OutlinedTextField(
                     modifier = Modifier
                         .weight(1f)
@@ -124,16 +139,28 @@ fun HomeScreen(
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
                     singleLine = true,
                     placeholder = { Text(placeholderText) },
-                    colors = TextFieldDefaults.colors()
+                    colors = TextFieldDefaults.colors(
+//                  Adding colors
+                    )
                 )
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    if(state.isSpeaking){
+                        voiceToTextParser.stopListening()
+                    }else{
+                        voiceToTextParser.startListening()
+                    }
+                }) {
                     Icon(
-                        painter = painterResource(R.drawable.baseline_keyboard_voice_24),
-                        contentDescription = "Voice Search Icon",
-                        tint = MaterialTheme.colorScheme.primary
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = "Voice Search"
                     )
                 }
             }
+            Column(
+                modifier = Modifier.fillMaxSize().background(Color(0xFFF6F6F6))
+                    .verticalScroll(scrollState)
+            ) {
+                // Search Bar
 
             // Welcome Section
             Box(

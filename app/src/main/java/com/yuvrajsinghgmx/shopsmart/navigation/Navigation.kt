@@ -47,6 +47,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.payments.SecurityScanScreen
 import com.yuvrajsinghgmx.shopsmart.screens.preferences.ChangePasswordScreen
 import com.yuvrajsinghgmx.shopsmart.screens.policies.PrivacyCheckScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopSmartNavBar
+import com.yuvrajsinghgmx.shopsmart.VoiceTextParser
 import com.yuvrajsinghgmx.shopsmart.screens.orders.ApplePaySetupScreen
 import com.yuvrajsinghgmx.shopsmart.screens.orders.MissingRefundScreen
 import com.yuvrajsinghgmx.shopsmart.screens.orders.MyOrders
@@ -106,7 +107,7 @@ import com.yuvrajsinghgmx.shopsmart.GoogleAuth.GoogleSignInViewModel
 import com.yuvrajsinghgmx.shopsmart.GoogleAuth.User
 
 @Composable
-fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController) {
+fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostController, voiceToTextParser: VoiceTextParser) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination?.route
     val context = LocalContext.current
@@ -201,7 +202,7 @@ fun Navigation(viewModel: ShoppingListViewModel, navController: NavHostControlle
             }
 
             composable("Home") {
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController,voiceToTextParser = voiceToTextParser)
             }
 
             composable("List") {

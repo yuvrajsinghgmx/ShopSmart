@@ -27,6 +27,9 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var ImageApi: API
 
+    val voiceToTextParser by lazy{
+        VoiceTextParser(application)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
@@ -46,8 +49,7 @@ class MainActivity : BaseActivity() {
             ) {
                 val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
-                Navigation(viewModel = viewModel, navController = navController)
-                val context = LocalContext.current
+                Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
 
 
 
