@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.support
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -76,105 +78,118 @@ fun ContactSupportScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Contact Support",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = backgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = backgroundColor
-                )
-            )
-        },
-        containerColor = backgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item {
-                Text(
-                    "How Can We Help?",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
+
+                    Text(
+                        text = "Contact Support",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color.White,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Column {
-                        contactOptions.forEachIndexed { index, option ->
-                            ContactOptionItem(
-                                option = option,
-                                onClick = { navController.navigate(option.route) }
-                            )
-                            if (index < contactOptions.size - 1) {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = Color(0xFFE5E7EB)
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                item {
+                    Text(
+                        "How Can We Help?",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25)
+                    )
+                }
+
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White,
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Column {
+                            contactOptions.forEachIndexed { index, option ->
+                                ContactOptionItem(
+                                    option = option,
+                                    onClick = { navController.navigate(option.route) }
                                 )
+                                if (index < contactOptions.size - 1) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        color = Color(0xFFE5E7EB)
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            item {
-                Text(
-                    "Common Issues",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
-            }
+                item {
+                    Text(
+                        "Common Issues",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25)
+                    )
+                }
 
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Color.White,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Column {
-                        commonIssues.forEachIndexed { index, issue ->
-                            CommonIssueItem(
-                                issue = issue,
-                                onClick = { navController.navigate(issue.route) }
-                            )
-                            if (index < commonIssues.size - 1) {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = Color(0xFFE5E7EB)
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White,
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Column {
+                            commonIssues.forEachIndexed { index, issue ->
+                                CommonIssueItem(
+                                    issue = issue,
+                                    onClick = { navController.navigate(issue.route) }
                                 )
+                                if (index < commonIssues.size - 1) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        color = Color(0xFFE5E7EB)
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            item {
-                SupportHoursCard()
+                item {
+                    SupportHoursCard()
+                }
             }
         }
     }
