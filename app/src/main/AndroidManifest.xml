@@ -14,7 +14,6 @@
         <package android:name="com.instagram.android" />
     </queries>
     <application
-
         android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -25,6 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MySplashScreen"
         tools:targetApi="31">
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -36,18 +36,22 @@
             <meta-data
                 android:name="com.google.android.gms.default_web_client_id"
                 android:value="@string/web_client_id" />
-
         </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MySplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- UCropActivity declaration -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+    </application>
 </manifest>
