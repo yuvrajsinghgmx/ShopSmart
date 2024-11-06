@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.support
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -96,56 +97,69 @@ fun CallSupportScreen(navController: NavController) {
 
     var showCallDialog by remember { mutableStateOf<SupportContact?>(null) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Call Support",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                SupportStatusCard(isWithinSupportHours)
+
+                    Text(
+                        text = "Call Support",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            items(supportContacts) { contact ->
-                ContactCard(
-                    contact = contact,
-                    onClick = { showCallDialog = contact }
-                )
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    SupportStatusCard(isWithinSupportHours)
+                }
 
-            item {
-                SupportHoursCard(supportHours)
-            }
+                items(supportContacts) { contact ->
+                    ContactCard(
+                        contact = contact,
+                        onClick = { showCallDialog = contact }
+                    )
+                }
 
-            item {
-                EmergencyInfoCard()
+                item {
+                    SupportHoursCard(supportHours)
+                }
+
+                item {
+                    EmergencyInfoCard()
+                }
             }
         }
     }
