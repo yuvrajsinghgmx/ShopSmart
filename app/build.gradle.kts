@@ -122,4 +122,9 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
+
+    //Image Cropper
+    implementation ("com.github.yalantis:ucrop:2.2.8")
+
+
 }

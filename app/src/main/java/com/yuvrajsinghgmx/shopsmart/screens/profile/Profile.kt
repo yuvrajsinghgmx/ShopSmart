@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.profile
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.net.Uri
 import android.util.Patterns
 import android.widget.Toast
@@ -42,6 +44,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
+import java.io.File
+import com.yalantis.ucrop.UCrop
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +61,21 @@ fun Profile(modifier: Modifier = Modifier, navController: NavController, viewMod
     // Initialize state variables
     var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
+
+    // State variables
     var profilePhotoUri by remember { mutableStateOf<Uri?>(null) }
+    val cropLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.let {
+                val resultUri = UCrop.getOutput(it)
+                resultUri?.let { croppedUri ->
+                    profilePhotoUri = croppedUri
+                    SharedPrefsHelper.saveProfilePhotoUri(context, croppedUri)
+                }
+            }
+        }
+    }
+
     var showImagePreview by remember { mutableStateOf(false) }
     var isNameError by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
@@ -73,13 +92,12 @@ fun Profile(modifier: Modifier = Modifier, navController: NavController, viewMod
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            coroutineScope.launch {
-                val copiedUri = ImageHelper.copyImageToPrivateStorage(context, it)
-                copiedUri?.let { savedUri ->
-                    profilePhotoUri = savedUri
-                    SharedPrefsHelper.saveProfilePhotoUri(context, savedUri)
-                }
-            }
+            val destinationUri = Uri.fromFile(File(context.cacheDir, "cropped_image.jpg"))
+            val uCrop = UCrop.of(uri, destinationUri)
+                .withAspectRatio(1f, 1f) // Square crop (you can change this if needed)
+                .withMaxResultSize(450, 450) // Max crop size (adjust as needed)
+
+            cropLauncher.launch(uCrop.getIntent(context))
         }
     }
 
