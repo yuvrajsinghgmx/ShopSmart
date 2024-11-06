@@ -37,12 +37,15 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.gson.Gson
+import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(modifier: Modifier = Modifier,navController: NavController) {
+fun Profile(modifier: Modifier = Modifier, navController: NavController, viewModel: ShoppingListViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val lightBackgroundColor = Color(0xFFF6F5F3)
@@ -80,29 +83,28 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.padding(0.dp),
-                title = {
-                    Text(
-                        "Profile",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ){
+        CenterAlignedTopAppBar(
+            modifier = Modifier.padding(0.dp),
+            title = {
+                Text(
+                    "Profile",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF332D25)
                 )
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = lightBackgroundColor
             )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
+        )
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -272,7 +274,9 @@ fun Profile(modifier: Modifier = Modifier,navController: NavController) {
                         Spacer(modifier = Modifier.height(4.dp))
                         HorizontalDivider()
                         ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
-                            navController.navigate("coming_soon")
+//                            navController.navigate("coming_soon")
+                            val selectedItemsJson = Gson().toJson(viewModel.items.value)
+                            navController.navigate("checkout?selectedItems=$selectedItemsJson")
                         }
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(4.dp))

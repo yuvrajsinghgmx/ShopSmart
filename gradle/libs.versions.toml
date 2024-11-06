@@ -1,6 +1,6 @@
 [versions]
 accompanistPager = "0.13.0"
-agp = "8.7.1"
+agp = "8.2.2"
 coilCompose = "2.7.0"
 coilComposeVersion = "2.7.0"
 converterGson = "2.11.0"

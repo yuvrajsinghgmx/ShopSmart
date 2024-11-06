@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.profile
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -68,138 +69,135 @@ fun PersonalInformationScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Personal Information",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        // Save data before navigating back
-                        scope.launch {
-                            sharedPreferences.edit().apply {
-                                putString("user_name", name)
-                                putString("user_email", email)
-                                putString("user_phone", phoneNumber)
-                                putString("user_country_code", countryCode)
-                                apply()
-                            }
-                            navController.navigateUp()
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(Color(0xFFF6F5F3)),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    "Personal Information",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF332D25)
                 )
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                isError = name.isBlank(),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && email.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CountryCodeDropdown(
-                    selectedCode = countryCode,
-                    onCodeSelected = { countryCode = it }
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = {
-                        if (it.length <= 10) phoneNumber = it
-                    },
-                    label = { Text("Phone Number") },
-                    isError = phoneNumber.isNotEmpty() && phoneNumber.length != 10,
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
+            },
+            navigationIcon = {
+                IconButton(onClick = {
+                    // Save data before navigating back
                     scope.launch {
-                        if (validateInputs(name, email, phoneNumber)) {
-                            // Save to both SharedPreferences and UserDataStore
-                            sharedPreferences.edit().apply {
-                                putString("user_name", name)
-                                putString("user_email", email)
-                                putString("user_phone", phoneNumber)
-                                putString("user_country_code", countryCode)
-                                apply()
-                            }
-                            userPreferences.saveUserData(name, email, "$countryCode$phoneNumber")
-                            snackbarHostState.showSnackbar("Information Saved Successfully")
-
-                            // Wait for a moment to show the success message
-                            kotlinx.coroutines.delay(1000)
-                            navController.navigateUp()
-                        } else {
-                            snackbarHostState.showSnackbar("Please fill all fields correctly")
+                        sharedPreferences.edit().apply {
+                            putString("user_name", name)
+                            putString("user_email", email)
+                            putString("user_phone", phoneNumber)
+                            putString("user_country_code", countryCode)
+                            apply()
                         }
+                        navController.navigateUp()
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save")
-            }
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = Color(0xFFF6F5F3)
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") },
+            isError = name.isBlank(),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() && email.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CountryCodeDropdown(
+                selectedCode = countryCode,
+                onCodeSelected = { countryCode = it }
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            OutlinedTextField(
+                value = phoneNumber,
+                onValueChange = { if (it.length <= 10) phoneNumber = it },
+                label = { Text("Phone Number") },
+                isError = phoneNumber.isNotEmpty() && phoneNumber.length != 10,
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done
+                )
+            )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                scope.launch {
+                    if (validateInputs(name, email, phoneNumber)) {
+                        // Save to both SharedPreferences and UserDataStore
+                        sharedPreferences.edit().apply {
+                            putString("user_name", name)
+                            putString("user_email", email)
+                            putString("user_phone", phoneNumber)
+                            putString("user_country_code", countryCode)
+                            apply()
+                        }
+                        userPreferences.saveUserData(name, email, "$countryCode$phoneNumber")
+                        snackbarHostState.showSnackbar("Information Saved Successfully")
+
+                        // Wait for a moment to show the success message
+                        kotlinx.coroutines.delay(1000)
+                        navController.navigateUp()
+                    } else {
+                        snackbarHostState.showSnackbar("Please fill all fields correctly")
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save")
+        }
+
+        SnackbarHost(snackbarHostState)
     }
+
 }
 
 // Dropdown for selecting Country Code

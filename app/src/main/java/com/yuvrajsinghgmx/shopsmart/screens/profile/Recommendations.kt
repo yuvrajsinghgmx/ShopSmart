@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -59,36 +60,38 @@ fun RecommendationsScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Recommendations",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ){
+
+        CenterAlignedTopAppBar(
+            title = {
+                Text(
+                    "Recommendations",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color(0xFF332D25)
                 )
+            },
+            navigationIcon = {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = lightBackgroundColor
             )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
+        )
+
+            Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
             // Info Card

@@ -63,19 +63,27 @@ import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.VoiceTextParser
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
-import androidx.compose.runtime.collectAsState
-    @Composable
-    fun HomeScreen(viewModel: HomeScreenViewModel = HomeScreenViewModel(), navController: NavController, voiceToTextParser: VoiceTextParser) {
-        var searchQuery by remember { mutableStateOf("") }
-        var showExitDialog by remember { mutableStateOf(false) }
-        val myItems = viewModel.itemsList.collectAsState()
-        val scrollState = rememberScrollState()
-        var placeholderText by remember { mutableStateOf("ShopSmart") }
-        val interactionSource = remember { MutableInteractionSource() }
-        val isFocused by interactionSource.collectIsFocusedAsState()
-        placeholderText = if (isFocused) "Search for products" else "ShopSmart"
 
-    // Exit Dialog
+@Composable
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = HomeScreenViewModel(),
+    navController: NavController
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    var showExitDialog by remember { mutableStateOf(false) }
+    val myItems = viewModel.itemsList.collectAsState()
+    val scrollState = rememberScrollState()
+    var placeholderText by remember { mutableStateOf("ShopSmart") }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    // Add back handler
+    BackHandler(enabled = true) {
+        showExitDialog = true
+    }
+
+    placeholderText = if (isFocused) "Search for products" else "ShopSmart"
+
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
@@ -93,7 +101,6 @@ import androidx.compose.runtime.collectAsState
             }
         )
     }
-
 
         var canRecord by remember{
             mutableStateOf(false)
@@ -120,6 +127,7 @@ import androidx.compose.runtime.collectAsState
 
         Column(Modifier.padding(16.dp, bottom = 0.dp)) {
             Row(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+
                 OutlinedTextField(
                     modifier = Modifier
                         .weight(1f)
@@ -155,26 +163,27 @@ import androidx.compose.runtime.collectAsState
                 // Search Bar
 
             // Welcome Section
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 Image(
                     painter = painterResource(R.drawable.shopinterior),
                     contentDescription = "Shop Interior",
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                        setToScale(
-                            0.7f,
-                            0.7f,
-                            0.7f,
-                            1f
-                        )
+                        setToScale(0.7f, 0.7f, 0.7f, 1f)
                     })
                 )
-                Column(modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                ) {
                     Text(
                         "Welcome to ShopSmart",
                         color = Color.White,
@@ -192,29 +201,34 @@ import androidx.compose.runtime.collectAsState
             Spacer(modifier = Modifier.height(16.dp))
 
             // Featured Section
-            Text("Featured", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                "Featured",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
-            LazyRow(modifier = Modifier.fillMaxWidth()) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
                 items(myItems.value.size) { index ->
                     CardLayout(myItems.value[index], index, navController)
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-
             // Description Section
-            Column(Modifier.padding(8.dp)) {
-                Text(
-                    "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
+            Text(
+                "At ShopSmart, we bring you the best deals on a wide range of products. From the latest electronics to fashionable clothing, we have everything you need at unbeatable prices. Our user-friendly app...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }
 
-// Card Layout for LazyRow items
 @Composable
 fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
     Card(
@@ -230,7 +244,8 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
         Box(
             Modifier
                 .background(Color.White)
-                .padding(8.dp)) {
+                .padding(8.dp)
+        ) {
             Column {
                 Image(
                     painter = painterResource(id = itemsData.image),
@@ -248,7 +263,11 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(itemsData.platform, color = Color.Gray, fontSize = 12.sp)
+                Text(
+                    itemsData.platform,
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -258,7 +277,10 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(4.dp))
-                    Text(text = "${itemsData.rating}", fontWeight = FontWeight.Medium)
+                    Text(
+                        text = "${itemsData.rating}",
+                        fontWeight = FontWeight.Medium
+                    )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -286,8 +308,6 @@ fun CardLayout(itemsData: ItemsData, index: Int, navController: NavController) {
         }
     }
 }
-
-
 
 //@Preview(showBackground = true)
 //@Composable

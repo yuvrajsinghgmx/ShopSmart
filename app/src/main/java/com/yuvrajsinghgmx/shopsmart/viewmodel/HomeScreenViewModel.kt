@@ -2,7 +2,6 @@ package com.yuvrajsinghgmx.shopsmart.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.test.filter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuvrajsinghgmx.shopsmart.R

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -140,147 +141,174 @@ fun NotificationSettings(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Notifications",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
-            item {
-                // Main notification toggle
-                NotificationSwitchItemWithImageVector(
-                    title = "Enable Notifications",
-                    subtitle = "Receive notifications from ShopSmart",
-                    icon = Icons.Default.Notifications,
-                    checked = notificationsEnabled,
-                    onCheckedChange = { enabled ->
-                        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            if (ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.POST_NOTIFICATIONS
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                showPermissionDialog = true
-                                return@NotificationSwitchItemWithImageVector
-                            }
-                        }
-                        notificationsEnabled = enabled
-                        notificationPrefs.setNotificationsEnabled(enabled)
-                    }
-                )
+            // Top Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF332D25)
+                    )
+                }
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-
-                // Alert Settings Section
                 Text(
-                    "Alert Settings",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-
-                NotificationSwitchItemWithImageVector(
-                    title = "Sound",
-                    subtitle = "Play sound for notifications",
-                    icon = Icons.Default.Notifications,
-                    checked = soundEnabled,
-                    enabled = notificationsEnabled,
-                    onCheckedChange = {
-                        soundEnabled = it
-                        notificationPrefs.setSoundEnabled(it)
-                    }
-                )
-
-                NotificationSwitchItemWithDrawable(
-                    title = "Vibration",
-                    subtitle = "Vibrate for notifications",
-                    iconResId = R.drawable.vibration_24px,
-                    checked = vibrationEnabled,
-                    enabled = notificationsEnabled,
-                    onCheckedChange = {
-                        vibrationEnabled = it
-                        notificationPrefs.setVibrationEnabled(it)
-                    }
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-
-                // Notification Types Section
-                Text(
-                    "Notification Types",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-
-                NotificationSwitchItemWithDrawable(
-                    title = "Promotional",
-                    subtitle = "Receive offers and promotional updates",
-                    iconResId = R.drawable.app_promo_24px,
-                    checked = promotionalEnabled,
-                    enabled = notificationsEnabled,
-                    onCheckedChange = {
-                        promotionalEnabled = it
-                        notificationPrefs.setPromotionalEnabled(it)
-                    }
-                )
-
-                NotificationSwitchItemWithImageVector(
-                    title = "Order Updates",
-                    subtitle = "Get updates about your orders",
-                    icon = Icons.Default.ShoppingCart,
-                    checked = orderUpdatesEnabled,
-                    enabled = notificationsEnabled,
-                    onCheckedChange = {
-                        orderUpdatesEnabled = it
-                        notificationPrefs.setOrderUpdatesEnabled(it)
-                    }
-                )
-
-                NotificationSwitchItemWithDrawable(
-                    title = "Delivery Updates",
-                    subtitle = "Track your delivery status",
-                    iconResId = R.drawable.package_2_24px,
-                    checked = deliveryUpdatesEnabled,
-                    enabled = notificationsEnabled,
-                    onCheckedChange = {
-                        deliveryUpdatesEnabled = it
-                        notificationPrefs.setDeliveryUpdatesEnabled(it)
-                    }
+                    text = "Notifications",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color(0xFF332D25),
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
+
+            // Main Content
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                item {
+                    // Enable Notifications Toggle
+                    NotificationSwitchItemWithImageVector(
+                        title = "Enable Notifications",
+                        subtitle = "Receive notifications from ShopSmart",
+                        icon = Icons.Default.Notifications,
+                        checked = notificationsEnabled,
+                        onCheckedChange = { enabled ->
+                            if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.POST_NOTIFICATIONS
+                                    ) != PackageManager.PERMISSION_GRANTED) {
+                                    showPermissionDialog = true
+                                    return@NotificationSwitchItemWithImageVector
+                                }
+                            }
+                            notificationsEnabled = enabled
+                            notificationPrefs.setNotificationsEnabled(enabled)
+                        }
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = Color(0xFFE0E0E0)
+                    )
+
+                    // Alert Settings Section
+                    Text(
+                        "Alert Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF006D3B),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    NotificationSwitchItemWithImageVector(
+                        title = "Sound",
+                        subtitle = "Play sound for notifications",
+                        icon = Icons.Default.Notifications,
+                        checked = soundEnabled,
+                        enabled = notificationsEnabled,
+                        onCheckedChange = {
+                            soundEnabled = it
+                            notificationPrefs.setSoundEnabled(it)
+                        }
+                    )
+
+                    NotificationSwitchItemWithDrawable(
+                        title = "Vibration",
+                        subtitle = "Vibrate for notifications",
+                        iconResId = R.drawable.vibration_24px,
+                        checked = vibrationEnabled,
+                        enabled = notificationsEnabled,
+                        onCheckedChange = {
+                            vibrationEnabled = it
+                            notificationPrefs.setVibrationEnabled(it)
+                        }
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = Color(0xFFE0E0E0)
+                    )
+
+                    // Notification Types Section
+                    Text(
+                        "Notification Types",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF006D3B),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    NotificationSwitchItemWithDrawable(
+                        title = "Promotional",
+                        subtitle = "Receive offers and promotional updates",
+                        iconResId = R.drawable.app_promo_24px,
+                        checked = promotionalEnabled,
+                        enabled = notificationsEnabled,
+                        onCheckedChange = {
+                            promotionalEnabled = it
+                            notificationPrefs.setPromotionalEnabled(it)
+                        }
+                    )
+
+                    NotificationSwitchItemWithImageVector(
+                        title = "Order Updates",
+                        subtitle = "Get updates about your orders",
+                        icon = Icons.Default.ShoppingCart,
+                        checked = orderUpdatesEnabled,
+                        enabled = notificationsEnabled,
+                        onCheckedChange = {
+                            orderUpdatesEnabled = it
+                            notificationPrefs.setOrderUpdatesEnabled(it)
+                        }
+                    )
+
+                    NotificationSwitchItemWithDrawable(
+                        title = "Delivery Updates",
+                        subtitle = "Track your delivery status",
+                        iconResId = R.drawable.package_2_24px,
+                        checked = deliveryUpdatesEnabled,
+                        enabled = notificationsEnabled,
+                        onCheckedChange = {
+                            deliveryUpdatesEnabled = it
+                            notificationPrefs.setDeliveryUpdatesEnabled(it)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
         }
+    }
+
+    // Permission Dialog
+    if (showPermissionDialog) {
+        NotificationPermissionDialog(
+            onDismiss = { showPermissionDialog = false },
+            onGoToSettings = {
+                showPermissionDialog = false
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+                context.startActivity(intent)
+            }
+        )
     }
 }
 
