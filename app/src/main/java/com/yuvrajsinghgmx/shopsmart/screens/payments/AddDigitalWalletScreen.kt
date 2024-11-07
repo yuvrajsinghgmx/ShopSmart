@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -77,101 +78,119 @@ fun AddDigitalWalletScreen(navController: NavController) {
     var selectedWallet by remember { mutableStateOf<WalletOption?>(null) }
     var showDetails by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Add Digital Wallet",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_back_24px),
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            // Info Card
-            item {
-                InfoCard()
+
+                    Text(
+                        text = "Add Digital Wallet",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            // Popular Wallets Section
-            item {
-                Text(
-                    "Popular Digital Wallets",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                // Info Card
+                item {
+                    InfoCard()
+                }
 
-            items(walletOptions.filter { it.isPopular }) { wallet ->
-                WalletCard(
-                    wallet = wallet,
-                    onClick = {
-                        selectedWallet = wallet
-                        showDetails = true
-                    }
-                )
-            }
+                // Popular Wallets Section
+                item {
+                    Text(
+                        "Popular Digital Wallets",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
 
-            // All Available Wallets Section
-            item {
-                Text(
-                    "All Available Wallets",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-                )
-            }
+                items(walletOptions.filter { it.isPopular }) { wallet ->
+                    WalletCard(
+                        wallet = wallet,
+                        onClick = {
+                            selectedWallet = wallet
+                            showDetails = true
+                        }
+                    )
+                }
 
-            items(walletOptions.filterNot { it.isPopular }) { wallet ->
-                WalletCard(
-                    wallet = wallet,
-                    onClick = {
-                        selectedWallet = wallet
-                        showDetails = true
-                    }
-                )
-            }
+                // All Available Wallets Section
+                item {
+                    Text(
+                        "All Available Wallets",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                    )
+                }
 
-            // Security Note
-            item {
-                SecurityNoteCard()
+                items(walletOptions.filterNot { it.isPopular }) { wallet ->
+                    WalletCard(
+                        wallet = wallet,
+                        onClick = {
+                            selectedWallet = wallet
+                            showDetails = true
+                        }
+                    )
+                }
+
+                // Security Note
+                item {
+                    SecurityNoteCard()
+                }
+
+                // Bottom spacing for navigation bar
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
-    }
 
-    // Wallet Details Bottom Sheet
-    if (showDetails && selectedWallet != null) {
-        WalletDetailsSheet(
-            wallet = selectedWallet!!,
-            onDismiss = { showDetails = false },
-            onSetup = { route ->
-                showDetails = false
-                navController.navigate(route)
-            }
-        )
+        // Wallet Details Bottom Sheet
+        if (showDetails && selectedWallet != null) {
+            WalletDetailsSheet(
+                wallet = selectedWallet!!,
+                onDismiss = { showDetails = false },
+                onSetup = { route ->
+                    showDetails = false
+                    navController.navigate(route)
+                }
+            )
+        }
     }
 }
 
