@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.support
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -158,76 +159,89 @@ fun FAQScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "FAQ",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            // Search Bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = { Text("Search FAQs") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
-                    )
-                },
-                singleLine = true
-            )
 
-            // FAQ List
-            LazyColumn(
+                    Text(
+                        text = "FAQ",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+            }
+
+            // Main Content
+            Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                faqCategories.forEach { category ->
-                    val filteredItems = category.items.filter {
-                        it.question.contains(searchQuery, ignoreCase = true) ||
-                                it.answer.contains(searchQuery, ignoreCase = true)
-                    }
+                // Search Bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    placeholder = { Text("Search FAQs") },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search"
+                        )
+                    },
+                    singleLine = true
+                )
 
-                    if (filteredItems.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = category.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(16.dp)
-                            )
+                // FAQ List
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    faqCategories.forEach { category ->
+                        val filteredItems = category.items.filter {
+                            it.question.contains(searchQuery, ignoreCase = true) ||
+                                    it.answer.contains(searchQuery, ignoreCase = true)
                         }
 
-                        items(filteredItems) { faq ->
-                            FAQExpandableCard(faq)
+                        if (filteredItems.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = category.name,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+
+                            items(filteredItems) { faq ->
+                                FAQExpandableCard(faq)
+                            }
                         }
                     }
                 }
