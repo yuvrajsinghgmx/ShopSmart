@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -78,128 +79,142 @@ fun ShippingPreferencesScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Shipping Preferences",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            item {
-                // Default Shipping Method Section
-                SectionTitle("Default Shipping Method")
 
-                ShippingMethodCard(
-                    title = "Standard Delivery",
-                    subtitle = "5-7 business days",
-                    iconResId = R.drawable.shipping_24px,
-                    isSelected = defaultShipping == "standard",
-                    onClick = {
-                        defaultShipping = "standard"
-                        shippingPrefs.setDefaultShipping("standard")
-                    }
-                )
+                    Text(
+                        text = "Shipping Preferences",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+            }
 
-                ShippingMethodCard(
-                    title = "Express Delivery",
-                    subtitle = "2-3 business days",
-                    iconResId = R.drawable.shipping_24px,
-                    isSelected = defaultShipping == "express",
-                    onClick = {
-                        defaultShipping = "express"
-                        shippingPrefs.setDefaultShipping("express")
-                    }
-                )
+            // Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    // Default Shipping Method Section
+                    SectionTitle("Default Shipping Method")
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    ShippingMethodCard(
+                        title = "Standard Delivery",
+                        subtitle = "5-7 business days",
+                        iconResId = R.drawable.shipping_24px,
+                        isSelected = defaultShipping == "standard",
+                        onClick = {
+                            defaultShipping = "standard"
+                            shippingPrefs.setDefaultShipping("standard")
+                        }
+                    )
 
-                // Delivery Preferences Section
-                SectionTitle("Delivery Preferences")
+                    ShippingMethodCard(
+                        title = "Express Delivery",
+                        subtitle = "2-3 business days",
+                        iconResId = R.drawable.shipping_24px,
+                        isSelected = defaultShipping == "express",
+                        onClick = {
+                            defaultShipping = "express"
+                            shippingPrefs.setDefaultShipping("express")
+                        }
+                    )
 
-                PreferenceToggleItem(
-                    title = "Express Delivery Available",
-                    subtitle = "Show express delivery options when available",
-                    iconResId = R.drawable.shipping_24px,
-                    checked = expressDelivery,
-                    onCheckedChange = {
-                        expressDelivery = it
-                        shippingPrefs.setExpressDelivery(it)
-                    }
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                PreferenceToggleItem(
-                    title = "Contact Before Delivery",
-                    subtitle = "Delivery person will contact you before delivery",
-                    iconResId = R.drawable.shipping_24px,
-                    checked = contactBeforeDelivery,
-                    onCheckedChange = {
-                        contactBeforeDelivery = it
-                        shippingPrefs.setContactBeforeDelivery(it)
-                    }
-                )
+                    // Delivery Preferences Section
+                    SectionTitle("Delivery Preferences")
 
-                PreferenceToggleItem(
-                    title = "Weekend Delivery",
-                    subtitle = "Allow deliveries on weekends",
-                    iconResId = R.drawable.shipping_24px,
-                    checked = weekendDelivery,
-                    onCheckedChange = {
-                        weekendDelivery = it
-                        shippingPrefs.setWeekendDelivery(it)
-                    }
-                )
+                    PreferenceToggleItem(
+                        title = "Express Delivery Available",
+                        subtitle = "Show express delivery options when available",
+                        iconResId = R.drawable.shipping_24px,
+                        checked = expressDelivery,
+                        onCheckedChange = {
+                            expressDelivery = it
+                            shippingPrefs.setExpressDelivery(it)
+                        }
+                    )
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    PreferenceToggleItem(
+                        title = "Contact Before Delivery",
+                        subtitle = "Delivery person will contact you before delivery",
+                        iconResId = R.drawable.shipping_24px,
+                        checked = contactBeforeDelivery,
+                        onCheckedChange = {
+                            contactBeforeDelivery = it
+                            shippingPrefs.setContactBeforeDelivery(it)
+                        }
+                    )
 
-                // Delivery Instructions Section
-                SectionTitle("Delivery Instructions")
+                    PreferenceToggleItem(
+                        title = "Weekend Delivery",
+                        subtitle = "Allow deliveries on weekends",
+                        iconResId = R.drawable.shipping_24px,
+                        checked = weekendDelivery,
+                        onCheckedChange = {
+                            weekendDelivery = it
+                            shippingPrefs.setWeekendDelivery(it)
+                        }
+                    )
 
-                OutlinedTextField(
-                    value = deliveryInstructions,
-                    onValueChange = {
-                        deliveryInstructions = it
-                        shippingPrefs.setDeliveryInstructions(it)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    label = { Text("Special Instructions for Delivery") },
-                    placeholder = { Text("E.g., Leave at the front door") },
-                    minLines = 3,
-                    maxLines = 5
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    // Delivery Instructions Section
+                    SectionTitle("Delivery Instructions")
+
+                    OutlinedTextField(
+                        value = deliveryInstructions,
+                        onValueChange = {
+                            deliveryInstructions = it
+                            shippingPrefs.setDeliveryInstructions(it)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        label = { Text("Special Instructions for Delivery") },
+                        placeholder = { Text("E.g., Leave at the front door") },
+                        minLines = 3,
+                        maxLines = 5
+                    )
+
+                    // Bottom spacing for navigation bar
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
     }
