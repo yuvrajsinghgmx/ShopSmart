@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -49,26 +50,42 @@ fun SearchHistoryScreen(navController: NavController) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     val categories = searchHistory.map { it.category }.distinct()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Search History",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                actions = {
+
+                    Text(
+                        text = "Search History",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
+                    )
+
                     if (searchHistory.isNotEmpty()) {
                         IconButton(onClick = { showClearDialog = true }) {
                             Icon(
@@ -77,72 +94,73 @@ fun SearchHistoryScreen(navController: NavController) {
                             )
                         }
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            // Category Filter
-            if (categories.isNotEmpty()) {
-                ScrollableTabRow(
-                    selectedTabIndex = categories.indexOf(selectedCategory) + 1,
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    edgePadding = 16.dp,
-                    containerColor = lightBackgroundColor,
-                    divider = {}
-                ) {
-                    Tab(
-                        selected = selectedCategory == null,
-                        onClick = { selectedCategory = null },
-                        text = { Text("All") }
-                    )
-                    categories.forEach { category ->
-                        Tab(
-                            selected = selectedCategory == category,
-                            onClick = { selectedCategory = category },
-                            text = { Text(category) }
-                        )
-                    }
                 }
             }
 
-            if (searchHistory.isEmpty()) {
-                EmptyHistoryMessage()
-            } else {
-                val filteredHistory = if (selectedCategory != null) {
-                    searchHistory.filter { it.category == selectedCategory }
-                } else {
-                    searchHistory
+            // Main Content
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Category Filter
+                if (categories.isNotEmpty()) {
+                    ScrollableTabRow(
+                        selectedTabIndex = categories.indexOf(selectedCategory) + 1,
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        edgePadding = 16.dp,
+                        containerColor = lightBackgroundColor,
+                        divider = {}
+                    ) {
+                        Tab(
+                            selected = selectedCategory == null,
+                            onClick = { selectedCategory = null },
+                            text = { Text("All") }
+                        )
+                        categories.forEach { category ->
+                            Tab(
+                                selected = selectedCategory == category,
+                                onClick = { selectedCategory = category },
+                                text = { Text(category) }
+                            )
+                        }
+                    }
                 }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    items(
-                        items = filteredHistory,
-                        key = { "${it.query}${it.timestamp}" }
-                    ) { searchItem ->
-                        SearchHistoryItem(
-                            searchItem = searchItem,
-                            onDelete = {
-                                searchHistory = searchHistory.filter { it != searchItem }
-                            },
-                            modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                if (searchHistory.isEmpty()) {
+                    EmptyHistoryMessage()
+                } else {
+                    val filteredHistory = if (selectedCategory != null) {
+                        searchHistory.filter { it.category == selectedCategory }
+                    } else {
+                        searchHistory
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 80.dp // Space for bottom navigation
                         )
+                    ) {
+                        items(
+                            items = filteredHistory,
+                            key = { "${it.query}${it.timestamp}" }
+                        ) { searchItem ->
+                            SearchHistoryItem(
+                                searchItem = searchItem,
+                                onDelete = {
+                                    searchHistory = searchHistory.filter { it != searchItem }
+                                },
+                                modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                            )
+                        }
                     }
                 }
             }
         }
 
+        // Clear Dialog
         if (showClearDialog) {
             AlertDialog(
                 onDismissRequest = { showClearDialog = false },

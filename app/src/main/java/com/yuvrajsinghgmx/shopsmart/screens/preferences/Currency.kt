@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -66,55 +67,73 @@ fun CurrencyScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Currency",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            item {
-                Text(
-                    "Select Currency",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+
+                    Text(
+                        text = "Currency",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            items(currencies) { currency ->
-                CurrencyItem(
-                    currency = currency,
-                    isSelected = selectedCurrency == currency.code,
-                    onSelect = {
-                        selectedCurrency = currency.code
-                        currencyPrefs.setSelectedCurrency(currency.code)
-                    }
-                )
+            // Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    Text(
+                        "Select Currency",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+
+                items(currencies) { currency ->
+                    CurrencyItem(
+                        currency = currency,
+                        isSelected = selectedCurrency == currency.code,
+                        onSelect = {
+                            selectedCurrency = currency.code
+                            currencyPrefs.setSelectedCurrency(currency.code)
+                        }
+                    )
+                }
+
+                // Add bottom spacing for navigation bar
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
             }
         }
     }

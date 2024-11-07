@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.preferences
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -104,50 +105,97 @@ fun LanguageScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Language",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            items(languages) { language ->
-                LanguageItem(
-                    language = language,
-                    isSelected = selectedLanguage == language.code,
-                    onSelect = {
-                        if (selectedLanguage != language.code) {
-                            selectedLanguage = language.code
-                            languageManager.setLanguage(language.code)
-                            showRestartDialog = true
-                        }
-                    }
-                )
+
+                    Text(
+                        text = "Language",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
+
+            // Language List
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 8.dp)
+            ) {
+                items(languages) { language ->
+                    LanguageItem(
+                        language = language,
+                        isSelected = selectedLanguage == language.code,
+                        onSelect = {
+                            if (selectedLanguage != language.code) {
+                                selectedLanguage = language.code
+                                languageManager.setLanguage(language.code)
+                                showRestartDialog = true
+                            }
+                        }
+                    )
+                }
+
+                // Add bottom spacing for navigation bar
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
+        }
+
+        // Restart Dialog
+        if (showRestartDialog) {
+            AlertDialog(
+                onDismissRequest = { showRestartDialog = false },
+                title = { Text("Restart Required") },
+                text = { Text("The app needs to restart to apply the language change. Would you like to restart now?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        // Restart the app
+                        val intent = activity.packageManager
+                            .getLaunchIntentForPackage(activity.packageName)
+                        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        activity.startActivity(intent)
+                        activity.finish()
+                    }) {
+                        Text("Restart Now")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showRestartDialog = false }) {
+                        Text("Later")
+                    }
+                }
+            )
         }
     }
 }

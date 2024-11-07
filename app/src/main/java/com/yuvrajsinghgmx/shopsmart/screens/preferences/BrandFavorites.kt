@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -64,26 +65,42 @@ fun BrandFavoritesScreen(navController: NavController) {
     val favoriteBrands = filteredBrands.filter { it.isFavorite }
     val suggestedBrands = filteredBrands.filter { !it.isFavorite }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Brand Favorites",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                actions = {
+
+                    Text(
+                        text = "Brand Favorites",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
+                    )
+
                     if (favoriteBrands.isNotEmpty()) {
                         IconButton(onClick = { showClearDialog = true }) {
                             Icon(
@@ -92,19 +109,9 @@ fun BrandFavoritesScreen(navController: NavController) {
                             )
                         }
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+                }
+            }
+
             // Search Bar
             OutlinedTextField(
                 value = searchQuery,
