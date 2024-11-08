@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -95,60 +96,80 @@ fun DigitalWalletScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            "Payment History",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color(0xFF332D25)
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Column {
+                    // Top Navigation Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = { navController.navigateUp() },
+                            modifier = Modifier.padding(4.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
+                                contentDescription = "Back",
+                                tint = Color(0xFF332D25)
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color(0xFFF6F5F3)
+
+                        Text(
+                            text = "Payment History",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF332D25),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 4.dp)
+                        )
+                    }
+
+                    // Search Bar
+                    SearchAndFilterBar(
+                        searchQuery = searchQuery,
+                        onSearchChange = { searchQuery = it },
+                        onFilterClick = { showFilters = !showFilters }
                     )
-                )
-                SearchAndFilterBar(
-                    searchQuery = searchQuery,
-                    onSearchChange = { searchQuery = it },
-                    onFilterClick = { showFilters = !showFilters }
-                )
-            }
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Summary Card
-            item {
-                TransactionSummaryCard(transactions)
+                }
             }
 
-            // Transaction List
-            items(transactions.filter {
-                it.description.contains(searchQuery, ignoreCase = true) ||
-                        it.id.contains(searchQuery, ignoreCase = true)
-            }) { transaction ->
-                TransactionCard(
-                    transaction = transaction,
-                    onClick = { selectedTransaction = transaction }
-                )
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Summary Card
+                item {
+                    TransactionSummaryCard(transactions)
+                }
+
+                // Transaction List
+                items(transactions.filter {
+                    it.description.contains(searchQuery, ignoreCase = true) ||
+                            it.id.contains(searchQuery, ignoreCase = true)
+                }) { transaction ->
+                    TransactionCard(
+                        transaction = transaction,
+                        onClick = { selectedTransaction = transaction }
+                    )
+                }
             }
         }
     }
