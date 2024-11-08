@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.preferences
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -76,183 +77,191 @@ fun SizePreferencesScreen(navController: NavController) {
 
     var measurementUnit by remember { mutableStateOf("Metric") } // or Imperial
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Size Preferences",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Info Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Your Size Profile",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Set your size preferences for better product recommendations",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
-            }
 
-            // Unit Preference
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
                     Text(
-                        text = "Measurement Unit",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Row(
+                        text = "Size Preferences",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFF332D25),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        FilterChip(
-                            selected = measurementUnit == "Metric",
-                            onClick = { measurementUnit = "Metric" },
-                            label = { Text("Metric (cm/kg)") }
-                        )
-                        FilterChip(
-                            selected = measurementUnit == "Imperial",
-                            onClick = { measurementUnit = "Imperial" },
-                            label = { Text("Imperial (in/lb)") }
-                        )
-                    }
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
                 }
             }
 
-            // Size Categories
-            Card(
+            // Content
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 80.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Standard Sizes",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                // Info Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Your Size Profile",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Set your size preferences for better product recommendations",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
 
-                    sizeCategories.forEach { category ->
-                        CategorySizeSelector(
-                            category = category,
-                            onSizeSelected = { newSize ->
-                                sizeCategories = sizeCategories.map {
-                                    if (it.name == category.name) it.copy(selectedSize = newSize)
-                                    else it
+                // Unit Preference
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Measurement Unit",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            FilterChip(
+                                selected = measurementUnit == "Metric",
+                                onClick = { measurementUnit = "Metric" },
+                                label = { Text("Metric (cm/kg)") }
+                            )
+                            FilterChip(
+                                selected = measurementUnit == "Imperial",
+                                onClick = { measurementUnit = "Imperial" },
+                                label = { Text("Imperial (in/lb)") }
+                            )
+                        }
+                    }
+                }
+
+                // Size Categories
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Standard Sizes",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        sizeCategories.forEach { category ->
+                            CategorySizeSelector(
+                                category = category,
+                                onSizeSelected = { newSize ->
+                                    sizeCategories = sizeCategories.map {
+                                        if (it.name == category.name) it.copy(selectedSize = newSize)
+                                        else it
+                                    }
                                 }
+                            )
+                            if (category != sizeCategories.last()) {
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                             }
-                        )
-                        if (category != sizeCategories.last()) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                         }
                     }
                 }
-            }
 
-            // Measurements
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Detailed Measurements",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                // Measurements
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-
-                    measurements.forEach { measurement ->
-                        MeasurementInput(
-                            measurement = measurement,
-                            isMetric = measurementUnit == "Metric"
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Detailed Measurements",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        if (measurement != measurements.last()) {
-                            Spacer(modifier = Modifier.height(16.dp))
+
+                        measurements.forEach { measurement ->
+                            MeasurementInput(
+                                measurement = measurement,
+                                isMetric = measurementUnit == "Metric"
+                            )
+                            if (measurement != measurements.last()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
                         }
                     }
                 }
-            }
 
-            // Save Button
-            Button(
-                onClick = { showSaveConfirmation = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0E8545)
-                )
-            ) {
-                Text("Save Preferences")
-            }
+                // Save Button
+                Button(
+                    onClick = { showSaveConfirmation = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0E8545)
+                    )
+                ) {
+                    Text("Save Preferences")
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
 
+        // Save Confirmation Dialog
         if (showSaveConfirmation) {
             AlertDialog(
                 onDismissRequest = { showSaveConfirmation = false },
