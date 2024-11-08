@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -24,125 +25,140 @@ fun PayPalSetupScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Set up PayPal",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // PayPal Logo
-            item {
-                Image(
-                    painter = painterResource(id = R.drawable.paypal_large),
-                    contentDescription = "PayPal Logo",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp)
-                )
-            }
-
-            // Setup Status
-            item {
-                SetupStatusCard(setupComplete, showError)
-            }
-
-            // Email Input Section
-            item {
-                EmailInputSection(
-                    email = email,
-                    isValid = isEmailValid,
-                    onEmailChange = {
-                        email = it
-                        isEmailValid = it.isEmpty() || it.matches(Regex("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}"))
-                    }
-                )
-            }
-
-            // Benefits Section
-            item {
-                BenefitsSection()
-            }
-
-            // Security Info
-            item {
-                SecurityInfoCard()
-            }
-
-            // Action Buttons
-            item {
-                Column(
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = {
-                            if (email.isNotEmpty() && isEmailValid) {
-                                isLoading = true
-                                // Simulate PayPal connection
-                                kotlinx.coroutines.GlobalScope.launch {
-                                    kotlinx.coroutines.delay(2000)
-                                    isLoading = false
-                                    setupComplete = true
-                                }
-                            } else {
-                                isEmailValid = false
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !isLoading && !setupComplete,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF0079C1) // PayPal blue
-                        )
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = Color.White
-                            )
-                        } else {
-                            Text(if (setupComplete) "PayPal Connected" else "Connect with PayPal")
-                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back_24px),
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
+                        )
                     }
 
-                    if (setupComplete) {
-                        OutlinedButton(
-                            onClick = { navController.navigateUp() },
+                    Text(
+                        text = "Set up PayPal",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                // PayPal Logo
+                item {
+                    Image(
+                        painter = painterResource(id = R.drawable.paypal_large),
+                        contentDescription = "PayPal Logo",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(8.dp)
+                    )
+                }
+
+                // Setup Status
+                item {
+                    SetupStatusCard(setupComplete, showError)
+                }
+
+                // Email Input Section
+                item {
+                    EmailInputSection(
+                        email = email,
+                        isValid = isEmailValid,
+                        onEmailChange = {
+                            email = it
+                            isEmailValid = it.isEmpty() || it.matches(Regex("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}"))
+                        }
+                    )
+                }
+
+                // Benefits Section
+                item {
+                    BenefitsSection()
+                }
+
+                // Security Info
+                item {
+                    SecurityInfoCard()
+                }
+
+                // Action Buttons
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                if (email.isNotEmpty() && isEmailValid) {
+                                    isLoading = true
+                                    // Simulate PayPal connection
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        kotlinx.coroutines.delay(2000)
+                                        isLoading = false
+                                        setupComplete = true
+                                    }
+                                } else {
+                                    isEmailValid = false
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF0079C1)
+                            enabled = !isLoading && !setupComplete,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF0079C1) // PayPal blue
                             )
                         ) {
-                            Text("Return to Payment Methods")
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.White
+                                )
+                            } else {
+                                Text(if (setupComplete) "PayPal Connected" else "Connect with PayPal")
+                            }
+                        }
+
+                        if (setupComplete) {
+                            OutlinedButton(
+                                onClick = { navController.navigateUp() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFF0079C1)
+                                )
+                            ) {
+                                Text("Return to Payment Methods")
+                            }
                         }
                     }
                 }
