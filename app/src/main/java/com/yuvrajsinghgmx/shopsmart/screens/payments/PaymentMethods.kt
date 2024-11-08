@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -68,95 +69,110 @@ fun PaymentMethodsScreen(navController: NavController) {
         )
     )
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Payment Methods",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            // Quick Actions
-            item {
-                QuickActionsSection(navController)
+
+                    Text(
+                        text = "Payment Methods",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
 
-            // Saved Cards Section
-            item {
-                PaymentMethodSection(
-                    title = "Saved Cards",
-                    items = savedCards,
-                    onItemClick = { route ->
-                        route?.let { navController.navigate(it) }
-                    },
-                    onAddClick = { navController.navigate("add_saved_card") }  // Changed from "coming_soon" to "add_saved_card"
-                )
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                // Quick Actions
+                item {
+                    QuickActionsSection(navController)
+                }
 
-            // Digital Wallets Section
-            item {
-                PaymentMethodSection(
-                    title = "Digital Wallets",
-                    items = digitalWallets,
-                    onItemClick = { route ->
-                        route?.let { navController.navigate(it) }
-                    },
-                    onAddClick = { navController.navigate("add_digital_wallet") } // New route for adding digital wallet
-                )
-            }
+                // Saved Cards Section
+                item {
+                    PaymentMethodSection(
+                        title = "Saved Cards",
+                        items = savedCards,
+                        onItemClick = { route ->
+                            route?.let { navController.navigate(it) }
+                        },
+                        onAddClick = { navController.navigate("add_saved_card") }
+                    )
+                }
 
-            // Bank Accounts Section
-            item {
-                PaymentMethodSection(
-                    title = "Bank Accounts",
-                    items = bankAccounts,
-                    onItemClick = { route ->
-                        route?.let { navController.navigate(it) }
-                    },
-                    onAddClick = { navController.navigate("add_bank_account") }
-                )
-            }
+                // Digital Wallets Section
+                item {
+                    PaymentMethodSection(
+                        title = "Digital Wallets",
+                        items = digitalWallets,
+                        onItemClick = { route ->
+                            route?.let { navController.navigate(it) }
+                        },
+                        onAddClick = { navController.navigate("add_digital_wallet") }
+                    )
+                }
 
-            // Payment Settings
-            item {
-                PaymentMethodSection(
-                    title = "Payment Settings",
-                    items = paymentSettings,
-                    onItemClick = { route ->
-                        route?.let { navController.navigate(it) }
-                    },
-                    showAddButton = false
-                )
-            }
+                // Bank Accounts Section
+                item {
+                    PaymentMethodSection(
+                        title = "Bank Accounts",
+                        items = bankAccounts,
+                        onItemClick = { route ->
+                            route?.let { navController.navigate(it) }
+                        },
+                        onAddClick = { navController.navigate("add_bank_account") }
+                    )
+                }
 
-            // Support Card
-            item {
-                SupportCard(navController)
+                // Payment Settings
+                item {
+                    PaymentMethodSection(
+                        title = "Payment Settings",
+                        items = paymentSettings,
+                        onItemClick = { route ->
+                            route?.let { navController.navigate(it) }
+                        },
+                        showAddButton = false
+                    )
+                }
+
+                // Support Card
+                item {
+                    SupportCard(navController)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,250 +37,265 @@ fun PaymentSecurityScreen(navController: NavController) {
         SecurityAlert("Successful login", "New login from your iPhone", "2 days ago", AlertType.SUCCESS)
     )
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Payment Security",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            // Quick Actions Section
-            item {
-                SecurityQuickActions(navController)
-            }
 
-            // Authentication Methods Section
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text(
-                            "Authentication Methods",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        // Biometric Authentication
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.policy_24px),
-                                    contentDescription = null,
-                                    tint = Color(0xFF637478)
-                                )
-                                Column {
-                                    Text(
-                                        "Biometric Authentication",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        "Use fingerprint or face ID",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF637478)
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = biometricEnabled,
-                                onCheckedChange = { biometricEnabled = it },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFF006D40),
-                                    checkedTrackColor = Color(0xFFE7F5EC)
-                                )
-                            )
-                        }
-
-                        HorizontalDivider()
-
-                        // PIN Authentication
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.pin_drop_24px),
-                                    contentDescription = null,
-                                    tint = Color(0xFF637478)
-                                )
-                                Column {
-                                    Text(
-                                        "PIN Authentication",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        "Use 6-digit PIN",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF637478)
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = pinEnabled,
-                                onCheckedChange = { pinEnabled = it },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFF006D40),
-                                    checkedTrackColor = Color(0xFFE7F5EC)
-                                )
-                            )
-                        }
-
-                        if (pinEnabled) {
-                            TextButton(
-                                onClick = { showChangePin = true }
-                            ) {
-                                Text("Change PIN", color = Color(0xFF006D40))
-                            }
-                        }
-
-                        HorizontalDivider()
-
-                        // Two-Factor Authentication
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.verified_user_24px),
-                                    contentDescription = null,
-                                    tint = Color(0xFF637478)
-                                )
-                                Column {
-                                    Text(
-                                        "Two-Factor Authentication",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        "Additional security layer",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF637478)
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = twoFactorEnabled,
-                                onCheckedChange = {
-                                    // Navigate to 2FA setup screen
-                                    navController.navigate("coming_soon")
-                                },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color(0xFF006D40),
-                                    checkedTrackColor = Color(0xFFE7F5EC)
-                                )
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Payment Security",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
             }
 
-            // Recent Security Alerts
-            item {
-                Text(
-                    "Recent Security Alerts",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                // Quick Actions Section
+                item {
+                    SecurityQuickActions(navController)
+                }
 
-            items(securityAlerts) { alert ->
-                SecurityAlertItem(alert)
-            }
-
-            // Additional Security Options
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                // Authentication Methods Section
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
                     ) {
-                        Text(
-                            "Additional Security",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                "Authentication Methods",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
 
-                        SecurityOptionItem(
-                            icon = R.drawable.account_balance_wallet_24px,
-                            title = "Trusted Devices",
-                            subtitle = "Manage devices that can access your account",
-                            onClick = { navController.navigate("coming_soon") }
-                        )
+                            // Biometric Authentication
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.policy_24px),
+                                        contentDescription = null,
+                                        tint = Color(0xFF637478)
+                                    )
+                                    Column {
+                                        Text(
+                                            "Biometric Authentication",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            "Use fingerprint or face ID",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF637478)
+                                        )
+                                    }
+                                }
+                                Switch(
+                                    checked = biometricEnabled,
+                                    onCheckedChange = { biometricEnabled = it },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color(0xFF006D40),
+                                        checkedTrackColor = Color(0xFFE7F5EC)
+                                    )
+                                )
+                            }
 
-                        SecurityOptionItem(
-                            icon = R.drawable.notifications_24px,
-                            title = "Security Notifications",
-                            subtitle = "Manage alert preferences",
-                            onClick = { navController.navigate("coming_soon") }
-                        )
+                            HorizontalDivider()
 
-                        SecurityOptionItem(
-                            icon = R.drawable.history_24px,
-                            title = "Activity Log",
-                            subtitle = "View recent account activities",
-                            onClick = { navController.navigate("coming_soon") }
-                        )
+                            // PIN Authentication
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.pin_drop_24px),
+                                        contentDescription = null,
+                                        tint = Color(0xFF637478)
+                                    )
+                                    Column {
+                                        Text(
+                                            "PIN Authentication",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            "Use 6-digit PIN",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF637478)
+                                        )
+                                    }
+                                }
+                                Switch(
+                                    checked = pinEnabled,
+                                    onCheckedChange = { pinEnabled = it },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color(0xFF006D40),
+                                        checkedTrackColor = Color(0xFFE7F5EC)
+                                    )
+                                )
+                            }
+
+                            if (pinEnabled) {
+                                TextButton(
+                                    onClick = { showChangePin = true }
+                                ) {
+                                    Text("Change PIN", color = Color(0xFF006D40))
+                                }
+                            }
+
+                            HorizontalDivider()
+
+                            // Two-Factor Authentication
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.verified_user_24px),
+                                        contentDescription = null,
+                                        tint = Color(0xFF637478)
+                                    )
+                                    Column {
+                                        Text(
+                                            "Two-Factor Authentication",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            "Additional security layer",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF637478)
+                                        )
+                                    }
+                                }
+                                Switch(
+                                    checked = twoFactorEnabled,
+                                    onCheckedChange = {
+                                        navController.navigate("coming_soon")
+                                    },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color(0xFF006D40),
+                                        checkedTrackColor = Color(0xFFE7F5EC)
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Recent Security Alerts
+                item {
+                    Text(
+                        "Recent Security Alerts",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                items(securityAlerts) { alert ->
+                    SecurityAlertItem(alert)
+                }
+
+                // Additional Security Options
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                "Additional Security",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            SecurityOptionItem(
+                                icon = R.drawable.account_balance_wallet_24px,
+                                title = "Trusted Devices",
+                                subtitle = "Manage devices that can access your account",
+                                onClick = { navController.navigate("coming_soon") }
+                            )
+
+                            SecurityOptionItem(
+                                icon = R.drawable.notifications_24px,
+                                title = "Security Notifications",
+                                subtitle = "Manage alert preferences",
+                                onClick = { navController.navigate("coming_soon") }
+                            )
+
+                            SecurityOptionItem(
+                                icon = R.drawable.history_24px,
+                                title = "Activity Log",
+                                subtitle = "View recent account activities",
+                                onClick = { navController.navigate("coming_soon") }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
+    // PIN Change Dialog
     if (showChangePin) {
         ChangePinDialog(
             onDismiss = { showChangePin = false },
