@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -142,247 +143,275 @@ fun <T> SecurityScreen(navController: NavController) {
         }
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Security",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+
                     Text(
-                        "Change Password",
+                        text = "Security",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
+                }
+            }
 
-                    OutlinedTextField(
-                        value = currentPassword,
-                        onValueChange = { currentPassword = it },
-                        label = { Text("Current Password") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (showCurrentPassword)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { showCurrentPassword = !showCurrentPassword }) {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = if (showCurrentPassword)
-                                        "Hide password"
-                                    else
-                                        "Show password",
-                                    tint = if (showCurrentPassword)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        Color.Gray
-                                )
-                            }
-                        }
+            // Main Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Password Change Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-
-                    OutlinedTextField(
-                        value = newPassword,
-                        onValueChange = {
-                            newPassword = it
-                            passwordViewModel.validatePassword(it)
-                        },
-                        label = { Text("New Password") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (showNewPassword)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { showNewPassword = !showNewPassword }) {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = if (showNewPassword)
-                                        "Hide password"
-                                    else
-                                        "Show password",
-                                    tint = if (showNewPassword)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        Color.Gray
-                                )
-                            }
-                        }
-                    )
-
+                ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        LinearProgressIndicator(
-                            progress = when (passwordStrength) {
-                                PasswordStrength.WEAK -> 0.33f
-                                PasswordStrength.MEDIUM -> 0.66f
-                                PasswordStrength.STRONG -> 1f
+                        Text(
+                            "Change Password",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        // Current Password Field
+                        OutlinedTextField(
+                            value = currentPassword,
+                            onValueChange = { currentPassword = it },
+                            label = { Text("Current Password") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = if (showCurrentPassword)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { showCurrentPassword = !showCurrentPassword }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = if (showCurrentPassword)
+                                            "Hide password"
+                                        else
+                                            "Show password",
+                                        tint = if (showCurrentPassword)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            Color.Gray
+                                    )
+                                }
+                            }
+                        )
+
+                        // New Password Field
+                        OutlinedTextField(
+                            value = newPassword,
+                            onValueChange = {
+                                newPassword = it
+                                passwordViewModel.validatePassword(it)
+                            },
+                            label = { Text("New Password") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = if (showNewPassword)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { showNewPassword = !showNewPassword }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = if (showNewPassword)
+                                            "Hide password"
+                                        else
+                                            "Show password",
+                                        tint = if (showNewPassword)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            Color.Gray
+                                    )
+                                }
+                            }
+                        )
+
+                        // Password Strength Indicator
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            LinearProgressIndicator(
+                                progress = when (passwordStrength) {
+                                    PasswordStrength.WEAK -> 0.33f
+                                    PasswordStrength.MEDIUM -> 0.66f
+                                    PasswordStrength.STRONG -> 1f
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                color = when (passwordStrength) {
+                                    PasswordStrength.WEAK -> Color.Red
+                                    PasswordStrength.MEDIUM -> Color(0xFFFFB74D)
+                                    PasswordStrength.STRONG -> Color(0xFF4CAF50)
+                                }
+                            )
+
+                            Text(
+                                text = "Password Strength: ${passwordStrength.name}",
+                                color = when (passwordStrength) {
+                                    PasswordStrength.WEAK -> Color.Red
+                                    PasswordStrength.MEDIUM -> Color(0xFFFF9800)
+                                    PasswordStrength.STRONG -> Color(0xFF4CAF50)
+                                },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        // Confirm Password Field
+                        OutlinedTextField(
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            label = { Text("Confirm New Password") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = if (showConfirmPassword)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = if (showConfirmPassword)
+                                            "Hide password"
+                                        else
+                                            "Show password",
+                                        tint = if (showConfirmPassword)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            Color.Gray
+                                    )
+                                }
+                            },
+                            isError = newPassword != confirmPassword && confirmPassword.isNotEmpty()
+                        )
+
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    passwordViewModel.changePassword(
+                                        currentPassword,
+                                        newPassword,
+                                        confirmPassword
+                                    )
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            color = when (passwordStrength) {
-                                PasswordStrength.WEAK -> Color.Red
-                                PasswordStrength.MEDIUM -> Color(0xFFFFB74D)
-                                PasswordStrength.STRONG -> Color(0xFF4CAF50)
-                            }
-                        )
-
-                        Text(
-                            text = "Password Strength: ${passwordStrength.name}",
-                            color = when (passwordStrength) {
-                                PasswordStrength.WEAK -> Color.Red
-                                PasswordStrength.MEDIUM -> Color(0xFFFF9800)
-                                PasswordStrength.STRONG -> Color(0xFF4CAF50)
-                            },
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                            enabled = currentPassword.isNotEmpty() &&
+                                    newPassword.isNotEmpty() &&
+                                    confirmPassword.isNotEmpty() &&
+                                    passwordStrength != PasswordStrength.WEAK &&
+                                    newPassword == confirmPassword
+                        ) {
+                            Text("Update Password")
+                        }
                     }
+                }
 
-                    OutlinedTextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        label = { Text("Confirm New Password") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (showConfirmPassword)
-                            VisualTransformation.None
-                        else
-                            PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = if (showConfirmPassword)
-                                        "Hide password"
-                                    else
-                                        "Show password",
-                                    tint = if (showConfirmPassword)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        Color.Gray
-                                )
-                            }
-                        },
-                        isError = newPassword != confirmPassword && confirmPassword.isNotEmpty()
+                // Password Requirements Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                passwordViewModel.changePassword(
-                                    currentPassword,
-                                    newPassword,
-                                    confirmPassword
-                                )
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = currentPassword.isNotEmpty() &&
-                                newPassword.isNotEmpty() &&
-                                confirmPassword.isNotEmpty() &&
-                                passwordStrength != PasswordStrength.WEAK &&
-                                newPassword == confirmPassword
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text("Update Password")
+                        Text(
+                            "Password Requirements",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text("• Minimum 8 characters")
+                        Text("• At least one uppercase letter")
+                        Text("• At least one lowercase letter")
+                        Text("• At least one number")
+                        Text("• At least one special character")
                     }
                 }
-            }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        "Password Requirements",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                // Security Tips Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-
-                    Text("• Minimum 8 characters")
-                    Text("• At least one uppercase letter")
-                    Text("• At least one lowercase letter")
-                    Text("• At least one number")
-                    Text("• At least one special character")
-                }
-            }
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        "Security Tips",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "Security Tips",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                    Text("• Never share your password with anyone")
-                    Text("• Use different passwords for different accounts")
-                    Text("• Avoid using personal information in your password")
-                    Text("• Change your password regularly")
-                    Text("• Enable two-factor authentication when available")
+                        Text("• Never share your password with anyone")
+                        Text("• Use different passwords for different accounts")
+                        Text("• Avoid using personal information in your password")
+                        Text("• Change your password regularly")
+                        Text("• Enable two-factor authentication when available")
+                    }
                 }
             }
         }
+
+        // Snackbar Host
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
