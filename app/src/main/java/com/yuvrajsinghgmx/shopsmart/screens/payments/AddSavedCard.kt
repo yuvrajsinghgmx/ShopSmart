@@ -1,11 +1,13 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -57,227 +59,240 @@ fun AddSavedCardScreen(navController: NavController) {
             cardDetail.expiryYear.isNotBlank() &&
             cardDetail.cvv.isNotBlank()
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Add Card",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_back_24px),
                             contentDescription = "Back"
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Security Notice
-            item {
-                SecurityNoticeCard()
+
+                    Text(
+                        text = "Add Card",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            // Card Input Form
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Security Notice
+                item {
+                    SecurityNoticeCard()
+                }
+
+                // Card Input Form
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
                     ) {
-                        // Card Number
-                        CardNumberTextField(
-                            value = cardDetail.cardNumber.text,
-                            onValueChange = { newValue ->
-                                if (newValue.length <= 19) {
-                                    val digitsOnly = newValue.filter { it.isDigit() }
-                                    cardDetail = cardDetail.copy(
-                                        cardNumber = TextFieldValue(newValue),
-                                        cardType = detectCardType(digitsOnly)
-                                    )
-                                    validations = validations + ("cardNumber" to validateCardNumber(digitsOnly))
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            cardType = cardDetail.cardType,
-                            isError = validations["cardNumber"]?.isValid == false,
-                            errorMessage = validations["cardNumber"]?.takeIf { !it.isValid }?.errorMessage
-                        )
-
-                        // Cardholder Name
-                        OutlinedTextField(
-                            value = cardDetail.cardholderName,
-                            onValueChange = { value ->
-                                cardDetail = cardDetail.copy(cardholderName = value.uppercase())
-                                validations = validations + ("cardholderName" to validateCardholderName(value))
-                            },
-                            label = { Text("Cardholder Name") },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.person_24px),
-                                    contentDescription = null
-                                )
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                capitalization = KeyboardCapitalization.Characters
-                            ),
-                            singleLine = true,
-                            isError = validations["cardholderName"]?.isValid == false,
-                            supportingText = validations["cardholderName"]?.let { validation ->
-                                if (!validation.isValid) {
-                                    { Text(validation.errorMessage) }
-                                } else null
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        // Expiry Date and CVV Row
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            // Expiry Month
-                            OutlinedTextField(
-                                value = cardDetail.expiryMonth,
-                                onValueChange = { value ->
-                                    if (value.length <= 2) {
-                                        cardDetail = cardDetail.copy(expiryMonth = value)
-                                        validations = validations + ("expiryMonth" to validateExpiryMonth(value))
-                                    }
-                                },
-                                label = { Text("MM") },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                singleLine = true,
-                                isError = validations["expiryMonth"]?.isValid == false,
-                                supportingText = validations["expiryMonth"]?.let { validation ->
-                                    if (!validation.isValid) {
-                                        { Text(validation.errorMessage) }
-                                    } else null
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            // Expiry Year
-                            OutlinedTextField(
-                                value = cardDetail.expiryYear,
-                                onValueChange = { value ->
-                                    if (value.length <= 2) {
-                                        cardDetail = cardDetail.copy(expiryYear = value)
-                                        validations = validations + ("expiryYear" to validateExpiryYear(value))
-                                    }
-                                },
-                                label = { Text("YY") },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number
-                                ),
-                                singleLine = true,
-                                isError = validations["expiryYear"]?.isValid == false,
-                                supportingText = validations["expiryYear"]?.let { validation ->
-                                    if (!validation.isValid) {
-                                        { Text(validation.errorMessage) }
-                                    } else null
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            // CVV
-                            OutlinedTextField(
-                                value = cardDetail.cvv,
-                                onValueChange = { value ->
-                                    if (value.length <= 4) {
-                                        cardDetail = cardDetail.copy(cvv = value)
-                                        validations = validations + ("cvv" to validateCVV(value, cardDetail.cardType))
-                                    }
-                                },
-                                label = { Text("CVV") },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Done
-                                ),
-                                visualTransformation = PasswordVisualTransformation(),
-                                singleLine = true,
-                                isError = validations["cvv"]?.isValid == false,
-                                supportingText = validations["cvv"]?.let { validation ->
-                                    if (!validation.isValid) {
-                                        { Text(validation.errorMessage) }
-                                    } else null
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-
-                        // Save Button
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    isLoading = true
-                                    // Simulate API call
-                                    delay(1500)
-
-                                    // Add the new card to SavedCardsManager
-                                    val lastFourDigits = cardDetail.cardNumber.text.filter { it.isDigit() }.takeLast(4)
-                                    val expiryDate = "${cardDetail.expiryMonth}/${cardDetail.expiryYear}"
-
-                                    SavedCardsManager.addCard(
-                                        PaymentMethodInfo(
-                                            "•••• •••• •••• $lastFourDigits",
-                                            "Expires $expiryDate",
-                                            R.drawable.credit_card_24px,
-                                            "saved_cards"
+                            // Card Number
+                            CardNumberTextField(
+                                value = cardDetail.cardNumber.text,
+                                onValueChange = { newValue ->
+                                    if (newValue.length <= 19) {
+                                        val digitsOnly = newValue.filter { it.isDigit() }
+                                        cardDetail = cardDetail.copy(
+                                            cardNumber = TextFieldValue(newValue),
+                                            cardType = detectCardType(digitsOnly)
                                         )
-                                    )
-
-                                    isLoading = false
-                                    showSuccessDialog = true
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = isFormValid && !isLoading,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF006D40)
+                                        validations = validations + ("cardNumber" to validateCardNumber(digitsOnly))
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                cardType = cardDetail.cardType,
+                                isError = validations["cardNumber"]?.isValid == false,
+                                errorMessage = validations["cardNumber"]?.takeIf { !it.isValid }?.errorMessage
                             )
-                        ) {
-                            if (isLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = Color.White,
-                                    strokeWidth = 2.dp
+
+                            // Cardholder Name
+                            OutlinedTextField(
+                                value = cardDetail.cardholderName,
+                                onValueChange = { value ->
+                                    cardDetail = cardDetail.copy(cardholderName = value.uppercase())
+                                    validations = validations + ("cardholderName" to validateCardholderName(value))
+                                },
+                                label = { Text("Cardholder Name") },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.person_24px),
+                                        contentDescription = null
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    capitalization = KeyboardCapitalization.Characters
+                                ),
+                                singleLine = true,
+                                isError = validations["cardholderName"]?.isValid == false,
+                                supportingText = validations["cardholderName"]?.let { validation ->
+                                    if (!validation.isValid) {
+                                        { Text(validation.errorMessage) }
+                                    } else null
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            // Expiry Date and CVV Row
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                // Expiry Month
+                                OutlinedTextField(
+                                    value = cardDetail.expiryMonth,
+                                    onValueChange = { value ->
+                                        if (value.length <= 2) {
+                                            cardDetail = cardDetail.copy(expiryMonth = value)
+                                            validations = validations + ("expiryMonth" to validateExpiryMonth(value))
+                                        }
+                                    },
+                                    label = { Text("MM") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    ),
+                                    singleLine = true,
+                                    isError = validations["expiryMonth"]?.isValid == false,
+                                    supportingText = validations["expiryMonth"]?.let { validation ->
+                                        if (!validation.isValid) {
+                                            { Text(validation.errorMessage) }
+                                        } else null
+                                    },
+                                    modifier = Modifier.weight(1f)
                                 )
-                            } else {
-                                Text("Save Card")
+
+                                // Expiry Year
+                                OutlinedTextField(
+                                    value = cardDetail.expiryYear,
+                                    onValueChange = { value ->
+                                        if (value.length <= 2) {
+                                            cardDetail = cardDetail.copy(expiryYear = value)
+                                            validations = validations + ("expiryYear" to validateExpiryYear(value))
+                                        }
+                                    },
+                                    label = { Text("YY") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    ),
+                                    singleLine = true,
+                                    isError = validations["expiryYear"]?.isValid == false,
+                                    supportingText = validations["expiryYear"]?.let { validation ->
+                                        if (!validation.isValid) {
+                                            { Text(validation.errorMessage) }
+                                        } else null
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                // CVV
+                                OutlinedTextField(
+                                    value = cardDetail.cvv,
+                                    onValueChange = { value ->
+                                        if (value.length <= 4) {
+                                            cardDetail = cardDetail.copy(cvv = value)
+                                            validations = validations + ("cvv" to validateCVV(value, cardDetail.cardType))
+                                        }
+                                    },
+                                    label = { Text("CVV") },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    visualTransformation = PasswordVisualTransformation(),
+                                    singleLine = true,
+                                    isError = validations["cvv"]?.isValid == false,
+                                    supportingText = validations["cvv"]?.let { validation ->
+                                        if (!validation.isValid) {
+                                            { Text(validation.errorMessage) }
+                                        } else null
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+
+                            // Save Button
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        isLoading = true
+                                        // Simulate API call
+                                        delay(1500)
+
+                                        // Add the new card to SavedCardsManager
+                                        val lastFourDigits = cardDetail.cardNumber.text.filter { it.isDigit() }.takeLast(4)
+                                        val expiryDate = "${cardDetail.expiryMonth}/${cardDetail.expiryYear}"
+
+                                        SavedCardsManager.addCard(
+                                            PaymentMethodInfo(
+                                                "•••• •••• •••• $lastFourDigits",
+                                                "Expires $expiryDate",
+                                                R.drawable.credit_card_24px,
+                                                "saved_cards"
+                                            )
+                                        )
+
+                                        isLoading = false
+                                        showSuccessDialog = true
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled = isFormValid && !isLoading,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF006D40)
+                                )
+                            ) {
+                                if (isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Text("Save Card")
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // Supported Cards Section
-            item {
-                SupportedCardsSection()
+                // Supported Cards Section
+                item {
+                    SupportedCardsSection()
+                }
             }
         }
     }

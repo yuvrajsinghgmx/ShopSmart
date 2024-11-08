@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -21,199 +22,214 @@ fun BankAccountDetailsScreen(navController: NavController, accountNumber: String
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showDefaultDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Account Details",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        if (account != null) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Account Status Card
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = if (account.isDefault) Color(0xFFE7F5EC) else Color.White
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+                    Text(
+                        text = "Account Details",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+
+            // Main Content
+            if (account != null) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Account Status Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = if (account.isDefault) Color(0xFFE7F5EC) else Color.White
                         ) {
-                            Icon(
-                                painter = painterResource(
-                                    id = if (account.isDefault)
-                                        R.drawable.ic_check_circle
-                                    else
-                                        R.drawable.account_balance_24px
-                                ),
-                                contentDescription = null,
-                                tint = if (account.isDefault) Color(0xFF006D40) else Color(0xFF637478)
-                            )
-                            Column(modifier = Modifier.weight(1f)) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (account.isDefault)
+                                            R.drawable.ic_check_circle
+                                        else
+                                            R.drawable.account_balance_24px
+                                    ),
+                                    contentDescription = null,
+                                    tint = if (account.isDefault) Color(0xFF006D40) else Color(0xFF637478)
+                                )
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "•••• ${accountNumber.takeLast(4)}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = if (account.isDefault)
+                                            "Default Account"
+                                        else
+                                            "Saved Account",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color(0xFF637478)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Account Details Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color.White
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
                                 Text(
-                                    text = "•••• ${accountNumber.takeLast(4)}",
+                                    "Account Information",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                Text(
-                                    text = if (account.isDefault)
-                                        "Default Account"
-                                    else
-                                        "Saved Account",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF637478)
+
+                                DetailItem(
+                                    icon = R.drawable.profile,
+                                    label = "Account Holder",
+                                    value = account.holderName
+                                )
+
+                                DetailItem(
+                                    icon = R.drawable.account_balance_24px,
+                                    label = "Bank Name",
+                                    value = account.bankName
+                                )
+
+                                DetailItem(
+                                    icon = R.drawable.account_balance_wallet_24px,
+                                    label = "Account Type",
+                                    value = account.accountType
+                                )
+
+                                DetailItem(
+                                    icon = R.drawable.payments_24px,
+                                    label = "IFSC Code",
+                                    value = account.ifscCode
+                                )
+
+                                DetailItem(
+                                    icon = R.drawable.pin_drop_24px,
+                                    label = "Branch",
+                                    value = account.branchName
                                 )
                             }
                         }
                     }
-                }
 
-                // Account Details Card
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = Color.White
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                    // Actions Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color.White
                         ) {
-                            Text(
-                                "Account Information",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                if (!account.isDefault) {
+                                    Button(
+                                        onClick = { showDefaultDialog = true },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF006D40)
+                                        )
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_check_circle),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Set as Default")
+                                    }
+                                }
 
-                            DetailItem(
-                                icon = R.drawable.profile,
-                                label = "Account Holder",
-                                value = account.holderName
-                            )
-
-                            DetailItem(
-                                icon = R.drawable.account_balance_24px,
-                                label = "Bank Name",
-                                value = account.bankName
-                            )
-
-                            DetailItem(
-                                icon = R.drawable.account_balance_wallet_24px,
-                                label = "Account Type",
-                                value = account.accountType
-                            )
-
-                            DetailItem(
-                                icon = R.drawable.payments_24px,
-                                label = "IFSC Code",
-                                value = account.ifscCode
-                            )
-
-                            DetailItem(
-                                icon = R.drawable.pin_drop_24px,
-                                label = "Branch",
-                                value = account.branchName
-                            )
-                        }
-                    }
-                }
-
-                // Actions Card
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = Color.White
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            if (!account.isDefault) {
-                                Button(
-                                    onClick = { showDefaultDialog = true },
+                                OutlinedButton(
+                                    onClick = { showDeleteDialog = true },
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF006D40)
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = Color.Red
                                     )
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.ic_check_circle),
+                                        painter = painterResource(id = R.drawable.delete_24px),
                                         contentDescription = null,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Set as Default")
+                                    Text("Remove Account")
                                 }
-                            }
-
-                            OutlinedButton(
-                                onClick = { showDeleteDialog = true },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = Color.Red
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.delete_24px),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Remove Account")
                             }
                         }
                     }
-                }
 
-                // Security Note
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = Color(0xFFFFF4ED)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    // Security Note
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color(0xFFFFF4ED)
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_lock),
-                                contentDescription = null,
-                                tint = Color(0xFFB25E02)
-                            )
-                            Text(
-                                "Your bank account information is securely stored and encrypted",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFFB25E02)
-                            )
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_lock),
+                                    contentDescription = null,
+                                    tint = Color(0xFFB25E02)
+                                )
+                                Text(
+                                    "Your bank account information is securely stored and encrypted",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFFB25E02)
+                                )
+                            }
                         }
                     }
                 }

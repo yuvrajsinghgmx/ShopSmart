@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -59,118 +60,120 @@ fun AutoPayScreen(navController: NavController) {
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Auto-Pay",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddPaymentDialog = true },
-                containerColor = Color(0xFF006D40)
-            ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = "Add Auto Payment",
-                    tint = Color.White
-                )
-            }
-        }
-    ) { innerPadding ->
-        if (autoPayments.isEmpty()) {
-            EmptyAutoPayState(
-                modifier = Modifier.padding(innerPadding),
-                onAddPayment = { showAddPaymentDialog = true }
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Overview Card
-                item {
-                    AutoPayOverviewCard(autoPayments)
-                }
 
-                // Settings Card
-                item {
-                    AutoPaySettingsCard(navController)
-                }
-
-                // Active Auto-Payments
-                item {
                     Text(
-                        "Active Auto-Payments",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = "Auto-Pay",
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+            }
 
-                items(autoPayments) { payment ->
-                    AutoPaymentCard(
-                        payment = payment,
-                        onEditClick = { selectedPayment = payment },
-                        onToggle = { isEnabled ->
-                            autoPayments = autoPayments.map {
-                                if (it.id == payment.id) it.copy(isEnabled = isEnabled)
-                                else it
+            // Main Content
+            if (autoPayments.isEmpty()) {
+                EmptyAutoPayState(
+                    onAddPayment = { showAddPaymentDialog = true }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Overview Card
+                    item {
+                        AutoPayOverviewCard(autoPayments)
+                    }
+
+                    // Settings Card
+                    item {
+                        AutoPaySettingsCard(navController)
+                    }
+
+                    // Active Auto-Payments
+                    item {
+                        Text(
+                            "Active Auto-Payments",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    items(autoPayments) { payment ->
+                        AutoPaymentCard(
+                            payment = payment,
+                            onEditClick = { selectedPayment = payment },
+                            onToggle = { isEnabled ->
+                                autoPayments = autoPayments.map {
+                                    if (it.id == payment.id) it.copy(isEnabled = isEnabled)
+                                    else it
+                                }
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                // Info Card
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = Color(0xFFF0F7FF)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    // Info Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color(0xFFF0F7FF)
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.info_24px),
-                                contentDescription = null,
-                                tint = Color(0xFF0055D4)
-                            )
-                            Column {
-                                Text(
-                                    "Auto-Pay Information",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0055D4)
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.info_24px),
+                                    contentDescription = null,
+                                    tint = Color(0xFF0055D4)
                                 )
-                                Text(
-                                    "Automatic payments are processed on the scheduled date. Make sure to maintain sufficient balance.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF0055D4)
-                                )
+                                Column {
+                                    Text(
+                                        "Auto-Pay Information",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF0055D4)
+                                    )
+                                    Text(
+                                        "Automatic payments are processed on the scheduled date. Make sure to maintain sufficient balance.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF0055D4)
+                                    )
+                                }
                             }
                         }
                     }
@@ -178,34 +181,49 @@ fun AutoPayScreen(navController: NavController) {
             }
         }
 
-        // Dialogs
-        if (showAddPaymentDialog) {
-            AddAutoPaymentDialog(
-                onDismiss = { showAddPaymentDialog = false },
-                onSave = { payment ->
-                    autoPayments = autoPayments + payment
-                    showAddPaymentDialog = false
-                }
+        // FAB
+        FloatingActionButton(
+            onClick = { showAddPaymentDialog = true },
+            containerColor = Color(0xFF006D40),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add Auto Payment",
+                tint = Color.White
             )
         }
+    }
 
-        selectedPayment?.let { payment ->
-            EditAutoPaymentDialog(
-                payment = payment,
-                onDismiss = { selectedPayment = null },
-                onSave = { updatedPayment ->
-                    autoPayments = autoPayments.map {
-                        if (it.id == updatedPayment.id) updatedPayment
-                        else it
-                    }
-                    selectedPayment = null
-                },
-                onDelete = { paymentToDelete ->
-                    autoPayments = autoPayments.filter { it.id != paymentToDelete.id }
-                    selectedPayment = null
+    // Dialogs
+    if (showAddPaymentDialog) {
+        AddAutoPaymentDialog(
+            onDismiss = { showAddPaymentDialog = false },
+            onSave = { payment ->
+                autoPayments = autoPayments + payment
+                showAddPaymentDialog = false
+            }
+        )
+    }
+
+    selectedPayment?.let { payment ->
+        EditAutoPaymentDialog(
+            payment = payment,
+            onDismiss = { selectedPayment = null },
+            onSave = { updatedPayment ->
+                autoPayments = autoPayments.map {
+                    if (it.id == updatedPayment.id) updatedPayment
+                    else it
                 }
-            )
-        }
+                selectedPayment = null
+            },
+            onDelete = { paymentToDelete ->
+                autoPayments = autoPayments.filter { it.id != paymentToDelete.id }
+                selectedPayment = null
+            }
+        )
     }
 }
 
