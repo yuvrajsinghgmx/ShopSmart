@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.payments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,82 +48,100 @@ fun SavedCardsScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Saved Cards",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                actions = {
+
+                    Text(
+                        text = "Saved Cards",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+
                     IconButton(onClick = { showAddCardDialog = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.add_card_24px),
-                            contentDescription = "Add Card"
+                            contentDescription = "Add Card",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        if (savedCards.isEmpty()) {
-            EmptyCardsMessage(
-                modifier = Modifier.padding(innerPadding),
-                onAddCard = { showAddCardDialog = true }
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(savedCards) { card ->
-                    SavedCardItem(
-                        card = card,
-                        onEditCard = { editingCard = card },
-                        onDeleteCard = { showDeleteDialog = card },
-                        onSetDefault = { newDefaultCard ->
-                            savedCards = savedCards.map { it.copy(isDefault = it == newDefaultCard) }
-                        }
-                    )
                 }
+            }
 
-                item {
-                    OutlinedButton(
-                        onClick = { showAddCardDialog = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.add_card_24px),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+            // Main Content
+            if (savedCards.isEmpty()) {
+                EmptyCardsMessage(
+                    onAddCard = { showAddCardDialog = true }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(savedCards) { card ->
+                        SavedCardItem(
+                            card = card,
+                            onEditCard = { editingCard = card },
+                            onDeleteCard = { showDeleteDialog = card },
+                            onSetDefault = { newDefaultCard ->
+                                savedCards = savedCards.map { it.copy(isDefault = it == newDefaultCard) }
+                            }
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Add New Card")
+                    }
+
+                    item {
+                        OutlinedButton(
+                            onClick = { showAddCardDialog = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.add_card_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Add New Card")
+                        }
                     }
                 }
             }
         }
     }
 
+    // Dialogs
     if (showAddCardDialog) {
         AddEditCardDialog(
             card = null,

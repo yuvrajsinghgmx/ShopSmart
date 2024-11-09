@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -23,121 +24,136 @@ fun ApplePaySetupScreen(navController: NavController) {
     var showError by remember { mutableStateOf(false) }
     var deviceSupported by remember { mutableStateOf(true) } // For device compatibility check
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Set up Apple Pay",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Apple Pay Logo
-            item {
-                Image(
-                    painter = painterResource(id = R.drawable.apple_pay_24px),
-                    contentDescription = "Apple Pay Logo",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp)
-                )
-            }
-
-            // Device Compatibility Check
-            item {
-                DeviceCompatibilityCard(deviceSupported)
-            }
-
-            // Setup Status
-            item {
-                SetupStatusCard(setupComplete, showError, deviceSupported)
-            }
-
-            // Features Section
-            item {
-                FeaturesSection()
-            }
-
-            // Setup Steps
-            item {
-                SetupStepsCard()
-            }
-
-            // Security Info
-            item {
-                SecurityInfoCard()
-            }
-
-            // Action Buttons
-            item {
-                Column(
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = {
-                            if (deviceSupported) {
-                                isLoading = true
-                                // Simulate Apple Pay setup process
-                                kotlinx.coroutines.GlobalScope.launch {
-                                    kotlinx.coroutines.delay(2000)
-                                    isLoading = false
-                                    setupComplete = true
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !isLoading && !setupComplete && deviceSupported,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF000000) // Apple Pay black
-                        )
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = Color.White
-                            )
-                        } else {
-                            Text(if (setupComplete) "Setup Complete" else "Set up Apple Pay")
-                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back_24px),
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
+                        )
                     }
 
-                    if (setupComplete) {
-                        OutlinedButton(
-                            onClick = { navController.navigateUp() },
+                    Text(
+                        text = "Set up Apple Pay",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                // Apple Pay Logo
+                item {
+                    Image(
+                        painter = painterResource(id = R.drawable.apple_pay_24px),
+                        contentDescription = "Apple Pay Logo",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(8.dp)
+                    )
+                }
+
+                // Device Compatibility Check
+                item {
+                    DeviceCompatibilityCard(deviceSupported)
+                }
+
+                // Setup Status
+                item {
+                    SetupStatusCard(setupComplete, showError, deviceSupported)
+                }
+
+                // Features Section
+                item {
+                    FeaturesSection()
+                }
+
+                // Setup Steps
+                item {
+                    SetupStepsCard()
+                }
+
+                // Security Info
+                item {
+                    SecurityInfoCard()
+                }
+
+                // Action Buttons
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                if (deviceSupported) {
+                                    isLoading = true
+                                    // Simulate Apple Pay setup process
+                                    kotlinx.coroutines.GlobalScope.launch {
+                                        kotlinx.coroutines.delay(2000)
+                                        isLoading = false
+                                        setupComplete = true
+                                    }
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFF000000)
+                            enabled = !isLoading && !setupComplete && deviceSupported,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF000000) // Apple Pay black
                             )
                         ) {
-                            Text("Return to Payment Methods")
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.White
+                                )
+                            } else {
+                                Text(if (setupComplete) "Setup Complete" else "Set up Apple Pay")
+                            }
+                        }
+
+                        if (setupComplete) {
+                            OutlinedButton(
+                                onClick = { navController.navigateUp() },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = Color(0xFF000000)
+                                )
+                            ) {
+                                Text("Return to Payment Methods")
+                            }
                         }
                     }
                 }

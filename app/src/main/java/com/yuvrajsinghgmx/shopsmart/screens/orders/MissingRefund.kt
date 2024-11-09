@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,249 +36,264 @@ fun MissingRefundScreen(navController: NavController) {
         "Other issues"
     )
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Missing Refund",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Status Check Section
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text(
-                            "Check Refund Status",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
 
-                        OutlinedTextField(
-                            value = orderId,
-                            onValueChange = {
-                                orderId = it
-                                showDetails = false
-                            },
-                            label = { Text("Order ID") },
-                            placeholder = { Text("Enter Order ID (e.g., ORD-12345678)") },
-                            modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text
-                            ),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF006D40),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
-                            )
-                        )
-
-                        Button(
-                            onClick = { showDetails = true },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF006D40)
-                            )
-                        ) {
-                            Text("Check Status")
-                        }
-                    }
+                    Text(
+                        text = "Missing Refund",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
             }
 
-            // Quick Actions Card
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color(0xFFE7F5EC)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Status Check Section
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                "Check Refund Status",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            OutlinedTextField(
+                                value = orderId,
+                                onValueChange = {
+                                    orderId = it
+                                    showDetails = false
+                                },
+                                label = { Text("Order ID") },
+                                placeholder = { Text("Enter Order ID (e.g., ORD-12345678)") },
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF006D40),
+                                    unfocusedBorderColor = Color(0xFFE5E7EB)
+                                )
+                            )
+
+                            Button(
+                                onClick = { showDetails = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF006D40)
+                                )
+                            ) {
+                                Text("Check Status")
+                            }
+                        }
+                    }
+                }
+
+                // Quick Actions Card
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color(0xFFE7F5EC)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.support_agent_24px),
+                                contentDescription = null,
+                                tint = Color(0xFF006D40)
+                            )
+                            Column {
+                                Text(
+                                    "Quick Support Actions",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF006D40)
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                QuickActionButton("Live Chat Support", R.drawable.chat_24px) {
+                                    navController.navigate("live_chat")
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                QuickActionButton("Call Support", R.drawable.contact_phone_24px) {
+                                    navController.navigate("phone_support")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Issue Selection
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                "Select Issue Type",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            refundIssueOptions.forEach { option ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = selectedOption == option,
+                                        onClick = { selectedOption = option }
+                                    )
+                                    Text(
+                                        text = option,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier.padding(start = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Additional Notes
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color.White
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                "Additional Notes",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            OutlinedTextField(
+                                value = additionalNotes,
+                                onValueChange = { additionalNotes = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp),
+                                placeholder = { Text("Provide any additional details about your missing refund") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF006D40),
+                                    unfocusedBorderColor = Color(0xFFE5E7EB)
+                                )
+                            )
+                        }
+                    }
+                }
+
+                // Submit Button
+                item {
+                    Button(
+                        onClick = { showSubmitDialog = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = selectedOption != null && orderId.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF006D40)
+                        )
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.support_agent_24px),
+                            painter = painterResource(id = R.drawable.send_24px),
                             contentDescription = null,
-                            tint = Color(0xFF006D40)
+                            modifier = Modifier.size(20.dp)
                         )
-                        Column {
-                            Text(
-                                "Quick Support Actions",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF006D40)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            QuickActionButton("Live Chat Support", R.drawable.chat_24px) {
-                                navController.navigate("live_chat")
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            QuickActionButton("Call Support", R.drawable.contact_phone_24px) {
-                                navController.navigate("phone_support")
-                            }
-                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Submit Report")
                     }
                 }
-            }
 
-            // Issue Selection
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                // Help Card
+                item {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color(0xFFFFF4ED)
                     ) {
-                        Text(
-                            "Select Issue Type",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        refundIssueOptions.forEach { option ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                RadioButton(
-                                    selected = selectedOption == option,
-                                    onClick = { selectedOption = option }
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.help_24px),
+                                contentDescription = null,
+                                tint = Color(0xFFB25E02)
+                            )
+                            Column {
+                                Text(
+                                    "Need Help?",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFFB25E02)
                                 )
                                 Text(
-                                    text = option,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = Modifier.padding(start = 8.dp)
+                                    "Check our refund policy or contact support for immediate assistance",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFFB25E02)
                                 )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Additional Notes
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color.White
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            "Additional Notes",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        OutlinedTextField(
-                            value = additionalNotes,
-                            onValueChange = { additionalNotes = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(120.dp),
-                            placeholder = { Text("Provide any additional details about your missing refund") },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF006D40),
-                                unfocusedBorderColor = Color(0xFFE5E7EB)
-                            )
-                        )
-                    }
-                }
-            }
-
-            // Submit Button
-            item {
-                Button(
-                    onClick = { showSubmitDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = selectedOption != null && orderId.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF006D40)
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.send_24px),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Submit Report")
-                }
-            }
-
-            // Help Card
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    color = Color(0xFFFFF4ED)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.help_24px),
-                            contentDescription = null,
-                            tint = Color(0xFFB25E02)
-                        )
-                        Column {
-                            Text(
-                                "Need Help?",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFFB25E02)
-                            )
-                            Text(
-                                "Check our refund policy or contact support for immediate assistance",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFFB25E02)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            TextButton(
-                                onClick = { navController.navigate("refund_policy") },
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = Color(0xFFB25E02)
-                                )
-                            ) {
-                                Text("View Refund Policy")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextButton(
+                                    onClick = { navController.navigate("refund_policy") },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = Color(0xFFB25E02)
+                                    )
+                                ) {
+                                    Text("View Refund Policy")
+                                }
                             }
                         }
                     }
@@ -286,6 +302,7 @@ fun MissingRefundScreen(navController: NavController) {
         }
     }
 
+    // Submit Dialog
     if (showSubmitDialog) {
         AlertDialog(
             onDismissRequest = { showSubmitDialog = false },
