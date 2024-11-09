@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -106,158 +107,173 @@ fun OrderNotificationsScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Order Notifications",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            item {
-                // Order Status Section
-                SectionTitle("Order Status Updates")
 
-                NotificationToggleItem(
-                    title = "Order Confirmation",
-                    subtitle = "Receive notifications when your order is confirmed",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = orderConfirmation,
-                    onCheckedChange = {
-                        orderConfirmation = it
-                        notificationPrefs.setOrderConfirmation(it)
-                    }
-                )
+                    Text(
+                        text = "Order Notifications",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
 
-                NotificationToggleItem(
-                    title = "Shipping Updates",
-                    subtitle = "Get notified about shipping status changes",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = shippingUpdates,
-                    onCheckedChange = {
-                        shippingUpdates = it
-                        notificationPrefs.setShippingUpdates(it)
-                    }
-                )
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    // Order Status Section
+                    SectionTitle("Order Status Updates")
 
-                NotificationToggleItem(
-                    title = "Delivery Updates",
-                    subtitle = "Receive notifications about delivery status",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = deliveryUpdates,
-                    onCheckedChange = {
-                        deliveryUpdates = it
-                        notificationPrefs.setDeliveryUpdates(it)
-                    }
-                )
+                    NotificationToggleItem(
+                        title = "Order Confirmation",
+                        subtitle = "Receive notifications when your order is confirmed",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = orderConfirmation,
+                        onCheckedChange = {
+                            orderConfirmation = it
+                            notificationPrefs.setOrderConfirmation(it)
+                        }
+                    )
 
-                NotificationToggleItem(
-                    title = "Order Cancellation",
-                    subtitle = "Get notified about order cancellations",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = orderCancellation,
-                    onCheckedChange = {
-                        orderCancellation = it
-                        notificationPrefs.setOrderCancellation(it)
-                    }
-                )
+                    NotificationToggleItem(
+                        title = "Shipping Updates",
+                        subtitle = "Get notified about shipping status changes",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = shippingUpdates,
+                        onCheckedChange = {
+                            shippingUpdates = it
+                            notificationPrefs.setShippingUpdates(it)
+                        }
+                    )
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    NotificationToggleItem(
+                        title = "Delivery Updates",
+                        subtitle = "Receive notifications about delivery status",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = deliveryUpdates,
+                        onCheckedChange = {
+                            deliveryUpdates = it
+                            notificationPrefs.setDeliveryUpdates(it)
+                        }
+                    )
 
-                // Product Updates Section
-                SectionTitle("Product Updates")
+                    NotificationToggleItem(
+                        title = "Order Cancellation",
+                        subtitle = "Get notified about order cancellations",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = orderCancellation,
+                        onCheckedChange = {
+                            orderCancellation = it
+                            notificationPrefs.setOrderCancellation(it)
+                        }
+                    )
 
-                NotificationToggleItem(
-                    title = "Price Drops",
-                    subtitle = "Get notified when prices drop on your wishlist items",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = priceDrops,
-                    onCheckedChange = {
-                        priceDrops = it
-                        notificationPrefs.setPriceDrops(it)
-                    }
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                NotificationToggleItem(
-                    title = "Back in Stock",
-                    subtitle = "Receive alerts when out-of-stock items are available",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = backInStock,
-                    onCheckedChange = {
-                        backInStock = it
-                        notificationPrefs.setBackInStock(it)
-                    }
-                )
+                    // Product Updates Section
+                    SectionTitle("Product Updates")
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
+                    NotificationToggleItem(
+                        title = "Price Drops",
+                        subtitle = "Get notified when prices drop on your wishlist items",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = priceDrops,
+                        onCheckedChange = {
+                            priceDrops = it
+                            notificationPrefs.setPriceDrops(it)
+                        }
+                    )
 
-                // Notification Methods Section
-                SectionTitle("Notification Methods")
+                    NotificationToggleItem(
+                        title = "Back in Stock",
+                        subtitle = "Receive alerts when out-of-stock items are available",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = backInStock,
+                        onCheckedChange = {
+                            backInStock = it
+                            notificationPrefs.setBackInStock(it)
+                        }
+                    )
 
-                NotificationToggleItem(
-                    title = "Email Notifications",
-                    subtitle = "Receive notifications via email",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = emailNotifications,
-                    onCheckedChange = {
-                        emailNotifications = it
-                        notificationPrefs.setEmailNotifications(it)
-                    }
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
 
-                NotificationToggleItem(
-                    title = "Push Notifications",
-                    subtitle = "Receive notifications on your device",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = pushNotifications,
-                    onCheckedChange = {
-                        pushNotifications = it
-                        notificationPrefs.setPushNotifications(it)
-                    }
-                )
+                    // Notification Methods Section
+                    SectionTitle("Notification Methods")
 
-                NotificationToggleItem(
-                    title = "SMS Notifications",
-                    subtitle = "Receive notifications via SMS",
-                    iconResId = R.drawable.notifications_24px,
-                    checked = smsNotifications,
-                    onCheckedChange = {
-                        smsNotifications = it
-                        notificationPrefs.setSMSNotifications(it)
-                    }
-                )
+                    NotificationToggleItem(
+                        title = "Email Notifications",
+                        subtitle = "Receive notifications via email",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = emailNotifications,
+                        onCheckedChange = {
+                            emailNotifications = it
+                            notificationPrefs.setEmailNotifications(it)
+                        }
+                    )
 
-                // Bottom Spacing
-                Spacer(modifier = Modifier.height(16.dp))
+                    NotificationToggleItem(
+                        title = "Push Notifications",
+                        subtitle = "Receive notifications on your device",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = pushNotifications,
+                        onCheckedChange = {
+                            pushNotifications = it
+                            notificationPrefs.setPushNotifications(it)
+                        }
+                    )
+
+                    NotificationToggleItem(
+                        title = "SMS Notifications",
+                        subtitle = "Receive notifications via SMS",
+                        iconResId = R.drawable.notifications_24px,
+                        checked = smsNotifications,
+                        onCheckedChange = {
+                            smsNotifications = it
+                            notificationPrefs.setSMSNotifications(it)
+                        }
+                    )
+
+                    // Bottom Spacing
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }

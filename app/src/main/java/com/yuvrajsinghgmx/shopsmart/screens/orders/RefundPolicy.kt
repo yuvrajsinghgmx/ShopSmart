@@ -1,11 +1,13 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -17,116 +19,131 @@ import androidx.navigation.NavController
 fun RefundPolicyScreen(navController: NavController) {
     val backgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Refund Policy",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = backgroundColor
-                )
-            )
-        },
-        containerColor = backgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // General Policy Section
-            item {
-                PolicySection(
-                    title = "General Policy",
-                    content = listOf(
-                        "We accept returns within 30 days of purchase",
-                        "Items must be unused and in original packaging",
-                        "Return shipping costs may apply",
-                        "Refunds are processed within 5-7 business days"
+
+                    Text(
+                        text = "Refund Policy",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
-                )
+                }
             }
 
-            // Eligible Items Section
-            item {
-                PolicySection(
-                    title = "Eligible Items",
-                    content = listOf(
-                        "Clothing and accessories in original condition",
-                        "Unopened beauty products",
-                        "Electronics with all original accessories",
-                        "Furniture without assembly or use"
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // General Policy Section
+                item {
+                    PolicySection(
+                        title = "General Policy",
+                        content = listOf(
+                            "We accept returns within 30 days of purchase",
+                            "Items must be unused and in original packaging",
+                            "Return shipping costs may apply",
+                            "Refunds are processed within 5-7 business days"
+                        )
                     )
-                )
-            }
+                }
 
-            // Non-Eligible Items Section
-            item {
-                PolicySection(
-                    title = "Non-Eligible Items",
-                    content = listOf(
-                        "Personalized or custom-made items",
-                        "Intimate apparel and swimwear",
-                        "Used or damaged items",
-                        "Digital products and gift cards"
+                // Eligible Items Section
+                item {
+                    PolicySection(
+                        title = "Eligible Items",
+                        content = listOf(
+                            "Clothing and accessories in original condition",
+                            "Unopened beauty products",
+                            "Electronics with all original accessories",
+                            "Furniture without assembly or use"
+                        )
                     )
-                )
-            }
+                }
 
-            // Refund Process Section
-            item {
-                PolicySection(
-                    title = "Refund Process",
-                    content = listOf(
-                        "1. Initiate return through your account",
-                        "2. Print return shipping label",
-                        "3. Pack items securely with original packaging",
-                        "4. Drop off at designated shipping locations",
-                        "5. Refund issued after quality check"
+                // Non-Eligible Items Section
+                item {
+                    PolicySection(
+                        title = "Non-Eligible Items",
+                        content = listOf(
+                            "Personalized or custom-made items",
+                            "Intimate apparel and swimwear",
+                            "Used or damaged items",
+                            "Digital products and gift cards"
+                        )
                     )
-                )
-            }
+                }
 
-            // Payment Methods Section
-            item {
-                PolicySection(
-                    title = "Refund Methods",
-                    content = listOf(
-                        "Original payment method (default)",
-                        "Store credit (processed faster)",
-                        "Bank account transfer",
-                        "Digital wallet credit"
+                // Refund Process Section
+                item {
+                    PolicySection(
+                        title = "Refund Process",
+                        content = listOf(
+                            "1. Initiate return through your account",
+                            "2. Print return shipping label",
+                            "3. Pack items securely with original packaging",
+                            "4. Drop off at designated shipping locations",
+                            "5. Refund issued after quality check"
+                        )
                     )
-                )
-            }
+                }
 
-            // Additional Information
-            item {
-                PolicySection(
-                    title = "Additional Information",
-                    content = listOf(
-                        "Sale items may have different return policies",
-                        "International orders may have longer processing times",
-                        "Bulk orders require special return authorization",
-                        "Seasonal items may have specific return windows"
+                // Payment Methods Section
+                item {
+                    PolicySection(
+                        title = "Refund Methods",
+                        content = listOf(
+                            "Original payment method (default)",
+                            "Store credit (processed faster)",
+                            "Bank account transfer",
+                            "Digital wallet credit"
+                        )
                     )
-                )
+                }
+
+                // Additional Information
+                item {
+                    PolicySection(
+                        title = "Additional Information",
+                        content = listOf(
+                            "Sale items may have different return policies",
+                            "International orders may have longer processing times",
+                            "Bulk orders require special return authorization",
+                            "Seasonal items may have specific return windows"
+                        )
+                    )
+                }
             }
         }
     }
