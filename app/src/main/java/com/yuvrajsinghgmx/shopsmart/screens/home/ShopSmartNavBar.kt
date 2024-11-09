@@ -1,17 +1,18 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,19 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Person
-import androidx.navigation.NavGraph.Companion.findStartDestination
+
 
 private data class NavigationItem(
     val title: String,
@@ -79,51 +71,54 @@ fun ShopSmartNavBar(navController: NavHostController) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 22.dp)  // Increased bottom padding
-            .padding(bottom = 24.dp)  // Added extra bottom padding to move it higher
+            .height(100.dp)
             .zIndex(1f),
         color = Color.White,
         shape = RoundedCornerShape(28.dp),
         shadowElevation = 8.dp
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)  // Slightly reduced height
-                .background(Color.White)
-                .clip(RoundedCornerShape(28.dp))
-                .padding(horizontal = 12.dp),  // Slightly reduced horizontal padding
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            navigationItems.forEach { item ->
-                val isSelected = currentDestination == item.route
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)  // Slightly reduced height
+                    .background(Color.White)
+                    .clip(RoundedCornerShape(28.dp))
+                    .padding(horizontal = 12.dp),  // Slightly reduced horizontal padding
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                navigationItems.forEach { item ->
+                    val isSelected = currentDestination == item.route
 
-                IconButton(
-                    onClick = {
-                        if (!isSelected) {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                    IconButton(
+                        onClick = {
+                            if (!isSelected) {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    },
-                    modifier = Modifier.size(44.dp)  // Slightly reduced button size
-                ) {
-                    Icon(
-                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.title,
-                        modifier = Modifier.size(24.dp),  // Slightly reduced icon size
-                        tint = if (isSelected) Color.Black else Color.Gray
-                    )
+                        },
+                        modifier = Modifier.size(44.dp)  // Slightly reduced button size
+                    ) {
+                        Icon(
+                            imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                            contentDescription = item.title,
+                            modifier = Modifier.size(24.dp),  // Slightly reduced icon size
+                            tint = if (isSelected) Color.Black else Color.Gray
+                        )
+                    }
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -124,55 +126,58 @@ fun HomeScreen(
             }
         }
 
-        Column(Modifier.padding(16.dp, bottom = 0.dp)) {
-            Row(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-
-                OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(16.dp))
-                        .shadow(4.dp),
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    interactionSource = interactionSource,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search Icon") },
-                    singleLine = true,
-                    placeholder = { Text(placeholderText) },
-                    colors = TextFieldDefaults.colors(
-//                  Adding colors
-                    )
-                )
-                IconButton(onClick = {
-                    if(state.isSpeaking){
-                        voiceToTextParser.stopListening()
-                    }else{
-                        voiceToTextParser.startListening()
-                    }
-                }) {
+        Column() {
+            TextField(
+                value = searchQuery,
+                onValueChange = {  searchQuery = it },
+                placeholder = { Text(text = placeholderText) },
+                interactionSource = interactionSource,
+                leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Mic,
-                        contentDescription = "Voice Search"
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
                     )
-                }
-            }
+                },
+                trailingIcon = {
+                    Icon(
+
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            if(state.isSpeaking){
+                                voiceToTextParser.stopListening()
+                            }else{
+                                voiceToTextParser.startListening()
+                            }
+                        }
+                    )
+                },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
+                )
+            )
             Column(
                 modifier = Modifier.fillMaxSize()
                     .verticalScroll(scrollState)
             ) {
-                // Search Bar
-
-            // Welcome Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+//                    .padding(horizontal = 16.dp)
             ) {
                 Image(
                     painter = painterResource(R.drawable.shopinterior),
                     contentDescription = "Shop Interior",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp)),
+                        .fillMaxWidth(),
+//                        .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop,
                     colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
                         setToScale(0.7f, 0.7f, 0.7f, 1f)
@@ -210,7 +215,7 @@ fun HomeScreen(
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    .padding(start = 8.dp)
             ) {
                 items(myItems.value.size) { index ->
                     CardLayout(myItems.value[index], index, navController)
