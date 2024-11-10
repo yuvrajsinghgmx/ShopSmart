@@ -80,92 +80,55 @@ fun TrackRefundScreen(navController: NavController) {
         )
     )
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Track Refund",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                // Search Section
-                Column {
-                    OutlinedTextField(
-                        value = orderIdInput,
-                        onValueChange = { orderIdInput = it },
-                        label = { Text("Order ID") },
-                        placeholder = { Text("Enter Order ID (e.g., ORD-12345678)") },
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                                tint = Color(0xFF637478)
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text
-                        ),
-                        isError = showError,
-                        supportingText = if (showError) {
-                            { Text("No refund found for this Order ID") }
-                        } else null,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF006D40),
-                            unfocusedBorderColor = Color(0xFFE5E7EB)
-                        )
+
+                    Text(
+                        text = "Track Refund",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(
-                        onClick = {
-                            if (orderIdInput == mockRefund.orderId) {
-                                trackingDetails = mockRefund
-                                showError = false
-                            } else {
-                                showError = true
-                                trackingDetails = null
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF006D40)
-                        )
-                    ) {
-                        Text("Track Refund")
-                    }
                 }
             }
 
-            trackingDetails?.let { refund ->
-                // Status Card
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 item {
+                    // Search Section
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
@@ -173,87 +136,147 @@ fun TrackRefundScreen(navController: NavController) {
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Row(
+                            OutlinedTextField(
+                                value = orderIdInput,
+                                onValueChange = { orderIdInput = it },
+                                label = { Text("Order ID") },
+                                placeholder = { Text("Enter Order ID (e.g., ORD-12345678)") },
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = null,
+                                        tint = Color(0xFF637478)
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text
+                                ),
+                                isError = showError,
+                                supportingText = if (showError) {
+                                    { Text("No refund found for this Order ID") }
+                                } else null,
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF006D40),
+                                    unfocusedBorderColor = Color(0xFFE5E7EB)
+                                )
+                            )
+
+                            Button(
+                                onClick = {
+                                    if (orderIdInput == mockRefund.orderId) {
+                                        trackingDetails = mockRefund
+                                        showError = false
+                                    } else {
+                                        showError = true
+                                        trackingDetails = null
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF006D40)
+                                )
                             ) {
-                                Column {
-                                    Text(
-                                        "Order ID",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color(0xFF637478)
-                                    )
-                                    Text(
-                                        refund.orderId,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
-                                Column(horizontalAlignment = Alignment.End) {
-                                    Text(
-                                        "Amount",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color(0xFF637478)
-                                    )
-                                    Text(
-                                        "₹${String.format("%.2f", refund.amount)}",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF006D40)
-                                    )
-                                }
-                            }
-
-                            StatusBadge(refund.currentStatus)
-
-                            if (refund.expectedDate != null) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        "Expected Credit Date",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color(0xFF637478)
-                                    )
-                                    Text(
-                                        refund.expectedDate.format(
-                                            DateTimeFormatter.ofPattern("dd MMM, yyyy")
-                                        ),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
+                                Text("Track Refund")
                             }
                         }
                     }
                 }
 
-                // Timeline Card
-                item {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
-                        color = Color.White
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                trackingDetails?.let { refund ->
+                    // Status Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color.White
                         ) {
-                            Text(
-                                "Refund Timeline",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column {
+                                        Text(
+                                            "Order ID",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF637478)
+                                        )
+                                        Text(
+                                            refund.orderId,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                    Column(horizontalAlignment = Alignment.End) {
+                                        Text(
+                                            "Amount",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF637478)
+                                        )
+                                        Text(
+                                            "₹${String.format("%.2f", refund.amount)}",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color(0xFF006D40)
+                                        )
+                                    }
+                                }
 
-                            refund.updates.forEachIndexed { index, update ->
-                                TimelineItem(
-                                    update = update,
-                                    isLast = index == refund.updates.size - 1
+                                StatusBadge(refund.currentStatus)
+
+                                if (refund.expectedDate != null) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            "Expected Credit Date",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF637478)
+                                        )
+                                        Text(
+                                            refund.expectedDate.format(
+                                                DateTimeFormatter.ofPattern("dd MMM, yyyy")
+                                            ),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Timeline Card
+                    item {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color.White
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Text(
+                                    "Refund Timeline",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
                                 )
+
+                                refund.updates.forEachIndexed { index, update ->
+                                    TimelineItem(
+                                        update = update,
+                                        isLast = index == refund.updates.size - 1
+                                    )
+                                }
                             }
                         }
                     }

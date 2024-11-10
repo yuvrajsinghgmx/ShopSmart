@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -104,72 +105,87 @@ fun ReturnGuidelinesScreen(navController: NavController) {
         )
     )
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Return Guidelines",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFFF6F5F3)
-                )
-            )
-        },
-        containerColor = Color(0xFFF6F5F3)
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // General Return Process
-            item {
-                ReturnProcessCard()
+
+                    Text(
+                        text = "Return Guidelines",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
 
-            // Return Policies
-            items(returnPolicies) { policy ->
-                PolicyCard(policy)
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // General Return Process
+                item {
+                    ReturnProcessCard()
+                }
 
-            // Category Specific Guidelines
-            item {
-                Text(
-                    "Category Guidelines",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
-            }
+                // Return Policies
+                items(returnPolicies) { policy ->
+                    PolicyCard(policy)
+                }
 
-            items(returnCategories) { category ->
-                CategoryGuidelineCard(
-                    category = category,
-                    isExpanded = expandedSection == category.title,
-                    onExpandClick = {
-                        expandedSection = if (expandedSection == category.title) null else category.title
-                    }
-                )
-            }
+                // Category Specific Guidelines
+                item {
+                    Text(
+                        "Category Guidelines",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25)
+                    )
+                }
 
-            // Return Tips
-            item {
-                ReturnTipsCard()
+                items(returnCategories) { category ->
+                    CategoryGuidelineCard(
+                        category = category,
+                        isExpanded = expandedSection == category.title,
+                        onExpandClick = {
+                            expandedSection = if (expandedSection == category.title) null else category.title
+                        }
+                    )
+                }
+
+                // Return Tips
+                item {
+                    ReturnTipsCard()
+                }
             }
         }
     }
