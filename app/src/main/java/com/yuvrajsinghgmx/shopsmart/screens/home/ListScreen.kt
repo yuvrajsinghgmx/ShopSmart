@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -555,7 +556,9 @@ fun ProductCard(
 @Composable
 fun EmptyListContent() {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -582,19 +585,21 @@ fun EmptyListContent() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "Your shopping list is empty.",
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+            text = "Your shopping list is empty.",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            ),
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "Add items using the + button below.",
-            style = TextStyle(
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
+            text = "Add items using the + button below.",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            ),
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }
