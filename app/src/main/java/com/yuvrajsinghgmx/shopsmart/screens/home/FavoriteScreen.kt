@@ -46,15 +46,17 @@ import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ItemsData
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(
-    viewModel: HomeScreenViewModel = HomeScreenViewModel(),
-    navController: NavController? = null
+
+    navController: NavController? = null ,
+    viewModel: HomeScreenViewModel = viewModel()
 ) {
-    val favorite = viewModel.itemsList.collectAsState().value
+    val itemsList = viewModel.itemsList.collectAsState().value
+    val favoriteItems = itemsList.filter { it.favorite }
 
     Box(
         modifier = Modifier
@@ -107,10 +109,11 @@ fun FavoriteScreen(
                     .padding(horizontal = 8.dp),
                 contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                items(favorite.size) { item ->
+                items(favoriteItems.size) { index ->
+                    val item = favoriteItems[index]
                     FavoriteCardLayout(
-                        itemsData = favorite[item],
-                        onClick = { /* Handle click */ }
+                        itemsData = item,
+                        onClick = {/*TODO*/}
                     )
                 }
             }
