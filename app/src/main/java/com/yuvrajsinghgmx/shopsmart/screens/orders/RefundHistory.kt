@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -65,63 +66,84 @@ fun RefundHistoryScreen(navController: NavController) {
 
     val lightBackgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Refund History",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                actions = {
+
+                    Text(
+                        text = "Refund History",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    )
+
+                    // Action Icons
                     IconButton(onClick = { showFilterDialog = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.filter_list_24px),
-                            contentDescription = "Filter"
+                            contentDescription = "Filter",
+                            tint = Color(0xFF332D25)
                         )
                     }
                     IconButton(onClick = { /* Download functionality */ }) {
                         Icon(
                             painter = painterResource(id = R.drawable.download_24px),
-                            contentDescription = "Download"
+                            contentDescription = "Download",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        if (refunds.isEmpty()) {
-            EmptyRefundHistory(modifier = Modifier.padding(innerPadding))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(refunds.size) { index ->
-                    RefundHistoryItem(refund = refunds[index])
+                }
+            }
+
+            // Main Content
+            if (refunds.isEmpty()) {
+                EmptyRefundHistory()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(refunds.size) { index ->
+                        RefundHistoryItem(refund = refunds[index])
+                    }
                 }
             }
         }
     }
 
+    // Filter Dialog
     if (showFilterDialog) {
         FilterDialog(
             currentFilter = selectedFilter,

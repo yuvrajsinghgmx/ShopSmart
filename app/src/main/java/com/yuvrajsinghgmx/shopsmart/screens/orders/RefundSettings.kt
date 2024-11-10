@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,86 +40,107 @@ fun RefundSettingsScreen(navController: NavController) {
 
     val backgroundColor = Color(0xFFF6F5F3)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Refund Settings",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = backgroundColor
-                )
-            )
-        },
-        containerColor = backgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item {
-                Text(
-                    "Default Refund Method",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
+
+                    Text(
+                        text = "Refund Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
 
-            items(refundMethods.size) { index ->
-                RefundMethodItem(
-                    method = refundMethods[index],
-                    onSetDefault = { method ->
-                        refundMethods = refundMethods.map { it.copy(isDefault = it.id == method.id) }
-                    }
-                )
-            }
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Default Refund Method Section
+                item {
+                    Text(
+                        "Default Refund Method",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
 
-            item {
-                Text(
-                    "Refund Preferences",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
-            }
+                items(refundMethods.size) { index ->
+                    RefundMethodItem(
+                        method = refundMethods[index],
+                        onSetDefault = { method ->
+                            refundMethods = refundMethods.map { it.copy(isDefault = it.id == method.id) }
+                        }
+                    )
+                }
 
-            item {
-                RefundPreferencesSection()
-            }
+                // Refund Preferences Section
+                item {
+                    Text(
+                        "Refund Preferences",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
 
-            item {
-                Text(
-                    "Additional Settings",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF332D25)
-                )
-            }
+                item {
+                    RefundPreferencesSection()
+                }
 
-            item {
-                AdditionalSettingsSection(navController)
-            }
+                // Additional Settings Section
+                item {
+                    Text(
+                        "Additional Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
 
-            // Add some bottom padding
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                item {
+                    AdditionalSettingsSection(navController)
+                }
+
+                // Bottom Spacing
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
