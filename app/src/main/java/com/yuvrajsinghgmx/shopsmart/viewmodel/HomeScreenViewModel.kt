@@ -1,15 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.viewmodel
-
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.yuvrajsinghgmx.shopsmart.R
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 
 data class ListedSite(
@@ -29,55 +23,57 @@ data class ItemsData(
     val listedSites : List<ListedSite>,
     val features : List<String> ,
     val description: String,
-    var favorite: Boolean = false
+    val favorite: Boolean
 )
 
 
 class HomeScreenViewModel: ViewModel(){
 
     // Demo data
-    private val _itemsList = MutableStateFlow<List<ItemsData>>(listOf(
+    //NOTE :fetch and use realtime user data instead of dummy data to keep the changes saved!
+    private val _itemsList = MutableStateFlow(listOf(
         ItemsData(R.drawable.shopinterior, "Phone1", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            false
         ),
         ItemsData(R.drawable.shopinterior, "Phone2", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            true
         ),
         ItemsData(R.drawable.shopinterior, "Phone3", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            true
         ),
         ItemsData(R.drawable.shopinterior, "Phone4", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            false
         ) ,
         ItemsData(R.drawable.shopinterior, "Phone5", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            false
         ),
         ItemsData(R.drawable.shopinterior, "Phone6", "flipkart", 4.5f, 10, 500, 480,
             listOf(ListedSite("Amazon", 150.0f), ListedSite("Flipkart", 300.0f)), listOf("Dimensions: 12x8x4 inches", "Material: Mesh, Synthetic"),
-            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability.."
+            "The Nike Air Max 270 features a sleek design with a large Air unit in the heel for maximum cushioning. The upper is made from a combination of mesh and synthetic materials, providing, breathability..",
+            false
         )
     )
     )
 
-    val itemsList: StateFlow<List<ItemsData>> = _itemsList.asStateFlow()
+    val itemsList: StateFlow<List<ItemsData>> = _itemsList
 
-    val favorite = emptyList<ItemsData>()
-
-
-
-    fun changeFavorite(index: Int) {
-        favorite + _itemsList.value[index]
-//        _itemsList.value = _itemsList.value.mapIndexed { it, data->
-//            when(it){
-//                index-> data.copy(favorite = true)
-//                else->data
-//            }
-//        }
+    fun changeFavorite(index: Int, newFavoriteState : Boolean) {
+        _itemsList.update { list ->
+            list.mapIndexed { i, item ->
+                if (i == index) item.copy(favorite = newFavoriteState) else item
+            }
+        }
     }
+
 }
 

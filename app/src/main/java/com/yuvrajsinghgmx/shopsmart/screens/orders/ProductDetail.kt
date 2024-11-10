@@ -20,6 +20,9 @@ import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.viewmodel.HomeScreenViewModel
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
@@ -27,12 +30,16 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun ProductDetails(
     index: Int,
-    navController: NavController
+    navController: NavController,
+
 ) {
-    val itemsData = HomeScreenViewModel().itemsList.collectAsState().value[index]
+    val viewModel: HomeScreenViewModel = viewModel()
+    val itemsData = viewModel.itemsList.collectAsState().value[index]
     val listedSites = itemsData.listedSites
     val features = itemsData.features
     val scrollState = rememberLazyListState()
+
+    val favoriteState = remember { mutableStateOf(itemsData.favorite) }
 
     // Outer Box to hold the scrollable content and fixed bottom buttons
     Box(modifier = Modifier.fillMaxSize()) {
@@ -61,9 +68,18 @@ fun ProductDetails(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /*ToDo*/ }) {
+                        IconButton(onClick = {
+                            val newFavoriteState = !favoriteState.value
+                            favoriteState.value = newFavoriteState        
+                            viewModel.changeFavorite(index, newFavoriteState)  
+                        }) {
+                            val favoriteIcon = if (favoriteState.value) {
+                                painterResource(R.drawable.favorite_filled_24px)
+                            } else {
+                                painterResource(R.drawable.favorite_border_24px)
+                            }
                             Icon(
-                                painter = painterResource(R.drawable.favorite_border_24px),
+                                painter = favoriteIcon,
                                 contentDescription = "Favorite"
                             )
                         }
