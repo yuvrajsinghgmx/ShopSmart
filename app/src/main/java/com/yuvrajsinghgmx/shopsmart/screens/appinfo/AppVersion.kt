@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.appinfo
 
 import android.content.pm.PackageManager
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -40,143 +41,158 @@ fun AppVersionScreen(navController: NavController) {
         SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(it))
     } ?: "Not available"
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "App Version",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFF332D25)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Custom Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = lightBackgroundColor,
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color(0xFF332D25)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = lightBackgroundColor
-                )
-            )
-        },
-        containerColor = lightBackgroundColor
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            item {
-                // App Logo and Version
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.app_version_24px),
-                        contentDescription = null,
-                        modifier = Modifier.size(72.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "ShopSmart",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = "Version $versionName",
+                        text = "App Version",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF332D25),
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+            }
 
-                // Version Details
-                VersionInfoItem(
-                    title = "Version Code",
-                    value = versionCode,
-                    iconResId = R.drawable.app_version_24px
-                )
-
-                VersionInfoItem(
-                    title = "Last Updated",
-                    value = lastUpdateDate,
-                    iconResId = R.drawable.update_24px
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-
-                // Additional Information
-                Text(
-                    text = "Build Information",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-
-                VersionInfoItem(
-                    title = "Package Name",
-                    value = context.packageName,
-                    iconResId = R.drawable.info_24px
-                )
-
-                VersionInfoItem(
-                    title = "Build Type",
-                    value = "Release",
-                    iconResId = R.drawable.build_24px
-                )
-
-                VersionInfoItem(
-                    title = "Target SDK",
-                    value = context.applicationInfo.targetSdkVersion.toString(),
-                    iconResId = R.drawable.android_24px
-                )
-
-                // Update Section
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                )
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
+            // Main Content
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    // App Logo and Version
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.app_version_24px),
+                            contentDescription = null,
+                            modifier = Modifier.size(72.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Text(
-                            text = "Up to Date",
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "ShopSmart",
+                            style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold
                         )
+
                         Text(
-                            text = "You're running the latest version of ShopSmart",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = "Version $versionName",
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
-                }
 
-                // Bottom Spacing
-                Spacer(modifier = Modifier.height(16.dp))
+                    // Version Details
+                    VersionInfoItem(
+                        title = "Version Code",
+                        value = versionCode,
+                        iconResId = R.drawable.app_version_24px
+                    )
+
+                    VersionInfoItem(
+                        title = "Last Updated",
+                        value = lastUpdateDate,
+                        iconResId = R.drawable.update_24px
+                    )
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
+
+                    // Additional Information
+                    Text(
+                        text = "Build Information",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+
+                    VersionInfoItem(
+                        title = "Package Name",
+                        value = context.packageName,
+                        iconResId = R.drawable.info_24px
+                    )
+
+                    VersionInfoItem(
+                        title = "Build Type",
+                        value = "Release",
+                        iconResId = R.drawable.build_24px
+                    )
+
+                    VersionInfoItem(
+                        title = "Target SDK",
+                        value = context.applicationInfo.targetSdkVersion.toString(),
+                        iconResId = R.drawable.android_24px
+                    )
+
+                    // Update Section
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Up to Date",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "You're running the latest version of ShopSmart",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+
+                    // Bottom Spacing
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }

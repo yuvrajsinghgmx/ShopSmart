@@ -91,253 +91,267 @@ fun ListScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            if (selectedItems.isEmpty()) {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "back Icon", tint = Color(0xFF98F9B3))
-                        }
-                    },
-                    title = {
-                        if (isSearching) {
-                            OutlinedTextField(
-                                value = searchKeyword,
-                                onValueChange = {
-                                    searchKeyword = it
-                                    viewModel.search(searchKeyword)
-                                },
-                                leadingIcon = {
-                                    IconButton(onClick = {
-                                        isSearching = false
-                                        searchKeyword = ""
-                                        viewModel.search("")
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back Arrow",
-                                            tint = Color(0xFF98F9B3)
-                                        )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF6F5F3))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Top Bar
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color(0xFFF6F5F3),
+                shadowElevation = 1.dp
+            ) {
+                if (selectedItems.isEmpty()) {
+                    TopAppBar(
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "back Icon", tint = Color(0xFF98F9B3))
+                            }
+                        },
+                        title = {
+                            if (isSearching) {
+                                OutlinedTextField(
+                                    value = searchKeyword,
+                                    onValueChange = {
+                                        searchKeyword = it
+                                        viewModel.search(searchKeyword)
+                                    },
+                                    leadingIcon = {
+                                        IconButton(onClick = {
+                                            isSearching = false
+                                            searchKeyword = ""
+                                            viewModel.search("")
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription = "Back Arrow",
+                                                tint = Color(0xFF98F9B3)
+                                            )
+                                        }
+                                    },
+                                    shape = RoundedCornerShape(25.dp),
+                                    modifier = Modifier.fillMaxWidth().scale(animatedSize),
+                                    placeholder = { Text("Search") }
+                                )
+                            } else {
+                                Text(
+                                    text = "Shopping List",
+                                    fontWeight = FontWeight.SemiBold,
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+                            }
+                        },
+                        actions = {
+                            if (!isSearching) {
+                                IconButton(
+                                    onClick = { isSearching = true },
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        containerColor = Color(0xAB98F9B3)
+                                    )
+                                ) {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = "Search Icon",
+                                        tint = Color(0xFF006D3B)
+                                    )
+                                }
+                            }
+                            Checkbox(
+                                checked = selectAll,
+                                onCheckedChange = { checked ->
+                                    selectAll = checked
+                                    if (checked) {
+                                        selectedItems.clear()
+                                        selectedItems.addAll(items.value)
+                                    } else {
+                                        selectedItems.clear()
                                     }
                                 },
-                                shape = RoundedCornerShape(25.dp),
-                                modifier = Modifier.fillMaxWidth().scale(animatedSize),
-                                placeholder = {Text("Search")}
-                            )
-                        } else {
-                            Text(
-                                text = "Shopping List",
-                                fontWeight = FontWeight.SemiBold,
-                                style = MaterialTheme.typography.headlineMedium
+                                modifier = Modifier.padding(end = 8.dp),
+                                colors = CheckboxDefaults.colors(uncheckedColor = Color(0xFF98F9B3))
                             )
                         }
-                    },
-                    actions = {
-                        if(!isSearching) {
-                            IconButton(
-                                onClick = { isSearching = true },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color(
-                                        0xAB98F9B3
-                                    )
-                                )
-                            ) {
-                                Icon(
-                                    Icons.Default.Search,
-                                    contentDescription = "Search Icon",
-                                    tint = Color(0xFF006D3B)
-                                )
-                            }
-                        }
-                        Checkbox(
-                            checked = selectAll,
-                            onCheckedChange = { checked ->
-                                selectAll = checked
-                                if (checked) {
-                                    selectedItems.clear()
-                                    selectedItems.addAll(items.value)
-                                } else {
-                                    selectedItems.clear()
-                                }
-                            },
-                            modifier = Modifier.padding(end = 8.dp),
-                            colors = CheckboxDefaults.colors(uncheckedColor = Color(0xFF98F9B3))
-                        )
-                    }
-                )
-            } else {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            selectedItems.clear()
-                            selectAll = false
-                        }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close Icon")
-                        }
-                    },
-                    title = {
-                        Text(
-                            text = "${selectedItems.size} selected",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val updatedItems = items.value.toMutableList().apply {
-                                    removeAll(selectedItems)
-                                }
-                                viewModel.updateItems(updatedItems)
-                                saveItems(context, updatedItems)
+                    )
+                } else {
+                    TopAppBar(
+                        navigationIcon = {
+                            IconButton(onClick = {
                                 selectedItems.clear()
                                 selectAll = false
+                            }) {
+                                Icon(Icons.Default.Close, contentDescription = "Close Icon")
                             }
-                        }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
-                        }
-                    }
-                )
-            }
-        },
-        bottomBar = {
-            if (selectedItems.isNotEmpty()) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF98F9B3)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        },
+                        title = {
                             Text(
-                                "Total:",
-                                style = TextStyle(
-                                    fontSize = 20.sp,
-                                    fontFamily = LexendRegular,
-                                    color = Color.Black
-                                )
+                                text = "${selectedItems.size} selected",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium
                             )
-                            Text(
-                                "₹${String.format("%.1f", totalAmount)}",
-                                style = TextStyle(
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = LexendRegular,
-                                    color = Color.Black
-                                )
-                            )
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                coroutineScope.launch {
+                                    val updatedItems = items.value.toMutableList().apply {
+                                        removeAll(selectedItems)
+                                    }
+                                    viewModel.updateItems(updatedItems)
+                                    saveItems(context, updatedItems)
+                                    selectedItems.clear()
+                                    selectAll = false
+                                }
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Icon")
+                            }
                         }
-                        Button(
-                            onClick = {
-                                val selectedItemsJson = Gson().toJson(selectedItems)
-                                navController.navigate("checkout?selectedItems=$selectedItemsJson")
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF006D3B)
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                "Checkout",
-                                style = TextStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = LexendRegular,
-                                    color = Color.White
-                                ),
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        floatingActionButton = {
-            if (selectedItems.isEmpty()) {
-                FloatingActionButton(
-                    onClick = { showDialog = true },
-                    containerColor = Color(0xFF98F9B3),
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Add Item",
-                        tint = Color.Black
                     )
                 }
             }
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-        ) {
-            if (items.value.isEmpty()) {
-                EmptyListContent()
-            } else {
-                val groupedItems = items.value.groupBy { product ->
-                    val date = java.util.Date(product.dateAdded)
-                    val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
-                    dateFormat.format(date)
-                }
 
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(bottom = if (selectedItems.isNotEmpty()) 90.dp else 0.dp)
-                ) {
-                    groupedItems.forEach { (day, products) ->
-                        item {
-                            Text(
-                                text = day,
-                                style = TextStyle(
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Light,
-                                ),
-                                modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
-                            )
-                        }
-                        items(products.size) { index ->
-                            ProductCard(
-                                product = products[index],
-                                isSelected = products[index] in selectedItems,
-                                onQuantityChange = { product, newQuantity ->
-                                    updateItemQuantity(product, newQuantity)
-                                },
-                                onSelect = { product ->
-                                    if (product in selectedItems) {
-                                        selectedItems.remove(product)
-                                        selectAll = false
-                                    } else {
-                                        selectedItems.add(product)
-                                        selectAll = selectedItems.size == items.value.size
+            // Main Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                if (items.value.isEmpty()) {
+                    EmptyListContent()
+                } else {
+                    val groupedItems = items.value.groupBy { product ->
+                        val date = java.util.Date(product.dateAdded)
+                        val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
+                        dateFormat.format(date)
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(bottom = if (selectedItems.isNotEmpty()) 90.dp else 0.dp)
+                    ) {
+                        groupedItems.forEach { (day, products) ->
+                            item {
+                                Text(
+                                    text = day,
+                                    style = TextStyle(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Light,
+                                    ),
+                                    modifier = Modifier.padding(8.dp, 3.dp, 0.dp, 3.dp)
+                                )
+                            }
+                            items(products.size) { index ->
+                                ProductCard(
+                                    product = products[index],
+                                    isSelected = products[index] in selectedItems,
+                                    onQuantityChange = { product, newQuantity ->
+                                        updateItemQuantity(product, newQuantity)
+                                    },
+                                    onSelect = { product ->
+                                        if (product in selectedItems) {
+                                            selectedItems.remove(product)
+                                            selectAll = false
+                                        } else {
+                                            selectedItems.add(product)
+                                            selectAll = selectedItems.size == items.value.size
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
+                    }
+                }
+            }
+        }
+
+        // FAB
+        if (selectedItems.isEmpty()) {
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                containerColor = Color(0xFF98F9B3),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "Add Item",
+                    tint = Color.Black
+                )
+            }
+        }
+
+        // Bottom Card
+        if (selectedItems.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF98F9B3)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Total:",
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontFamily = LexendRegular,
+                                color = Color.Black
+                            )
+                        )
+                        Text(
+                            "₹${String.format("%.1f", totalAmount)}",
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = LexendRegular,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            val selectedItemsJson = Gson().toJson(selectedItems)
+                            navController.navigate("checkout?selectedItems=$selectedItemsJson")
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF006D3B)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            "Checkout",
+                            style = TextStyle(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = LexendRegular,
+                                color = Color.White
+                            ),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
                 }
             }
         }
     }
 
-    // Delete confirmation dialog
+    // Keep all existing dialogs
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -374,7 +388,6 @@ fun ListScreen(
         )
     }
 
-    // Add item dialog
     if (showDialog) {
         AddItemDialog(
             onDismiss = { showDialog = false },
