@@ -293,7 +293,7 @@ fun Profile(modifier: Modifier = Modifier, navController: NavController, viewMod
                         HorizontalDivider()
                         ProfileItem(title = "My Orders", Icon = R.drawable.checkout) {
 //                            navController.navigate("coming_soon")
-                            val selectedItemsJson = Gson().toJson(viewModel.items.value)
+                            val selectedItemsJson = Gson().toJson(viewModel.items)
                             navController.navigate("checkout?selectedItems=$selectedItemsJson")
                         }
                         HorizontalDivider()

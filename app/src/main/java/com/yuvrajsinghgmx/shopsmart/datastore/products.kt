@@ -6,8 +6,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 
-data class Product(val name: String, val amount: Double,var no_of_items: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
+data class Product(val id: String = UUID.randomUUID().toString(), val name: String, val amount: Double, var no_of_items: Int, val imageUrl: String? = null, val dateAdded: Long = System.currentTimeMillis())
 object ShoppingList{
     val ITEMS_KEY = stringPreferencesKey("items")
 }

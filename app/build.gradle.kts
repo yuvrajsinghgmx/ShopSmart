@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-test-junit4:1.7.3")
     implementation("androidx.compose.ui:ui-test-manifest:1.7.3")
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.compose.material)
 
     testImplementation(libs.junit)
 //    androidTestImplementation(libs.androidx.junit)
