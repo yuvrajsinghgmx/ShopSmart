@@ -37,6 +37,11 @@ import com.yuvrajsinghgmx.shopsmart.datastore.saveItems
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LexendRegular
 import com.yuvrajsinghgmx.shopsmart.viewmodel.ShoppingListViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.gestures.Orientation
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
+import androidx.wear.compose.material.FractionalThreshold
+import androidx.wear.compose.material.rememberSwipeableState
+import androidx.wear.compose.material.swipeable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +50,8 @@ fun ListScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val items = viewModel.items.collectAsState(initial = emptyList())
+    val items = viewModel.items
+//    val items = viewModel.items.collectAsState(initial = emptyList())
     var showDeleteDialog by remember { mutableStateOf(false) }
     var productToDelete by remember { mutableStateOf<Product?>(null) }
     var showDialog by remember { mutableStateOf(false) }
@@ -55,6 +61,7 @@ fun ListScreen(
     var searchKeyword by remember { mutableStateOf("") }
     val selectedItems = remember { mutableStateListOf<Product>() }
     val coroutineScope = rememberCoroutineScope()
+    val groupedItems = remember { mutableStateOf<Map<String, List<Product>>>(emptyMap()) }
 
     // for search bar entry animation
     val animatedSize by animateFloatAsState(
@@ -74,7 +81,7 @@ fun ListScreen(
         }
 
         coroutineScope.launch {
-            val updatedItems = items.value.map {
+            val updatedItems = items.map {
                 if (it == product) {
                     it.copy(no_of_items = newQuantity)
                 } else {
@@ -87,7 +94,8 @@ fun ListScreen(
             // Update selected items if the modified item is selected
             val selectedIndex = selectedItems.indexOf(product)
             if (selectedIndex != -1) {
-                selectedItems[selectedIndex] = selectedItems[selectedIndex].copy(no_of_items = newQuantity)
+                selectedItems[selectedIndex] =
+                    selectedItems[selectedIndex].copy(no_of_items = newQuantity)
             }
         }
     }
@@ -110,7 +118,11 @@ fun ListScreen(
                     TopAppBar(
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "back Icon", tint = Color(0xFF98F9B3))
+                                Icon(
+                                    Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = "back Icon",
+                                    tint = Color(0xFF98F9B3)
+                                )
                             }
                         },
                         title = {
@@ -135,7 +147,9 @@ fun ListScreen(
                                         }
                                     },
                                     shape = RoundedCornerShape(25.dp),
-                                    modifier = Modifier.fillMaxWidth().scale(animatedSize),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .scale(animatedSize),
                                     placeholder = { Text("Search") }
                                 )
                             } else {
@@ -167,7 +181,7 @@ fun ListScreen(
                                     selectAll = checked
                                     if (checked) {
                                         selectedItems.clear()
-                                        selectedItems.addAll(items.value)
+                                        selectedItems.addAll(items)
                                     } else {
                                         selectedItems.clear()
                                     }
@@ -197,7 +211,7 @@ fun ListScreen(
                         actions = {
                             IconButton(onClick = {
                                 coroutineScope.launch {
-                                    val updatedItems = items.value.toMutableList().apply {
+                                    val updatedItems = items.apply {
                                         removeAll(selectedItems)
                                     }
                                     viewModel.updateItems(updatedItems)
@@ -219,12 +233,13 @@ fun ListScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                if (items.value.isEmpty()) {
+                if (items.isEmpty()) {
                     EmptyListContent()
                 } else {
-                    val groupedItems = items.value.groupBy { product ->
+                    groupedItems.value = items.groupBy { product ->
                         val date = java.util.Date(product.dateAdded)
-                        val dateFormat = java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
+                        val dateFormat =
+                            java.text.SimpleDateFormat("EEEE, d/M/y", java.util.Locale.getDefault())
                         dateFormat.format(date)
                     }
 
@@ -232,7 +247,7 @@ fun ListScreen(
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(bottom = if (selectedItems.isNotEmpty()) 90.dp else 0.dp)
                     ) {
-                        groupedItems.forEach { (day, products) ->
+                        groupedItems.value.forEach { (day, products) ->
                             item {
                                 Text(
                                     text = day,
@@ -256,10 +271,41 @@ fun ListScreen(
                                             selectAll = false
                                         } else {
                                             selectedItems.add(product)
-                                            selectAll = selectedItems.size == items.value.size
+                                            selectAll = selectedItems.size == items.size
                                         }
+                                    },
+                                    onDismiss = { dismissedProduct ->
+                                        productToDelete = dismissedProduct
+                                        productToDelete?.let { product ->
+                                            coroutineScope.launch {
+                                                val updatedItems = items.toMutableList().apply {
+                                                    removeAll { it.id == product.id } // Remove by unique ID
+                                                }
+                                                viewModel.updateItems(updatedItems)
+
+                                                saveItems(context, updatedItems)
+
+                                                val updatedGroupedItems =
+                                                    groupedItems.value.toMutableMap()
+                                                updatedGroupedItems[day]?.let { productsForDay ->
+                                                    val mutableProductsForDay =
+                                                        productsForDay.toMutableList()
+                                                    mutableProductsForDay.removeAll { it.id == dismissedProduct.id }
+                                                    updatedGroupedItems[day] = mutableProductsForDay
+
+                                                    if (mutableProductsForDay.isEmpty()) {
+                                                        updatedGroupedItems.remove(day)
+                                                    }
+                                                }
+                                                selectedItems.removeAll { it.id == product.id }
+                                                groupedItems.value = updatedGroupedItems
+                                            }
+                                        }
+                                        showDeleteDialog = false
+                                        productToDelete = null
                                     }
                                 )
+
                             }
                         }
                     }
@@ -362,7 +408,7 @@ fun ListScreen(
                 TextButton(onClick = {
                     productToDelete?.let { product ->
                         coroutineScope.launch {
-                            val updatedItems = items.value.toMutableList()
+                            val updatedItems = items.toMutableList()
                             updatedItems.remove(product)
                             viewModel.updateItems(updatedItems)
                             saveItems(context, updatedItems)
@@ -402,7 +448,7 @@ fun ListScreen(
                         imageUrl = imageUrl,
                         dateAdded = date
                     )
-                    val updatedItems = items.value.toMutableList().also { it.add(newProduct) }
+                    val updatedItems = items.toMutableList().also { it.add(newProduct) }
                     viewModel.updateItems(updatedItems)
                     saveItems(context, updatedItems)
                 }
@@ -412,27 +458,53 @@ fun ListScreen(
     }
 }
 
+@OptIn(ExperimentalWearMaterialApi::class)
 @Composable
 fun ProductCard(
     product: Product,
     isSelected: Boolean,
     onQuantityChange: (Product, Int) -> Unit,
-    onSelect: (Product) -> Unit
+    onSelect: (Product) -> Unit,
+    onDismiss: (Product) -> Unit
 ) {
+    val swipeableState = rememberSwipeableState(initialValue = 0)
+    val swipeProgress = remember { derivedStateOf { swipeableState.offset.value / 1000f } }
+
+    val anchors = mapOf(
+        0f to 0,
+        1000f to 1,
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp)
             .clip(RoundedCornerShape(16.dp))
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                thresholds = { _, to ->
+                    if (to == 1) FractionalThreshold(0.8f)
+                    else FractionalThreshold(0.5f)
+                },
+                orientation = Orientation.Horizontal
+            )
             .clickable { onSelect(product) },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected)
                 MaterialTheme.colorScheme.primaryContainer
             else
-                MaterialTheme.colorScheme.surface
+                MaterialTheme.colorScheme.surface.copy(
+                    alpha = (1f - swipeProgress.value * 0.3f)
+                )
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        LaunchedEffect(swipeableState.currentValue) {
+            if (swipeableState.currentValue == 1) {
+                onDismiss(product)
+                swipeableState.snapTo(0)
+            }
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -623,157 +695,162 @@ fun AddItemDialog(
             modifier = Modifier
                 .padding(16.dp)
                 .background(Color.Transparent),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(rgb(234, 235, 230))
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth()
+            colors = CardDefaults.cardColors(
+                containerColor = Color(rgb(234, 235, 230))
+            )
         ) {
-            Text(
-                "Add New Item",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                ),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            OutlinedTextField(
-                value = itemName,
-                onValueChange = {
-                    itemName = it
-                    showError = false
-                },
-                label = { Text("Item Name", color = Color.Black) },
-                shape = RoundedCornerShape(8.dp),
-                isError = showError && itemName.isBlank(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = Color(0xFF006D3B),
-                    focusedBorderColor = Color(0xFF006D3B),
-                    unfocusedBorderColor = Color(0xFFDBD6CA),
-                    focusedTextColor = Color(0xFF332D25),
-                    unfocusedTextColor = Color(0xFF332D25),
-                    errorBorderColor = Color.Red
-                ),
+            Column(
                 modifier = Modifier
+                    .padding(24.dp)
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-            )
-
-            OutlinedTextField(
-                value = itemAmount,
-                onValueChange = { newValue ->
-                    if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
-                        itemAmount = newValue
-                        showError = false }
-                },
-                label = { Text("Amount (optional)", color = Color.Black) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(8.dp),
-                isError = showError && (itemAmount.isNotBlank() && itemAmount.toDoubleOrNull() == null),
-                colors = OutlinedTextFieldDefaults.colors(
-                    cursorColor = Color(0xFF006D3B),
-                    focusedBorderColor = Color(0xFF006D3B),
-                    unfocusedBorderColor = Color(0xFFDBD6CA),
-                    focusedTextColor = Color(0xFF332D25),
-                    unfocusedTextColor = Color(0xFF332D25),
-                    errorBorderColor = Color.Red
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-            )
-
-            Button(
-                onClick = { showDatePicker = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF006D3B)
-                ),
-                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Select Date")
-            }
-
-            Text(
-                "Selected Date: ${java.text.SimpleDateFormat("yyyy-MM-dd").format(selectedDate)}",
-                modifier = Modifier.padding(bottom = 16.dp),
-                color = Color(0xFF006D3B)
-            )
-
-
-            if (showError) {
                 Text(
-                    text = "Please fill all fields correctly",
-                    color = Color.Red,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF332D25)
+                    "Add New Item",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
                     ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Cancel", color = Color.White)
-                }
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-                Button(
-                    onClick = {
-                        val amount = itemAmount.toDoubleOrNull() ?: 0.0
-                        if (itemName.isBlank()|| (amount != null && amount < 0)) {
-                            showError = true
-                        } else {
-                            onAddItem(itemName, amount ?:0.0, selectedDate!!)
-                            onDismiss()
+                OutlinedTextField(
+                    value = itemName,
+                    onValueChange = {
+                        itemName = it
+                        showError = false
+                    },
+                    label = { Text("Item Name", color = Color.Black) },
+                    shape = RoundedCornerShape(8.dp),
+                    isError = showError && itemName.isBlank(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color(0xFF006D3B),
+                        focusedBorderColor = Color(0xFF006D3B),
+                        unfocusedBorderColor = Color(0xFFDBD6CA),
+                        focusedTextColor = Color(0xFF332D25),
+                        unfocusedTextColor = Color(0xFF332D25),
+                        errorBorderColor = Color.Red
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                )
+
+                OutlinedTextField(
+                    value = itemAmount,
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+                            itemAmount = newValue
+                            showError = false
                         }
                     },
+                    label = { Text("Amount (optional)", color = Color.Black) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(8.dp),
+                    isError = showError && (itemAmount.isNotBlank() && itemAmount.toDoubleOrNull() == null),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color(0xFF006D3B),
+                        focusedBorderColor = Color(0xFF006D3B),
+                        unfocusedBorderColor = Color(0xFFDBD6CA),
+                        focusedTextColor = Color(0xFF332D25),
+                        unfocusedTextColor = Color(0xFF332D25),
+                        errorBorderColor = Color.Red
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Button(
+                    onClick = { showDatePicker = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF006D3B)
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Add")
+                    Text("Select Date")
                 }
-            }
-        }
-    }
+
+                Text(
+                    "Selected Date: ${
+                        java.text.SimpleDateFormat("yyyy-MM-dd").format(selectedDate)
+                    }",
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = Color(0xFF006D3B)
+                )
 
 
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        selectedDate = datePickerState.selectedDateMillis ?: System.currentTimeMillis() // Default to current date if null
-                        showDatePicker = false
-                        showError = false
-                    }
+                if (showError) {
+                    Text(
+                        text = "Please fill all fields correctly",
+                        color = Color.Red,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF332D25)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Cancel", color = Color.White)
+                    }
+
+                    Button(
+                        onClick = {
+                            val amount = itemAmount.toDoubleOrNull() ?: 0.0
+                            if (itemName.isBlank() || (amount != null && amount < 0)) {
+                                showError = true
+                            } else {
+                                onAddItem(itemName, amount ?: 0.0, selectedDate!!)
+                                onDismiss()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF006D3B)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Add")
+                    }
                 }
             }
-        ) {
-            DatePicker(
-                state = datePickerState
-            )
+        }
+
+
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            selectedDate = datePickerState.selectedDateMillis
+                                ?: System.currentTimeMillis() // Default to current date if null
+                            showDatePicker = false
+                            showError = false
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState
+                )
+            }
         }
     }
-}}
+}
