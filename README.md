@@ -5,7 +5,7 @@
 
 **Effortless shopping, simplified.** 🛒
 
-ShopSmart is a user-friendly shopping list app built with Kotlin and Jetpack Compose. From organizing items by category to adding them through voice commands, ShopSmart helps you streamline your grocery shopping experience—whether you're online or offline.
+ShopSmart is a user-friendly and efficient shopping list app built with Kotlin and Jetpack Compose. From organizing items by category to adding them through voice commands, ShopSmart helps you streamline your grocery shopping experience—whether you're online or offline.
 
 <!-- Added Hacktoberfest 2024 and GSSoc Extended 2024 banners -->
 
