@@ -21,6 +21,12 @@ suspend fun saveItems(context: Context, items: List<com.yuvrajsinghgmx.shopsmart
 }
 
 fun getItems(context: Context): Flow<List<Product>> = context.dataStore.data.map { preferences ->
-        val json = preferences[ShoppingList.ITEMS_KEY] ?: return@map emptyList()
-        Gson().fromJson(json, Array<Product>::class.java).toList()
+    val json = preferences[ShoppingList.ITEMS_KEY] ?: return@map emptyList()
+    Gson().fromJson(json, Array<Product>::class.java).map { product ->
+        if (product.id.isNullOrBlank()) {
+            product.copy(id = UUID.randomUUID().toString()) // Assign a new ID
+        } else {
+            product
+        }
     }
+}

@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -242,7 +243,9 @@ fun Profile(modifier: Modifier = Modifier, navController: NavController, viewMod
                         isEditing = true
                     }
                 },
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.13f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.13f),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFFFFF)),
                 shape = RoundedCornerShape(14.dp)
             ) {
@@ -319,7 +322,9 @@ fun Profile(modifier: Modifier = Modifier, navController: NavController, viewMod
                         }
 
                     },
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.6f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFebeded)),
                     shape = RoundedCornerShape(14.dp)
                 ) {
