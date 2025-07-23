@@ -34,7 +34,7 @@ Examples of unacceptable behavior include:
   advances of any kind
 * 🛑Trolling, insulting or derogatory comments, and personal or political attacks
 * ⚠️Public or private harassment
-* 🔒Publishing others' private information, such as a physical or email
+* 🔒Publishing other's private information, such as a physical or email
   address, without their explicit permission
 * ❌Other conduct which could reasonably be considered inappropriate in a
   professional setting
@@ -74,8 +74,7 @@ the contribution and further enforcement actions as outlined in the guidelines.
 ## 🛡️Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-.
+reported to the community leaders responsible for enforcement at discord or github.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
