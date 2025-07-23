@@ -103,70 +103,70 @@ fun HomeScreen(
         )
     }
 
-        var canRecord by remember{
-            mutableStateOf(false)
+    var canRecord by remember{
+        mutableStateOf(false)
+    }
+
+    val recordAudioLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            canRecord = isGranted
         }
+    )
 
-        val recordAudioLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { isGranted ->
-                canRecord = isGranted
-            }
-        )
+    LaunchedEffect(key1 = recordAudioLauncher){
+        recordAudioLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+    }
 
-        LaunchedEffect(key1 = recordAudioLauncher){
-            recordAudioLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+    val state by voiceToTextParser.state.collectAsState()
+
+    LaunchedEffect(state.spokenText){
+        if(state.spokenText.isNotBlank()){
+            searchQuery = state.spokenText
         }
+    }
 
-        val state by voiceToTextParser.state.collectAsState()
-
-        LaunchedEffect(state.spokenText){
-            if(state.spokenText.isNotBlank()){
-                searchQuery = state.spokenText
-            }
-        }
-
-        Column() {
-            TextField(
-                value = searchQuery,
-                onValueChange = {  searchQuery = it },
-                placeholder = { Text(text = placeholderText) },
-                interactionSource = interactionSource,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-
-                        imageVector = Icons.Default.Mic,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            if(state.isSpeaking){
-                                voiceToTextParser.stopListening()
-                            }else{
-                                voiceToTextParser.startListening()
-                            }
-                        }
-                    )
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
+    Column() {
+        TextField(
+            value = searchQuery,
+            onValueChange = {  searchQuery = it },
+            placeholder = { Text(text = placeholderText) },
+            interactionSource = interactionSource,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null
                 )
+            },
+            trailingIcon = {
+                Icon(
+
+                    imageVector = Icons.Default.Mic,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        if(state.isSpeaking){
+                            voiceToTextParser.stopListening()
+                        }else{
+                            voiceToTextParser.startListening()
+                        }
+                    }
+                )
+            },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
             )
-            Column(
-                modifier = Modifier.fillMaxSize()
-                    .verticalScroll(scrollState)
-            ) {
+        )
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

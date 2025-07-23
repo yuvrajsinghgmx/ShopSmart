@@ -51,8 +51,6 @@ class MainActivity : BaseActivity() {
                 val navController = rememberNavController()
                 Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
 
-
-
             }
         }
     }
