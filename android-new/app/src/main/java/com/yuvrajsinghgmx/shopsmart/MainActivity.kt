@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
             ShopSmartTheme {
                 Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("This is ShopSmart App.")
+
                 }
             }
         }
