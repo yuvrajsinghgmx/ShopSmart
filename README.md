@@ -1,93 +1,117 @@
-# 🛍️ ShopSmart
+# 🛍️ ShopSmart – Your Smart Shopping Companion
 
-ShopSmart is a dynamic and responsive E-commerce web application built with **React.js**, offering users a seamless shopping experience. From browsing products to managing carts and performing checkouts, every step is intuitive and efficient. It uses the **FakeStoreAPI** to simulate real-world product listings and data.
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.8.0-purple.svg)](https://kotlinlang.org/)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Latest-blue.svg)](https://developer.android.com/jetpack/compose)
 
-Whether you're a user looking to explore an elegant frontend or a developer seeking a clean and modern React project, ShopSmart has something to offer.
+A modern Android shopping companion app that revolutionizes your local shopping experience with smart features and intuitive design.
 
----
+## 📱 Key Features
 
-## 🚀 Key Features
+### 🔍 Smart Shopping
+- Voice & text-based product search with AI-powered suggestions
+- Real-time inventory tracking and price comparisons
+- Barcode scanning for instant product information
+- Location-based store recommendations
 
-- 🛒 **Add to Cart**  
-  Add products to your shopping cart with just a click. The cart updates in real-time with smooth UI feedback.
+### 📋 List Management
+- Create and manage multiple shopping lists
+- Smart categorization and sorting
+- Price tracking and budget estimation
+- Share lists with family members
+- Image attachments for specific items
 
-- ❌ **Remove from Cart**  
-  Remove any product from your cart instantly, allowing users to manage their selections easily.
+### 🔔 Smart Notifications
+- Price drop alerts for wishlist items
+- Stock availability notifications
+- Deal recommendations based on shopping history
+- Order status updates
 
-- ✅ **Checkout Process**  
-  Proceed to checkout with a simplified and user-friendly flow, mimicking real-world e-commerce functionality.
+## 🛠️ Tech Stack
 
-- 🔀 **Page Navigation**  
-  Implemented using **React Router**, ensuring smooth transitions between home, product, and cart pages.
+- **Frontend**: 
+  - Jetpack Compose
+  - Material Design 3
+  - View Models
+  - Kotlin Coroutines
 
-- 🎨 **Responsive Styling**  
-  Clean and modern CSS ensures that the application is responsive across devices – from mobile to desktop.
+- **Backend**:
+  - Room Database
+  - Retrofit for API calls
+  - Hilt for dependency injection
+  - Firebase Analytics
 
-- 📡 **API Integration**  
-  Products are fetched live from the [FakeStoreAPI](https://fakestoreapi.com/), showcasing integration with external APIs.
+- **Architecture**:
+  - MVVM (Model-View-ViewModel)
+  - Clean Architecture principles
+  - Repository pattern
 
----
+## 🚀 Getting Started
 
-## 🧪 Tech Stack
+### Prerequisites
+- Android Studio Arctic Fox or later
+- JDK 11 or higher
+- Android SDK 21+
+- Kotlin 1.8.0+
 
-| Tech        | Description                                  |
-|-------------|----------------------------------------------|
-| ⚛️ React.js | Frontend JavaScript library for UI building  |
-| 🧑‍🎨 CSS     | Styling and layout                           |
-| 🌍 React Router | Declarative routing for React apps       |
-| 📡 Axios    | Promise-based HTTP client for API requests   |
-| 📦 FakeStoreAPI | Dummy product API for testing/shop data |
+### Installation
 
----
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/ShopSmart.git
+```
+
+2. Open project in Android Studio
+
+3. Add your API keys in `local.properties`:
+```properties
+PIXABAY_API_KEY=your_key_here
+MAPS_API_KEY=your_key_here
+```
+
+4. Build and run the project
 
 ## 📸 Screenshots
 
-| Homepage | Cart Page | Product Page |
-|----------|-----------|--------------|
-| ![Home](./screenshots/homepage.png) | ![Cart](./screenshots/cartpage.png) | ![Product](./screenshots/productpage.png) |
+<table>
+  <tr>
+    <td align="center"><strong>Home Screen</strong></td>
+    <td align="center"><strong>Shopping List</strong></td>
+    <td align="center"><strong>Product Search</strong></td>
+  </tr>
+  <tr>
+    <td>(Coming Soon)</td>
+    <td>(Coming Soon)</td>
+    <td>(Coming Soon)</td>
+  </tr>
+</table>
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📜 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👥 Team
+
+- **Project Mentor**: Yuvraj Singh (@yuvrajsinghgmx)
+- **Project Lead**: Adarsh Chaubey
+- **Core Contributors**: Sree Chandana, [Add other core members if any]
+- **Contributors**: [Contributors Page](https://github.com/yuvrajsinghgmx/ShopSmart/contributors)
+
+## 📮 Contact
+
+- Project Link: [https://github.com/yuvrajsinghgmx/ShopSmart](https://github.com/yuvrajsinghgmx/ShopSmart)
+- Report Bug: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
+- Request Feature: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
+
 
 ---
 
-## ⚙️ Installation & Setup
-
-1. **Clone the Repository**
-
-```bash
-git clone https://github.com/Culinary-King/ShopSmart.git
-cd ShopSmart
-npm install
-npm start
-
-
-📁 Folder Structure
-ShopSmart/
-├── public/
-│   └── index.html
-├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── App.js
-│   ├── index.js
-│   └── styles/
-├── screenshots/
-├── package.json
-└── README.md
-
-🧑‍💻 Contributing
-Contributions are welcome! Here's how you can help:
-
-Fork the repository.
-Create a new branch (git checkout -b feature-name).
-Make your changes and commit (git commit -m 'Add feature').
-Push to the branch (git push origin feature-name).
-Open a Pull Request.
-
-📄 License
-This project is open-source and available under the MIT License.
-
-
-
-📬 Contact
-👤 Maintainer: Culinary-King
-
-📨 For queries, feel free to raise an issue or contact via GitHub.
+⭐️ If you find this project useful, please consider giving it a star!
