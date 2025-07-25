@@ -1,5 +1,4 @@
 package com.yuvrajsinghgmx.shopsmart.screens
-package com.yuvrajsinghgmx.shopsmart
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
