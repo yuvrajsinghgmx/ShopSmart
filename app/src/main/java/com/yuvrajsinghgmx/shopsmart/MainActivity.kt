@@ -50,7 +50,6 @@ class MainActivity : BaseActivity() {
                 val viewModel: ShoppingListViewModel = hiltViewModel()
                 val navController = rememberNavController()
                 Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
-
             }
         }
     }
