@@ -11,6 +11,4 @@ class Product(
     val shopName: String,
     val shopNumber:String,
     val distance: String
-) {
-
-}
+)
