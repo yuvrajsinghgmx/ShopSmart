@@ -398,4 +398,3 @@ fun StarRating(rating: Float, maxStars: Int = 5) {
         }
     }
 }
-
