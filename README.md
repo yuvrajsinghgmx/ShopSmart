@@ -3,8 +3,14 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.8.0-purple.svg)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Latest-blue.svg)](https://developer.android.com/jetpack/compose)
+[![GitHub Stars](https://img.shields.io/github/stars/yuvrajsinghgmx/ShopSmart?style=social)](https://github.com/yuvrajsinghgmx/ShopSmart/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/yuvrajsinghgmx/ShopSmart)](https://github.com/yuvrajsinghgmx/ShopSmart/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/yuvrajsinghgmx/ShopSmart)](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/yuvrajsinghgmx/ShopSmart)](https://github.com/yuvrajsinghgmx/ShopSmart/pulls)
 
 A modern Android shopping companion app that revolutionizes your local shopping experience with smart features and intuitive design.
+
+---
 
 ## 📱 Key Features
 
@@ -27,24 +33,38 @@ A modern Android shopping companion app that revolutionizes your local shopping 
 - Deal recommendations based on shopping history
 - Order status updates
 
+---
+
 ## 🛠️ Tech Stack
 
-- **Frontend**: 
-  - Jetpack Compose
-  - Material Design 3
-  - View Models
-  - Kotlin Coroutines
+**Frontend**:
+- Jetpack Compose
+- Material Design 3
+- View Models
+- Kotlin Coroutines
 
-- **Backend**:
-  - Room Database
-  - Retrofit for API calls
-  - Hilt for dependency injection
-  - Firebase Analytics
+**Backend**:
+- Room Database
+- Retrofit for API calls
+- Hilt for dependency injection
+- Firebase Analytics
 
-- **Architecture**:
-  - MVVM (Model-View-ViewModel)
-  - Clean Architecture principles
-  - Repository pattern
+**Architecture**:
+- MVVM (Model-View-ViewModel)
+- Clean Architecture principles
+- Repository pattern
+
+---
+
+## 📌 Roadmap
+
+- [ ] Dark Mode Support  
+- [ ] Offline Mode for Shopping Lists  
+- [ ] Multi-language Support  
+- [ ] Advanced Deal Recommendation Engine  
+- [ ] Cloud Sync Across Devices  
+
+---
 
 ## 🚀 Getting Started
 
@@ -56,20 +76,23 @@ A modern Android shopping companion app that revolutionizes your local shopping 
 
 ### Installation
 
-1. Clone the repository
+1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/ShopSmart.git
-```
+````
 
 2. Open project in Android Studio
 
 3. Add your API keys in `local.properties`:
+
 ```properties
 PIXABAY_API_KEY=your_key_here
 MAPS_API_KEY=your_key_here
 ```
 
 4. Build and run the project
+
+---
 
 ## 📸 Screenshots
 
@@ -86,6 +109,8 @@ MAPS_API_KEY=your_key_here
   </tr>
 </table>
 
+---
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -94,24 +119,31 @@ MAPS_API_KEY=your_key_here
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+---
+
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the [MIT License](https://choosealicense.com/licenses/mit/).
+
+---
 
 ## 👥 Team
 
-- **Project Mentor**: Yuvraj Singh (@yuvrajsinghgmx)
-- **Project Lead**: Adarsh Chaubey
-- **Core Contributors**: Sree Chandana, [Add other core members if any]
-- **Contributors**: [Contributors Page](https://github.com/yuvrajsinghgmx/ShopSmart/contributors)
+* **Project Mentor**: Yuvraj Singh ([@yuvrajsinghgmx](https://github.com/yuvrajsinghgmx))
+* **Project Lead**: Adarsh Chaubey
+* **Core Contributors**: Sree Chandana, \[Add other core members if any]
+* **Contributors**: [Contributors Page](https://github.com/yuvrajsinghgmx/ShopSmart/contributors)
+
+---
 
 ## 📮 Contact
 
-- Project Link: [https://github.com/yuvrajsinghgmx/ShopSmart](https://github.com/yuvrajsinghgmx/ShopSmart)
-- Report Bug: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
-- Request Feature: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
-
+* **Project Link**: [ShopSmart on GitHub](https://github.com/yuvrajsinghgmx/ShopSmart)
+* **Report Bug**: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
+* **Request Feature**: [Open Issue](https://github.com/yuvrajsinghgmx/ShopSmart/issues)
 
 ---
 
 ⭐️ If you find this project useful, please consider giving it a star!
+
+```
