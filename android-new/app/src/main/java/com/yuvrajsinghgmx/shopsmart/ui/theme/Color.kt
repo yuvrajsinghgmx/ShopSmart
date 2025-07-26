@@ -18,3 +18,6 @@ val TextPrimary = Color(0xFF212121)
 val BackgroundLight = Color(0xFFF5F5F5)
 val BackgroundDark = Color(0xFF121212)
 val SurfaceDark = Color(0xFF1E1E1E)
+
+val LightGreyy = Color(0xFFF5F5F5)
+val YellowStarColor = Color(0xFFFFC107)
