@@ -113,3 +113,18 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.username}"
+    
+class PhoneOTP(models.Model):
+    phone_number = models.CharField(max_length=15, unique=True)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.phone_number} - {'Verified' if self.is_verified else 'Not Verified'}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['phone_number']),
+        ]
+
