@@ -89,162 +89,181 @@ fun AddProductScreen() {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
         ) {
-            Spacer(Modifier.height(16.dp))
-
-            // Divider line above images
             Divider(color = Color.LightGray, thickness = 1.dp)
 
-            Text("Product Images", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, modifier = Modifier.padding(vertical = 8.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
-                            .clickable { galleryLauncher.launch("image/*") },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.Green)
-                            Text("Add Photo", fontSize = 10.sp, color = Color.Green)
+                Text("Product Images", fontWeight = FontWeight.SemiBold, fontSize = 16.sp, modifier = Modifier.padding(vertical = 8.dp))
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
+                                .clickable { galleryLauncher.launch("image/*") },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.Green)
+                                Text("Add Photo", fontSize = 10.sp, color = Color.Green)
+                            }
+                        }
+                    }
+
+                    items(imageUris.size) { index ->
+                        Box(modifier = Modifier.size(100.dp)) {
+                            Image(
+                                painter = rememberAsyncImagePainter(imageUris[index]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color(0xFFEFEFEF), RoundedCornerShape(8.dp))
+                            )
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 4.dp, y = (-4).dp)
+                                    .clickable {
+                                        imageUris = imageUris.toMutableList().also { it.removeAt(index) }
+                                    }
+                                    .background(Color.White, RoundedCornerShape(50))
+                                    .padding(2.dp)
+                                    .size(18.dp)
+                            )
                         }
                     }
                 }
 
-                items(imageUris.size) { index ->
-                    Box(modifier = Modifier.size(80.dp)) {
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUris[index]),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.LightGray, RoundedCornerShape(8.dp))
+                Spacer(Modifier.height(16.dp))
+
+                Text("Product Name*", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
+                OutlinedTextField(
+                    value = productName,
+                    onValueChange = { productName = it },
+                    placeholder = { Text("Enter product name", color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5)
+                    )
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text("Price*", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { price = it },
+                    placeholder = { Text("0.00", color = Color.Gray) },
+                    leadingIcon = { Text("₹", fontWeight = FontWeight.Bold, color = Color.DarkGray) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5)
+                    )
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text("Category", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = category,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Select category") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Gray,
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedLabelColor = Color.Gray,
+                            unfocusedLabelColor = Color.Gray,
+                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = Color(0xFFF5F5F5)
                         )
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(x = 4.dp, y = (-4).dp)
-                                .clickable {
-                                    imageUris = imageUris.toMutableList().also { it.removeAt(index) }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        categories.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text(cat) },
+                                onClick = {
+                                    category = cat
+                                    expanded = false
                                 }
-                                .background(Color.White, RoundedCornerShape(50))
-                                .padding(2.dp)
-                                .size(18.dp)
-                        )
+                            )
+                        }
                     }
                 }
-            }
 
-            Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(8.dp))
 
-            Text("Product Name*", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
-            OutlinedTextField(
-                value = productName,
-                onValueChange = { productName = it },
-                placeholder = { Text("Enter product name", color = Color.Gray) },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text("Price*", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(bottom = 8.dp))
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
-                placeholder = { Text("0.00", color = Color.Gray) },
-                leadingIcon = { Text("₹", fontWeight = FontWeight.Bold, color = Color.DarkGray) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text("Category", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
-            ) {
+                Text("Available Stock", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
                 OutlinedTextField(
-                    value = category,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Select category") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
+                    value = stock,
+                    onValueChange = { stock = it },
+                    placeholder = { Text("Enter quantity") },
+                    modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Gray,
                         unfocusedBorderColor = Color.LightGray,
                         focusedLabelColor = Color.Gray,
                         unfocusedLabelColor = Color.Gray,
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5)
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text("Description", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    placeholder = { Text("Describe your product...") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    maxLines = 4,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedLabelColor = Color.Gray,
+                        unfocusedLabelColor = Color.Gray,
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5)
                     )
                 )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    categories.forEach { cat ->
-                        DropdownMenuItem(
-                            text = { Text(cat) },
-                            onClick = {
-                                category = cat
-                                expanded = false
-                            }
-                        )
-                    }
-                }
             }
-
-            Spacer(Modifier.height(8.dp))
-
-            Text("Available Stock", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
-            OutlinedTextField(
-                value = stock,
-                onValueChange = { stock = it },
-                placeholder = { Text("Enter quantity") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Gray,
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = Color.Gray,
-                ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text("Description", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp))
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                placeholder = { Text("Describe your product...") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                maxLines = 4,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Gray,
-                    unfocusedBorderColor = Color.LightGray,
-                    focusedLabelColor = Color.Gray,
-                    unfocusedLabelColor = Color.Gray,
-                )
-            )
         }
     }
 }
