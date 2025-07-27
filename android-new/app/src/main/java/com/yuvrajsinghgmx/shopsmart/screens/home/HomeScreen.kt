@@ -1,18 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -30,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ShopCard
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.SearchBarComposable
@@ -41,18 +30,21 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    sharedViewModel: SharedShopViewModel, // ✅ Passed from NavHost
     navController: NavController
 ) {
     val state = viewModel.state.value
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
+        // ✅ Header Section
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
                 ShopSmartTheme {
@@ -77,25 +69,31 @@ fun HomeScreen(
             )
         }
 
+        // ✅ Loading / Error State
         when {
             state.isLoading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 return@Column
             }
-
             state.error != null -> {
                 Text(text = state.error, modifier = Modifier.align(Alignment.CenterHorizontally))
                 return@Column
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // ✅ Search Bar
         SearchBarComposable(
             query = state.searchQuery ?: "",
             onQueryChange = { viewModel.onEvent(HomeEvent.Search(it)) },
             onSearch = { viewModel.onEvent(HomeEvent.Search(state.searchQuery ?: "")) },
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // ✅ Trending Products Title
         ShopSmartTheme {
             Text(
                 text = "Trending Products",
@@ -103,7 +101,10 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // ✅ Trending Products List
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 12.dp)
@@ -112,7 +113,10 @@ fun HomeScreen(
                 ProductCard(product = product)
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // ✅ Nearby Shops Title
         ShopSmartTheme {
             Text(
                 text = "Nearby Shops",
@@ -120,13 +124,19 @@ fun HomeScreen(
                 fontWeight = FontWeight.Bold
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // ✅ Nearby Shops List with Clickable Navigation
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(vertical = 12.dp)
         ) {
             items(state.nearbyShops) { shop ->
-                ShopCard(shop)
+                ShopCard(shop = shop, onClick = {
+                    sharedViewModel.setSelectedShop(shop) // ✅ Save selected shop
+                    navController.navigate("shopDetails") // ✅ Navigate to details screen
+                })
             }
         }
     }

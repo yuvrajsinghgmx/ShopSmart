@@ -1,15 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,11 +21,12 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 
 @Composable
-fun ShopCard(shop: Shop) {
+fun ShopCard(shop: Shop, onClick: () -> Unit) { // ✅ Added onClick parameter
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(120.dp)
+            .clickable { onClick() },  // ✅ Make the entire card clickable
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -49,7 +42,7 @@ fun ShopCard(shop: Shop) {
             Card(
                 modifier = Modifier
                     .width(100.dp)
-                    .height((95.dp))
+                    .height(95.dp)
                     .padding(start = 5.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
@@ -59,28 +52,23 @@ fun ShopCard(shop: Shop) {
                     error = painterResource(R.drawable.error),
                     placeholder = painterResource(R.drawable.error),
                     fallback = painterResource(R.drawable.error),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Crop
                 )
             }
-            Column (
+            Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(horizontal = 16.dp)
-            ){
+            ) {
                 ShopSmartTheme {
-                    Text(text = shop.shopName,
-                        fontSize = 18.sp)
+                    Text(text = shop.shopName, fontSize = 18.sp)
                 }
                 ShopSmartTheme {
-                    Text(text = shop.category,
-                        color = Color.Gray
-                    )
+                    Text(text = shop.category, color = Color.Gray)
                 }
                 ShopSmartTheme {
-                    Text(text = shop.distance,
-                        color = GreenPrimary
-                    )
+                    Text(text = shop.distance, color = GreenPrimary)
                 }
             }
         }
