@@ -17,7 +17,6 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 
 @Composable
 fun NavHost(navController: NavHostController, padding: PaddingValues) {
-    // ✅ Create a single instance of SharedShopViewModel for both screens
     val sharedViewModel: SharedShopViewModel = viewModel()
 
     NavHost(
@@ -25,15 +24,12 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
         startDestination = BottomNavItem.Home.route,
         modifier = Modifier.padding(padding)
     ) {
-        // ✅ Main Bottom Nav Screens
         composable(BottomNavItem.Home.route) {
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
         composable(BottomNavItem.Search.route) { SearchScreen() }
         composable(BottomNavItem.Saved.route) { SavedProductScreen() }
         composable(BottomNavItem.Profile.route) { UserProfileScreen() }
-
-        // ✅ New Route for Shop Details Screen
         composable("shopDetails") {
             ShopDetail(sharedViewModel = sharedViewModel)
         }
