@@ -1,13 +1,24 @@
+
 package com.yuvrajsinghgmx.shopsmart
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavigationBar
-import com.yuvrajsinghgmx.shopsmart.navigation.NavHost
+import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavItem
+import com.yuvrajsinghgmx.shopsmart.screens.SplashScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
+import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -16,15 +27,46 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            Scaffold(
-                bottomBar = {
-                    BottomNavigationBar(navController = navController)
-                }, content = { padding ->
-                    NavHost(navController = navController, padding = padding)
+            ShopSmartTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    ShopSmartAppContent()
                 }
-            )
-
+            }
         }
+    }
+}
+
+@Composable
+fun ShopSmartAppContent() {
+    val navController = rememberNavController()
+    var showSplash by remember { mutableStateOf(true) }
+
+    if (showSplash) {
+        SplashScreen(
+            onSplashComplete = {
+                showSplash = false
+            }
+        )
+    } else {
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController = navController)
+            },
+            content = { padding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = BottomNavItem.Home.route,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    composable(BottomNavItem.Home.route) {
+                        HomeScreen(navController = navController)
+                    }
+                    // Add more composable screens here
+                }
+            }
+        )
     }
 }
