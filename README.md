@@ -94,7 +94,7 @@ MAPS_API_KEY=your_key_here
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## thabks to fellow contributors
+## thanks to fellow contributors
 
 <a href="https://github.com/yuvrajsinghgmx/ShopSmart/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=yuvrajsinghgmx/ShopSmart" />
