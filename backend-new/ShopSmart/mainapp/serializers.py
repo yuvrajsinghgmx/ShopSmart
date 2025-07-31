@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from .models import Product
+
 
 class PhoneSerializer(serializers.Serializer):
     country_code = serializers.CharField(
@@ -79,3 +81,20 @@ class VerifyOTPSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid country code.")
 
         return data
+
+class ProductSerializer(serializers.ModelSerializer):
+    shop = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id',
+            'shop',
+            'name',
+            'price',
+            'description',
+            'category',
+            'stock_quantity',
+            'images',
+            'created_at'
+        ]
