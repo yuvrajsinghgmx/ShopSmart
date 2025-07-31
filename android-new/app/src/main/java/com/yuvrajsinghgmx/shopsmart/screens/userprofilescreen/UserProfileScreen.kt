@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.screens
+package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -40,13 +40,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yuvrajsinghgmx.shopsmart.modelclass.User
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 
 @Composable
-fun UserProfileScreen(){
+fun UserProfileScreen(
+    user: User
+){
 
     //user type variable for now, will be updated through backend
-    val userType = "Customer"
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -80,14 +82,14 @@ fun UserProfileScreen(){
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "John Smith", //can be changed though backend
+                        text = user.userName, //can be changed though backend
                         style = ShopSmartTypography.headlineLarge,
                         fontSize = 32.sp,
                         color = Color.Black
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "+1 (555) 123-4567", //can be changed through backend
+                        text = user.userPhoneNumber.toString(), //can be changed through backend
                         color = Color.Black,
                         style = ShopSmartTypography.bodyMedium,
                         fontSize = 18.sp
@@ -141,7 +143,7 @@ fun UserProfileScreen(){
                         Box(
                             modifier = Modifier
                                 .background(
-                                    if(userType=="Customer"){
+                                    if(user.userType=="Customer"){
                                         Color(0xFF4CAF50)
                                     }else{
                                         Color.Transparent
@@ -156,13 +158,13 @@ fun UserProfileScreen(){
                                 text = "Customer",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (userType=="Customer") Color.White else Color.Black
+                                color = if (user.userType=="Customer") Color.White else Color.Black
                             )
                         }
                         Box(
                             modifier = Modifier
                                 .background(
-                                    if(userType=="Shopowner"){
+                                    if(user.userType=="Shopowner"){
                                         Color(0xFF4CAF50)
                                     }else{
                                         Color.Transparent
@@ -177,7 +179,7 @@ fun UserProfileScreen(){
                                 text = "Shop Owner",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (userType=="Shopowner") Color.White else Color.Black
+                                color = if (user.userType=="Shopowner") Color.White else Color.Black
                             )
                         }
                     }
@@ -241,7 +243,7 @@ fun UserProfileScreen(){
                     )
 
                     //add new product (only for shopowner)
-                    if(userType=="Shopowner"){
+                    if(user.userType=="Shopowner"){
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
