@@ -315,4 +315,8 @@ fun AddProductScreen() {
 @Composable
 fun AddProductScreenPreview() {
     AddProductScreen()
+
 }
+
+}
+
