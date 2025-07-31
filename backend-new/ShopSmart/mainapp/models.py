@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from datetime import timedelta
 
 
 class User(AbstractUser):
@@ -10,11 +12,10 @@ class User(AbstractUser):
         SHOP_OWNER = "SHOP_OWNER", _("Shop Owner")
 
     phone_number = models.CharField(max_length=15, unique=True)
-    role = models.CharField(
-        max_length=20, choices=Role.choices, default=Role.CUSTOMER
-    )
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     location_radius_km = models.PositiveIntegerField(default=10)
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='mainapp_user_set',
@@ -29,6 +30,7 @@ class User(AbstractUser):
         help_text=_('Specific permissions for this user.'),
         verbose_name=_('user permissions'),
     )
+
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = ['username', 'email']
 
@@ -76,6 +78,7 @@ class FavoriteShop(models.Model):
     def __str__(self):
         return f"{self.user} -> {self.shop}"
 
+
 class FavoriteProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_products")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="favorited_by")
@@ -101,6 +104,7 @@ class ShopReview(models.Model):
     def __str__(self):
         return f"Review for {self.shop.name} by {self.user.username}"
 
+
 class ProductReview(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -113,7 +117,8 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.username}"
-    
+
+
 class PhoneOTP(models.Model):
     phone_number = models.CharField(max_length=15, unique=True)
     otp_code = models.CharField(max_length=6)
@@ -123,8 +128,11 @@ class PhoneOTP(models.Model):
     def __str__(self):
         return f"{self.phone_number} - {'Verified' if self.is_verified else 'Not Verified'}"
 
+    def is_expired(self):
+        """Returns True if OTP is older than 5 minutes."""
+        return timezone.now() > self.created_at + timedelta(minutes=5)
+
     class Meta:
         indexes = [
             models.Index(fields=['phone_number']),
         ]
-
