@@ -7,11 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -21,19 +19,18 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavItem.Saved,
         BottomNavItem.Profile
     )
-
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val colorScheme = MaterialTheme.colorScheme
 
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = colorScheme.surface,
         tonalElevation = 0.dp,
         modifier = Modifier
-            .height(80.dp)
+            .height(100.dp)
             .drawBehind {
                 drawLine(
-                    color = Color(0xFFE0E0E0),
+                    color = colorScheme.outline.copy(alpha = 0.3f),
                     start = Offset(0f, 0f),
                     end = Offset(size.width, 0f),
                     strokeWidth = 1f
@@ -42,9 +39,10 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         items.forEach { item ->
             val isSelected = currentRoute == item.route
-
-            val iconColor = if (item == BottomNavItem.Home && isSelected) GreenPrimary else Color(0xFF4D4D4D)
-            val textColor = if (item == BottomNavItem.Home && isSelected) GreenPrimary else Color(0xFF4D4D4D)
+            val iconColor =
+                if (isSelected) colorScheme.primary else colorScheme.onSurfaceVariant
+            val textColor =
+                if (isSelected) colorScheme.primary else colorScheme.onSurfaceVariant
 
             NavigationBarItem(
                 selected = isSelected,
@@ -70,11 +68,11 @@ fun BottomNavigationBar(navController: NavController) {
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent,
-                    selectedIconColor = iconColor,
-                    unselectedIconColor = Color(0xFF4D4D4D),
-                    selectedTextColor = textColor,
-                    unselectedTextColor = Color(0xFF4D4D4D)
+                    selectedIconColor = colorScheme.primary,
+                    unselectedIconColor = colorScheme.onSurfaceVariant,
+                    selectedTextColor = colorScheme.primary,
+                    unselectedTextColor = colorScheme.onSurfaceVariant,
+                    indicatorColor = colorScheme.surfaceVariant
                 )
             )
         }
