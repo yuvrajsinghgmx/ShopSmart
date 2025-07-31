@@ -2,6 +2,8 @@ package com.yuvrajsinghgmx.shopsmart.modelclass.repository
 
 import com.yuvrajsinghgmx.shopsmart.modelclass.Product
 import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.modelclass.User
+import java.util.UUID
 import javax.inject.Inject
 
 class Repository @Inject constructor(){
@@ -68,6 +70,15 @@ class Repository @Inject constructor(){
                 distance = "0.8 km",
                 imageUrl = listOf("https://4.bp.blogspot.com/-fjLkRmTkG9I/Wh4ZL_ox2hI/AAAAAAAA-sA/QZnV_LeoB1Q37TNXQJCyB3rasqVqjkeKwCLcBGAs/s1600/1.jpg")
             )
+        )
+    }
+
+    fun getUserData(): User{
+        return User(
+            userId = UUID.randomUUID().toString(),
+            userName = "John Doe",
+            userPhoneNumber = 123456789,
+            userType = "Customer"
         )
     }
 }
