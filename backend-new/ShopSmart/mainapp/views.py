@@ -3,23 +3,23 @@ import random
 
 from dotenv import load_dotenv
 from twilio.rest import Client
-
 from django.shortcuts import get_object_or_404
-
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
 
 from .models import PhoneOTP, Product, Shop
 from .permissions import IsOwnerOfShop
 from .serializers import PhoneSerializer, ProductSerializer, VerifyOTPSerializer
 
-# Load environment variables
 load_dotenv()
 
 
-# Utility function to send OTP using Twilio (fallback to print if env vars not set)
 def send_otp(phone):
     otp = str(random.randint(1000, 9999))
 
@@ -43,7 +43,7 @@ def send_otp(phone):
 
     return otp
 
-
+@permission_classes([AllowAny])
 class SendOTPView(APIView):
     def post(self, request):
         serializer = PhoneSerializer(data=request.data)
@@ -62,6 +62,9 @@ class SendOTPView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+User = get_user_model()
+
+@permission_classes([AllowAny])
 class VerifyOTPView(APIView):
     def post(self, request):
         serializer = VerifyOTPSerializer(data=request.data)
@@ -81,10 +84,18 @@ class VerifyOTPView(APIView):
             if phone_obj.otp_code == otp:
                 phone_obj.is_verified = True
                 phone_obj.save()
-                return Response({'message': 'Phone number verified successfully'},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+                user, created = User.objects.get_or_create(phone_number=phone, defaults={'username': phone})
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                
+                return Response({
+                    'message': 'Phone number verified successfully',
+                    'access': access_token,
+                    'refresh': str(refresh),
+                    'is_new_user': created
+                }, status=status.HTTP_200_OK)
+
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
