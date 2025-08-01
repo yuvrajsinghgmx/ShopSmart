@@ -27,7 +27,10 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
         composable(BottomNavItem.Home.route) {
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
-        composable(BottomNavItem.Search.route) { SearchScreen() }
+        composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
+            sharedViewModel.setSelectedShop(shop)
+            navController.navigate("shopDetails")
+        }) }
         composable(BottomNavItem.Saved.route) { SavedProductScreen() }
         composable(BottomNavItem.Profile.route) { UserProfileScreen() }
         composable("shopDetails") {
