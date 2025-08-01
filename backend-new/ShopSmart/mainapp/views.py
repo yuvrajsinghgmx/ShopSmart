@@ -1,14 +1,19 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import PhoneOTP
-from .serializers import PhoneSerializer, VerifyOTPSerializer
-from django.utils import timezone
-from dotenv import load_dotenv
-from twilio.rest import Client
 import os
 import random
+
+from dotenv import load_dotenv
+from twilio.rest import Client
+
+from django.shortcuts import get_object_or_404
+
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import PhoneOTP, Product, Shop
+from .permissions import IsOwnerOfShop
+from .serializers import PhoneSerializer, ProductSerializer, VerifyOTPSerializer
 
 # Load environment variables
 load_dotenv()
@@ -82,3 +87,17 @@ class VerifyOTPView(APIView):
                 return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOfShop]
+
+    def get_queryset(self):
+        shop_pk = self.kwargs['shop_pk']
+        return Product.objects.filter(shop__pk=shop_pk)
+
+    def perform_create(self, serializer):
+        shop_pk = self.kwargs['shop_pk']
+        shop = get_object_or_404(Shop, pk=shop_pk)
+        serializer.save(shop=shop)
