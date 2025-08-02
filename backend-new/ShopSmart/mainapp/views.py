@@ -15,7 +15,7 @@ from django.contrib.auth import get_user_model
 
 from .models import PhoneOTP, Product, Shop
 from .permissions import IsOwnerOfShop
-from .serializers import PhoneSerializer, ProductSerializer, VerifyOTPSerializer
+from .serializers import SendOTPSerializer, ProductSerializer, VerifyOTPSerializer
 
 load_dotenv()
 
@@ -46,7 +46,7 @@ def send_otp(phone):
 @permission_classes([AllowAny])
 class SendOTPView(APIView):
     def post(self, request):
-        serializer = PhoneSerializer(data=request.data)
+        serializer = SendOTPSerializer(data=request.data)
         if serializer.is_valid():
             phone = serializer.validated_data['phone']
 
