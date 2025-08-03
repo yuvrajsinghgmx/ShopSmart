@@ -45,7 +45,6 @@ fun MiniProductCard(product: Product, onClick: () -> Unit) {
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 2,
-            color=Color.Black
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(

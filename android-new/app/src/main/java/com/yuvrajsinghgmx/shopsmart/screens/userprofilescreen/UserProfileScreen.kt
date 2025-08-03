@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,18 +50,16 @@ fun UserProfileScreen(
     user: User
 ){
 
-    //user type variable for now, will be updated through backend
-
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF5F5F5)
+        color = MaterialTheme.colorScheme.background
     ) {
         Column (
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
             Box(
-                modifier = Modifier.fillMaxWidth().background(Color.White).padding(vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
 
                 ){
                 Column(
@@ -82,17 +82,17 @@ fun UserProfileScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = user.userName, //can be changed though backend
+                        text = user.userName,
                         style = ShopSmartTypography.headlineLarge,
                         fontSize = 32.sp,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = user.userPhoneNumber.toString(), //can be changed through backend
-                        color = Color.Black,
+                        text = user.userPhoneNumber.toString(),
                         style = ShopSmartTypography.bodyMedium,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(16.dp))
                     Button(
@@ -102,8 +102,8 @@ fun UserProfileScreen(
                             .padding(horizontal = 16.dp)
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50),
-                            contentColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -122,16 +122,15 @@ fun UserProfileScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             ){
 
-                //account type section
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .background(if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White,RoundedCornerShape(12.dp))
                         .padding(18.dp)
                 ) {
                     Text(
                         "Account Type",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = ShopSmartTypography.headlineLarge,
                         fontSize = 18.sp
                     )
@@ -144,7 +143,7 @@ fun UserProfileScreen(
                             modifier = Modifier
                                 .background(
                                     if(user.userType=="Customer"){
-                                        Color(0xFF4CAF50)
+                                        MaterialTheme.colorScheme.primary
                                     }else{
                                         Color.Transparent
                                     },
@@ -158,14 +157,14 @@ fun UserProfileScreen(
                                 text = "Customer",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType=="Customer") Color.White else Color.Black
+                                color = if (user.userType=="Customer") MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Box(
                             modifier = Modifier
                                 .background(
                                     if(user.userType=="Shopowner"){
-                                        Color(0xFF4CAF50)
+                                        MaterialTheme.colorScheme.primary
                                     }else{
                                         Color.Transparent
                                     },
@@ -179,7 +178,7 @@ fun UserProfileScreen(
                                 text = "Shop Owner",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType=="Shopowner") Color.White else Color.Black
+                                color = if (user.userType=="Shopowner") MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -187,14 +186,12 @@ fun UserProfileScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                //menu items section
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .background(if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
-                    //delivery radius
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -209,13 +206,13 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.LocationOn,
                                 contentDescription = "Location",
-                                tint = Color(0xFF4CAF50),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 "Delivery Radius",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 16.sp
                             )
@@ -225,7 +222,7 @@ fun UserProfileScreen(
                         ) {
                             Text(
                                 "10 km",
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 14.sp
                             )
@@ -233,16 +230,15 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.KeyboardArrowRight,
                                 contentDescription = "Arrow",
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                     }
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                     )
 
-                    //add new product (only for shopowner)
                     if(user.userType=="Shopowner"){
                         Row(
                             modifier = Modifier
@@ -258,13 +254,13 @@ fun UserProfileScreen(
                                 Icon(
                                     Icons.Outlined.Add,
                                     contentDescription = "Location",
-                                    tint = Color(0xFF4CAF50),
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
                                     "Add New Product",
-                                    color = Color.Black,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     style = ShopSmartTypography.bodyMedium,
                                     fontSize = 16.sp
                                 )
@@ -275,17 +271,16 @@ fun UserProfileScreen(
                                 Icon(
                                     Icons.Outlined.KeyboardArrowRight,
                                     contentDescription = "Arrow",
-                                    tint = Color.Gray,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
                         HorizontalDivider(
-                            color = Color(0xFFF5F5F5)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                         )
                     }
 
-                    //saved items
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -300,13 +295,13 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.Bookmark,
                                 contentDescription = "Bookmark",
-                                tint = Color(0xFF4CAF50),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 "Saved Items",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 16.sp
                             )
@@ -314,16 +309,15 @@ fun UserProfileScreen(
                         Icon(
                             Icons.Default.KeyboardArrowRight,
                             contentDescription = "Arrow",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
 
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                     )
 
-                    //my reviews
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -338,13 +332,13 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.Star,
                                 contentDescription = "Star",
-                                tint = Color(0xFF4CAF50),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 "My Reviews",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 16.sp
                             )
@@ -352,16 +346,15 @@ fun UserProfileScreen(
                         Icon(
                             Icons.Default.KeyboardArrowRight,
                             contentDescription = "Arrow",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
 
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                     )
 
-                    //notification settings
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -376,13 +369,13 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.Notifications,
                                 contentDescription = "Notifications",
-                                tint = Color(0xFF4CAF50),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 "Notification Settings",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 16.sp
                             )
@@ -390,16 +383,15 @@ fun UserProfileScreen(
                         Icon(
                             Icons.Default.KeyboardArrowRight,
                             contentDescription = "Arrow",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
 
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
                     )
 
-                    //help center
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -414,13 +406,13 @@ fun UserProfileScreen(
                             Icon(
                                 Icons.Outlined.Help,
                                 contentDescription = "Help",
-                                tint = Color(0xFF4CAF50),
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 "Help Center",
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = ShopSmartTypography.bodyMedium,
                                 fontSize = 16.sp
                             )
@@ -428,7 +420,7 @@ fun UserProfileScreen(
                         Icon(
                             Icons.Default.KeyboardArrowRight,
                             contentDescription = "Arrow",
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -437,7 +429,6 @@ fun UserProfileScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            //logout button
             Button(
                 onClick = { /* handle logout */ },
                 modifier = Modifier

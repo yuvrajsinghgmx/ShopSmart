@@ -53,12 +53,13 @@ fun SearchScreen(
 ) {
     val state = viewModel.state.value
 
-    // Group results by shop
     val groupedResults: Map<Shop, List<Product>> = state.searchResults
         .filter { it.product != null && it.shop != null }
         .groupBy({ it.shop!! }, { it.product!! })
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
         SearchBarComposable(
             query = state.searchQuery.orEmpty(),
             onQueryChange = { viewModel.onEvent(HomeEvent.Search(it)) },
@@ -72,7 +73,7 @@ fun SearchScreen(
             Text(
                 text = "${state.searchResults.size} results found nearby",
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -84,7 +85,7 @@ fun SearchScreen(
             }
             !state.error.isNullOrBlank() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(state.error, color = Color.Red)
+                    Text(state.error, color = MaterialTheme.colorScheme.error)
                 }
             }
             else -> {
@@ -109,7 +110,6 @@ fun SearchScreen(
     }
 }
 
-// Card: left = horizontal product list, right = shop info
 @Composable
 fun ShopProductRow(
     shop: Shop,
@@ -120,7 +120,7 @@ fun ShopProductRow(
     Surface(
         shadowElevation = 4.dp,
         shape = RoundedCornerShape(18.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp, horizontal = 4.dp)
@@ -145,7 +145,6 @@ fun ShopProductRow(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp)
-
                     .background(MaterialTheme.colorScheme.outlineVariant)
             )
 
@@ -166,22 +165,17 @@ fun ShopProductRow(
                     fontSize = 14.sp,
                     maxLines = 2,
                     textAlign = TextAlign.Center,
-                    color=Color.Black
-
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = shop.distance,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
         }
     }
 }
-
-
-
 
 @Composable
 fun ShopCircleImage(imageUrl: String?) {

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -46,14 +47,11 @@ fun SearchBarComposable(
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             // ✅ These colors match your HomeScreen search bar
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent,
-            disabledBorderColor = Color.Transparent,
-            focusedContainerColor = Color(0xFFF5F5F5),
-            unfocusedContainerColor = Color(0xFFF5F5F5),
-            cursorColor = Color.Black,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedBorderColor = MaterialTheme.colorScheme.outline,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline
         )
     )
 }
