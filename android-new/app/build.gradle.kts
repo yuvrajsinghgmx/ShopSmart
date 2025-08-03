@@ -62,4 +62,5 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     //load image
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

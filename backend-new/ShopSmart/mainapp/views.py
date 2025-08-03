@@ -2,16 +2,27 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import PhoneOTP
+from .models import PhoneOTP, User
 from .serializers import PhoneSerializer, VerifyOTPSerializer
 import random
+from django.utils import timezone
+from datetime import timedelta
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # Utility function to send OTP (you can integrate Twilio or other APIs later)
 def send_otp(phone):
-    otp = random.randint(1000, 9999)
-    print(f"Generated OTP for {phone}: {otp}")  # Replace with actual sending logic
+    otp = str(random.randint(1000, 9999))
+    print(f"Generated OTP for {phone}: {otp}")  # Replace with actual sending logic (e.g., Twilio)
     return otp
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 class SendOTPView(APIView):
@@ -22,10 +33,16 @@ class SendOTPView(APIView):
 
             otp = send_otp(phone)
 
+            # Check if OTP was sent too recently
+            phone_obj = PhoneOTP.objects.filter(phone=phone).first()
+            if phone_obj and timezone.now() - phone_obj.created_at < timedelta(seconds=60):
+                return Response({'error': 'Please wait before requesting a new OTP.'},
+                                status=status.HTTP_429_TOO_MANY_REQUESTS)
+
             # Update or create OTP entry
-            phone_obj, created = PhoneOTP.objects.update_or_create(
+            PhoneOTP.objects.update_or_create(
                 phone=phone,
-                defaults={'otp': otp, 'is_verified': False}
+                defaults={'otp': otp, 'is_verified': False, 'created_at': timezone.now()}
             )
 
             return Response({'message': 'OTP sent successfully'}, status=status.HTTP_200_OK)
@@ -47,8 +64,21 @@ class VerifyOTPView(APIView):
             if phone_obj.otp == otp:
                 phone_obj.is_verified = True
                 phone_obj.save()
-                return Response({'message': 'Phone number verified'}, status=status.HTTP_200_OK)
-            else:
-                return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Create or get user
+                user, created = User.objects.get_or_create(phone_number=phone, defaults={
+                    "username": phone
+                })
+
+                # Generate tokens
+                tokens = get_tokens_for_user(user)
+
+                return Response({
+                    'message': 'Phone number verified',
+                    'user_id': user.id,
+                    'tokens': tokens
+                }, status=status.HTTP_200_OK)
+
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
