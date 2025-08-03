@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -120,7 +121,7 @@ fun ShopProductRow(
     Surface(
         shadowElevation = 4.dp,
         shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp, horizontal = 4.dp)
@@ -143,9 +144,9 @@ fun ShopProductRow(
 
             Box(
                 modifier = Modifier
-                    .fillMaxHeight()
+                    .fillMaxHeight(0.85f)
                     .width(1.dp)
-                    .background(MaterialTheme.colorScheme.outlineVariant)
+                    .background(MaterialTheme.colorScheme.onSurfaceVariant)
             )
 
             Column(
@@ -153,7 +154,8 @@ fun ShopProductRow(
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable { onShopClick(shop) }
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .background(if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.sharedComponents
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,11 +48,8 @@ fun SearchBarComposable(
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             // ✅ These colors match your HomeScreen search bar
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedBorderColor = MaterialTheme.colorScheme.outline,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            focusedContainerColor = if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White,
+            unfocusedContainerColor = if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else Color.White,
         )
     )
 }
