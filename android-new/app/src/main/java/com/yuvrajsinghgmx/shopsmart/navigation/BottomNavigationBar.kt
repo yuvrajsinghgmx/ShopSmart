@@ -1,15 +1,15 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -21,24 +21,58 @@ fun BottomNavigationBar(navController: NavController) {
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val colorScheme = MaterialTheme.colorScheme
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = colorScheme.surface,
+        tonalElevation = 0.dp,
+        modifier = Modifier
+            .height(100.dp)
+            .drawBehind {
+                drawLine(
+                    color = colorScheme.outline.copy(alpha = 0.3f),
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = 1f
+                )
+            }
+    ) {
         items.forEach { item ->
+            val isSelected = currentRoute == item.route
+            val iconColor =
+                if (isSelected) colorScheme.primary else colorScheme.onSurfaceVariant
+            val textColor =
+                if (isSelected) colorScheme.primary else colorScheme.onSurfaceVariant
 
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = isSelected,
                 onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route){
+                    if (!isSelected) {
+                        navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationId)
                             launchSingleTop = true
                         }
                     }
                 },
-                icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) },
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = item.label,
+                        tint = iconColor
+                    )
+                },
+                label = {
+                    Text(
+                        text = item.label,
+                        color = textColor
+                    )
+                },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = GreenPrimary,
+                    selectedIconColor = colorScheme.primary,
+                    unselectedIconColor = colorScheme.onSurfaceVariant,
+                    selectedTextColor = colorScheme.primary,
+                    unselectedTextColor = colorScheme.onSurfaceVariant,
+                    indicatorColor = colorScheme.surfaceVariant
                 )
             )
         }

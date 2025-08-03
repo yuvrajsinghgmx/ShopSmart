@@ -1,3 +1,4 @@
+
 package com.yuvrajsinghgmx.shopsmart
 
 import android.os.Bundle
@@ -23,6 +24,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ShopSmartTheme {
+
                 val context = LocalContext.current
                 val prefs = remember { UserPreferences(context) }
                 val onboardingDone by prefs.onboardingCompleted.collectAsState(initial = false)
@@ -45,6 +47,15 @@ class MainActivity : ComponentActivity() {
                         if (showBottomBar) {
                             BottomNavigationBar(navController = navController)
                         }
+
+                val navController = rememberNavController()
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigationBar(navController = navController)
+                    },
+                    content = { padding ->
+                        NavHost(navController,padding)
+
                     }
                 ) { innerPadding ->
                     AppNavHost(

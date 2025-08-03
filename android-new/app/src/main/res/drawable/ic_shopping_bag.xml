@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Shopping bag body - maximum size, wider and medium height -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M2,7 L22,7 L21,20 C21,20.6 20.6,21 20,21 L4,21 C3.4,21 3,20.6 3,20 L2,7 Z" />
+
+    <!-- Left handle -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M7.5,7 C7.5,4.8 9.3,3 12,3 C14.7,3 16.5,4.8 16.5,7" />
+
+    <!-- Smiley face - positioned for maximum size bag -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M8.5,13 Q12,17 15.5,13"
+        android:strokeWidth="2.5"
+        android:strokeColor="#4CAF50"
+        android:strokeLineCap="round" />
+
+</vector>

@@ -94,16 +94,16 @@ MAPS_API_KEY=your_key_here
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## 🥹 Thanks to fellow contributors
+
+<a href="https://github.com/yuvrajsinghgmx/ShopSmart/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=yuvrajsinghgmx/ShopSmart" />
+</a>
+
 ## 📜 License
+ 
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 👥 Team
-
-- **Project Mentor**: Yuvraj Singh (@yuvrajsinghgmx)
-- **Project Lead**: Adarsh Chaubey
-- **Core Contributors**: Sree Chandana, [Add other core members if any]
-- **Contributors**: [Contributors Page](https://github.com/yuvrajsinghgmx/ShopSmart/contributors)
 
 ## 📮 Contact
 
