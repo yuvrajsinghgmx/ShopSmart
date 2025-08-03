@@ -1,17 +1,5 @@
-
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import PhoneOTP, User
-from .serializers import PhoneSerializer, VerifyOTPSerializer
-
 import os
-
 import random
-from django.utils import timezone
-from datetime import timedelta
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -35,10 +23,6 @@ load_dotenv()
 def send_otp(phone):
     otp = str(random.randint(1000, 9999))
 
-    print(f"Generated OTP for {phone}: {otp}")  # Replace with actual sending logic (e.g., Twilio)
-    return otp
-
-
     account_sid = os.getenv("TWILIO_ACCOUNT_SID")
     auth_token = os.getenv("TWILIO_AUTH_TOKEN")
     from_phone = os.getenv("TWILIO_PHONE_NUMBER")
@@ -57,20 +41,9 @@ def send_otp(phone):
     else:
         print(f"[DEV MODE] OTP for {phone}: {otp}")
 
-
-def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-    return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-    }
-
-
-
     return otp
 
 @permission_classes([AllowAny])
-
 class SendOTPView(APIView):
     def post(self, request):
         serializer = SendOTPSerializer(data=request.data)
@@ -79,22 +52,10 @@ class SendOTPView(APIView):
 
             otp = send_otp(phone)
 
-            # Check if OTP was sent too recently
-            phone_obj = PhoneOTP.objects.filter(phone=phone).first()
-            if phone_obj and timezone.now() - phone_obj.created_at < timedelta(seconds=60):
-                return Response({'error': 'Please wait before requesting a new OTP.'},
-                                status=status.HTTP_429_TOO_MANY_REQUESTS)
-
             # Update or create OTP entry
-
-            PhoneOTP.objects.update_or_create(
-                phone=phone,
-                defaults={'otp': otp, 'is_verified': False, 'created_at': timezone.now()}
-
             phone_obj, created = PhoneOTP.objects.update_or_create(
                 phone_number=phone,
                 defaults={'otp_code': otp, 'is_verified': False}
-
             )
 
             return Response({'message': 'OTP sent successfully'}, status=status.HTTP_200_OK)
@@ -123,21 +84,6 @@ class VerifyOTPView(APIView):
             if phone_obj.otp_code == otp:
                 phone_obj.is_verified = True
                 phone_obj.save()
-
-
-                # Create or get user
-                user, created = User.objects.get_or_create(phone_number=phone, defaults={
-                    "username": phone
-                })
-
-                # Generate tokens
-                tokens = get_tokens_for_user(user)
-
-                return Response({
-                    'message': 'Phone number verified',
-                    'user_id': user.id,
-                    'tokens': tokens
-
                 user, created = User.objects.get_or_create(phone_number=phone, defaults={'username': phone})
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
@@ -147,7 +93,6 @@ class VerifyOTPView(APIView):
                     'access': access_token,
                     'refresh': str(refresh),
                     'is_new_user': created
-
                 }, status=status.HTTP_200_OK)
 
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
