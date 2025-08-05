@@ -9,11 +9,12 @@ import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.yuvrajsinghgmx.shopsmart.ui.theme.YellowStarColor
 
 @Composable
-fun StarRating(rating: Float, maxStars: Int = 5) {
+fun StarRating(rating: Float, maxStars: Int = 5, starSize : Dp = 20.dp) {
     val fullStars = rating.toInt()
     val hasHalfStar = rating - fullStars >= 0.5f
     val emptyStars = maxStars - fullStars - if (hasHalfStar) 1 else 0
@@ -24,7 +25,7 @@ fun StarRating(rating: Float, maxStars: Int = 5) {
                 imageVector = Icons.Filled.Star,
                 contentDescription = "Full Star",
                 tint = YellowStarColor,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(starSize)
             )
         }
         if (hasHalfStar) {
@@ -32,14 +33,14 @@ fun StarRating(rating: Float, maxStars: Int = 5) {
                 imageVector = Icons.Filled.StarHalf,
                 contentDescription = "Half Star",
                 tint = YellowStarColor,
-                modifier = Modifier.size(20.dp))
+                modifier = Modifier.size(starSize))
         }
         repeat(emptyStars) {
             Icon(
                 imageVector = Icons.Filled.StarBorder,
                 contentDescription = "Empty Star",
                 tint = YellowStarColor,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(starSize)
             )
         }
     }

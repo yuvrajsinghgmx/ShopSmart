@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.SavedProductScreen
+import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
@@ -35,7 +35,7 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
             sharedViewModel.setSelectedShop(shop)
             navController.navigate("shopDetails")
         }) }
-        composable(BottomNavItem.Saved.route) { SavedProductScreen() }
+        composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
         composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
                 user = userProfileViewModel.getUserData()
