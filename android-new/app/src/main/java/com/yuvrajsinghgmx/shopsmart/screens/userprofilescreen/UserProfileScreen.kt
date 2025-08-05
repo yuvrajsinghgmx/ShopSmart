@@ -17,51 +17,48 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Bookmark
-import androidx.compose.material.icons.outlined.Help
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.modelclass.User
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 
 @Composable
-fun UserProfileScreen(
-    user: User
-){
-
-    //user type variable for now, will be updated through backend
-
+fun UserProfileScreen(user: User) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF5F5F5)
+        color = MaterialTheme.colorScheme.background
     ) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-        ){
+        ) {
             Box(
-                modifier = Modifier.fillMaxWidth().background(Color.White).padding(vertical = 16.dp),
-
-                ){
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(vertical = 16.dp)
+            ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,33 +74,33 @@ fun UserProfileScreen(
                             Icons.Default.AccountCircle,
                             contentDescription = "User Avatar",
                             modifier = Modifier.size(80.dp),
-                            tint = Color.Gray
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = user.userName, //can be changed though backend
+                        text = user.userName,
                         style = ShopSmartTypography.headlineLarge,
                         fontSize = 32.sp,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = user.userPhoneNumber.toString(), //can be changed through backend
-                        color = Color.Black,
+                        text = user.userPhoneNumber.toString(),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = ShopSmartTypography.bodyMedium,
                         fontSize = 18.sp
                     )
                     Spacer(Modifier.height(16.dp))
                     Button(
-                        onClick = { /*reroute to edit profile screen */ },
+                        onClick = { /* reroute to edit profile screen */ },
                         modifier = Modifier
                             .fillMaxWidth(0.45f)
                             .padding(horizontal = 16.dp)
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4CAF50),
-                            contentColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -118,20 +115,21 @@ fun UserProfileScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            // Account Type
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            ){
-
-                //account type section
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                         .padding(18.dp)
                 ) {
                     Text(
                         "Account Type",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = ShopSmartTypography.headlineLarge,
                         fontSize = 18.sp
                     )
@@ -143,11 +141,10 @@ fun UserProfileScreen(
                         Box(
                             modifier = Modifier
                                 .background(
-                                    if(user.userType=="Customer"){
-                                        Color(0xFF4CAF50)
-                                    }else{
-                                        Color.Transparent
-                                    },
+                                    if (user.userType == "Customer")
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
                                     RoundedCornerShape(12.dp)
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -158,17 +155,19 @@ fun UserProfileScreen(
                                 text = "Customer",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType=="Customer") Color.White else Color.Black
+                                color = if (user.userType == "Customer")
+                                    MaterialTheme.colorScheme.onPrimary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
                             )
                         }
                         Box(
                             modifier = Modifier
                                 .background(
-                                    if(user.userType=="Shopowner"){
-                                        Color(0xFF4CAF50)
-                                    }else{
-                                        Color.Transparent
-                                    },
+                                    if (user.userType == "Shopowner")
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.surfaceVariant,
                                     RoundedCornerShape(12.dp)
                                 )
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -179,7 +178,10 @@ fun UserProfileScreen(
                                 text = "Shop Owner",
                                 fontSize = 16.sp,
                                 style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType=="Shopowner") Color.White else Color.Black
+                                color = if (user.userType == "Shopowner")
+                                    MaterialTheme.colorScheme.onPrimary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -187,257 +189,59 @@ fun UserProfileScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                //menu items section
+                // Menu Items
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
-                    //delivery radius
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .clickable{/*logic to route to the screen*/},
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.LocationOn,
-                                contentDescription = "Location",
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                "Delivery Radius",
-                                color = Color.Black,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "10 km",
-                                color = Color.Gray,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 14.sp
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Icon(
-                                Icons.Outlined.KeyboardArrowRight,
-                                contentDescription = "Arrow",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                    HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                    MenuItem(
+                        icon = Icons.Outlined.LocationOn,
+                        text = "Delivery Radius",
+                        trailingText = "10 km"
                     )
-
-                    //add new product (only for shopowner)
-                    if(user.userType=="Shopowner"){
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp)
-                                .clickable{/*logic to route to the screen*/},
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Outlined.Add,
-                                    contentDescription = "Location",
-                                    tint = Color(0xFF4CAF50),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Text(
-                                    "Add New Product",
-                                    color = Color.Black,
-                                    style = ShopSmartTypography.bodyMedium,
-                                    fontSize = 16.sp
-                                )
-                            }
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Outlined.KeyboardArrowRight,
-                                    contentDescription = "Arrow",
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
+                    if (user.userType == "Shopowner") {
                         HorizontalDivider(
-                            color = Color(0xFFF5F5F5)
+                            Modifier,
+                            DividerDefaults.Thickness,
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                        MenuItem(
+                            icon = Icons.Outlined.Add,
+                            text = "Add New Product"
                         )
                     }
-
-                    //saved items
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .clickable{/*logic to route to the screen*/},
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Bookmark,
-                                contentDescription = "Bookmark",
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                "Saved Items",
-                                color = Color.Black,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        Modifier,
+                        DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
                     )
-
-                    //my reviews
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .clickable{/*logic to route to the screen*/},
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Star,
-                                contentDescription = "Star",
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                "My Reviews",
-                                color = Color.Black,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
+                    MenuItem(icon = Icons.Outlined.Bookmark, text = "Saved Items")
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        Modifier,
+                        DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
                     )
-
-                    //notification settings
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .clickable{/*logic to route to the screen*/},
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Notifications,
-                                contentDescription = "Notifications",
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                "Notification Settings",
-                                color = Color.Black,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
+                    MenuItem(icon = Icons.Outlined.Star, text = "My Reviews")
                     HorizontalDivider(
-                        color = Color(0xFFF5F5F5)
+                        Modifier,
+                        DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
                     )
-
-                    //help center
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .clickable{/*logic to route to the screen*/},
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Outlined.Help,
-                                contentDescription = "Help",
-                                tint = Color(0xFF4CAF50),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                "Help Center",
-                                color = Color.Black,
-                                style = ShopSmartTypography.bodyMedium,
-                                fontSize = 16.sp
-                            )
-                        }
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Arrow",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                    MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings")
+                    HorizontalDivider(
+                        Modifier,
+                        DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                    MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Help Center")
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
-            //logout button
+            // Logout Button
             Button(
                 onClick = { /* handle logout */ },
                 modifier = Modifier
@@ -445,16 +249,16 @@ fun UserProfileScreen(
                     .padding(horizontal = 16.dp)
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color(0xFFE53E3E)
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.error
                 ),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFFE53E3E))
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
             ) {
                 Icon(
-                    Icons.Default.Logout,
+                    Icons.AutoMirrored.Filled.Logout,
                     contentDescription = "Logout",
-                    tint = Color(0xFFE53E3E),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(8.dp))
@@ -464,6 +268,55 @@ fun UserProfileScreen(
                     style = ShopSmartTypography.bodyMedium
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun MenuItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String,
+    trailingText: String? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+            .clickable { /* logic to route */ },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                icon,
+                contentDescription = text,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = ShopSmartTypography.bodyMedium,
+                fontSize = 16.sp
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            trailingText?.let {
+                Text(
+                    it,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = ShopSmartTypography.bodyMedium,
+                    fontSize = 14.sp
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Arrow",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
