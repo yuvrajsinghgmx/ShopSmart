@@ -1,14 +1,16 @@
-
 package com.yuvrajsinghgmx.shopsmart
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavigationBar
-import com.yuvrajsinghgmx.shopsmart.navigation.NavHost
+import com.yuvrajsinghgmx.shopsmart.screens.CustomerHomeScreen
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +27,9 @@ class MainActivity : ComponentActivity() {
                         BottomNavigationBar(navController = navController)
                     },
                     content = { padding ->
-                        NavHost(navController,padding)
+                        Box(modifier = Modifier.padding(padding)) {
+                            CustomerHomeScreen()
+                        }
                     }
                 )
             }
