@@ -77,5 +77,6 @@ out/
 *.srl
 *.csr
 *.pub
-google-services.json
+app/google-services.json
+
 
