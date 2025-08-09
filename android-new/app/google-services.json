@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126261083662",
+    "project_id": "shopsmartgmx",
+    "storage_bucket": "shopsmartgmx.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126261083662:android:66e93380f26b16bbd2065f",
+        "android_client_info": {
+          "package_name": "com.yuvrajsinghgmx.shopsmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4CDmSw1jdaQI6qpFO1S0fvY0FmdbUzYY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
