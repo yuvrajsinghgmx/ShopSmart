@@ -1,4 +1,3 @@
-package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
