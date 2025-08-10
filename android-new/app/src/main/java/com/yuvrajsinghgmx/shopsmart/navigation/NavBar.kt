@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
+import UserProfileScreen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -13,7 +14,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileScreen
+//import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileViewModel
