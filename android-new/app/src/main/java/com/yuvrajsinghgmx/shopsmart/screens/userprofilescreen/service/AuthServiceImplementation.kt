@@ -17,66 +17,62 @@ class AuthServiceImpl @Inject constructor(
     private val auth: FirebaseAuth
 ) : AuthService {
 
-    override fun sendOtp(phoneNumber: String, activity: Activity): Flow<AuthState> = callbackFlow { // Add activity
+    override fun sendOtp(
+        phoneNumber: String,
+        activity: Activity,
+        resendingToken: PhoneAuthProvider.ForceResendingToken?
+    ): Flow<AuthState> = callbackFlow {
         trySend(AuthState.Loading)
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            // Called when verification is complete automatically (e.g., on some devices)
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                auth.signInWithCredential(credential)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            trySend(AuthState.AuthSuccess)
-                        } else {
-                            val errorMessage = task.exception?.message ?: "Auto-verification failed."
-                            trySend(AuthState.Error(errorMessage))
-                        }
+                auth.signInWithCredential(credential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        trySend(AuthState.AuthSuccess)
+                    } else {
+                        trySend(AuthState.Error(task.exception?.message ?: "Auto-verification failed."))
                     }
+                }
             }
 
-            // Called when there's an error
             override fun onVerificationFailed(e: FirebaseException) {
                 trySend(AuthState.Error(e.message ?: "An unknown error occurred."))
             }
 
-            // Called when the OTP is sent to the user's phone
             override fun onCodeSent(
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken
             ) {
-
-                trySend(AuthState.CodeSent(verificationId))
+                trySend(AuthState.CodeSent(verificationId, token))
             }
         }
 
-        val options = PhoneAuthOptions.newBuilder(auth)
+        val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(callbacks)
-            .build()
 
-        PhoneAuthProvider.verifyPhoneNumber(options)
+        // Add the token for resend requests
+        if (resendingToken != null) {
+            optionsBuilder.setForceResendingToken(resendingToken)
+        }
+
+        PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
         awaitClose { /* Cleanup */ }
-
     }
 
     override fun verifyOtp(verificationId: String, otp: String): Flow<AuthState> = callbackFlow {
         trySend(AuthState.Loading)
-
         val credential = PhoneAuthProvider.getCredential(verificationId, otp)
-
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    trySend(AuthState.AuthSuccess)
-                } else {
-                    val errorMessage = task.exception?.message ?: "Invalid OTP or verification failed."
-                    trySend(AuthState.Error(errorMessage))
-                }
-                channel.close() // Close the flow after completion
+        auth.signInWithCredential(credential).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                trySend(AuthState.AuthSuccess)
+            } else {
+                trySend(AuthState.Error(task.exception?.message ?: "Invalid OTP."))
             }
-
+            channel.close()
+        }
         awaitClose { /* Cleanup */ }
     }
 
