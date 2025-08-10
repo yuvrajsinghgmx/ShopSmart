@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.PhoneAuthProvider
 import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.state.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-@HiltViewModel // Example with Hilt
+@HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
@@ -20,16 +21,30 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
-    // We need to store the verificationId between sending the OTP and verifying it
     private var currentVerificationId: String? = null
+    private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
 
-    fun sendOtp(phoneNumber: String, activity: Activity) { // Add Activity
+    fun sendInitialOtp(phoneNumber: String, activity: Activity) {
         viewModelScope.launch {
-            repository.sendOtp(phoneNumber, activity).collect { state -> // Pass it down
+            repository.sendOtp(phoneNumber, activity, null).collect { state ->
                 if (state is AuthState.CodeSent) {
                     currentVerificationId = state.verificationId
+                    forceResendingToken = state.token
                 }
                 _authState.value = state
+            }
+        }
+    }
+
+    fun resendOtp(phoneNumber: String, activity: Activity) {
+        forceResendingToken?.let { token ->
+            viewModelScope.launch {
+                repository.sendOtp(phoneNumber, activity, token).collect { state ->
+                    if (state is AuthState.CodeSent) {
+                        forceResendingToken = state.token
+                    }
+                    _authState.value = state
+                }
             }
         }
     }
@@ -37,10 +52,9 @@ class AuthViewModel @Inject constructor(
     fun verifyOtp(otp: String) {
         val verificationId = currentVerificationId
         if (verificationId == null) {
-            _authState.value = AuthState.Error("Verification ID not found. Please request a new OTP.")
+            _authState.value = AuthState.Error("Please request an OTP first.")
             return
         }
-
         viewModelScope.launch {
             repository.verifyOtp(verificationId, otp).collect { state ->
                 _authState.value = state
@@ -48,7 +62,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // Optional: Reset state if user navigates away and back
     fun resetState() {
         _authState.value = AuthState.Idle
     }

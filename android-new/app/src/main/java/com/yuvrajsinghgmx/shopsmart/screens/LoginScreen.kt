@@ -3,7 +3,6 @@ package com.yuvrajsinghgmx.shopsmart.screens
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +29,7 @@ import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser.AuthViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +40,6 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onExitClick: () -> Unit
 ) {
-    // --- State Management ---
     val authState by viewModel.authState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -49,48 +48,56 @@ fun LoginScreen(
     var otp by remember { mutableStateOf("") }
     var showOtpField by remember { mutableStateOf(false) }
 
+    val initialTime = 120 // 2 minutes
+    var ticks by remember { mutableIntStateOf(initialTime) }
+    var isTimerRunning by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
+
     val activity = context as? ComponentActivity
+
+    val isLoading = authState is AuthState.Loading
 
     LaunchedEffect(authState) {
         when (val state = authState) {
             is AuthState.CodeSent -> {
                 showOtpField = true
+                isTimerRunning = true
                 scope.launch { snackbarHostState.showSnackbar("OTP Sent!") }
             }
-            is AuthState.AuthSuccess -> {
-                scope.launch { snackbarHostState.showSnackbar("Login Successful!") }
-                onLoginSuccess()
-            }
-            is AuthState.Error -> {
-                scope.launch { snackbarHostState.showSnackbar(state.message) }
-            }
+            is AuthState.AuthSuccess -> onLoginSuccess()
+            is AuthState.Error -> scope.launch { snackbarHostState.showSnackbar(state.message) }
             is AuthState.Idle -> {
                 showOtpField = false
+                isTimerRunning = false
+                ticks = initialTime
             }
             else -> Unit
         }
     }
 
+    LaunchedEffect(key1 = isTimerRunning) {
+        if (isTimerRunning) {
+            while (ticks > 0) {
+                delay(1000)
+                ticks--
+            }
+            isTimerRunning = false
+        }
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        // FROM: Color.White
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { /* No title needed */ },
+                title = { },
                 actions = {
                     IconButton(onClick = onExitClick) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Exit to Home",
-                            // Tint will adapt automatically
-                        )
+                        Icon(Icons.Default.Close, "Exit to Home")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { paddingValues ->
@@ -102,139 +109,103 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Box(
+                modifier = Modifier.size(120.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(painterResource(R.drawable.shield_image), "Shield Logo")
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+            Text(if (!showOtpField) "Welcome to ShopSmart" else "Enter OTP", style = ShopSmartTypography.headlineLarge)
+            Spacer(Modifier.height(16.dp))
+            Text(if (!showOtpField) "Enter your mobile number to continue" else "We've sent a code to your number", style = ShopSmartTypography.bodyLarge, fontSize = 20.sp, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(24.dp))
 
-            if (authState is AuthState.Loading) {
-                CircularProgressIndicator()
+            if (!showOtpField) {
+                PhoneInputSection(phoneNumber, { phoneNumber = it }, !isLoading)
             } else {
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        // FROM: Color(0xFFF5F5F5)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.shield_image),
-                        contentDescription = "Shield Logo"
-                    )
-                }
+                OtpInputSection(otp, { otp = it }, !isLoading)
+            }
+            Spacer(Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Text(
-                    text = if (!showOtpField) "Welcome to ShopSmart" else "Enter OTP",
-                    style = ShopSmartTypography.headlineLarge
-                    // Color is inherited from the theme
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = if (!showOtpField) "Enter your mobile number to continue" else "We've sent a code to your number",
-                    style = ShopSmartTypography.bodyLarge,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(24.dp))
-
-                if (!showOtpField) {
-                    PhoneInputSection(phoneNumber = phoneNumber, onPhoneNumberChange = { phoneNumber = it })
-                } else {
-                    OtpInputSection(otp = otp, onOtpChange = { otp = it })
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        if (!showOtpField) {
-                            if (activity != null) {
-                                val fullPhoneNumber = "+91$phoneNumber"
-                                viewModel.sendOtp(fullPhoneNumber, activity)
-                            } else {
-                                // Handle the unlikely case where activity is null
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Error: Could not perform action.")
-                                }
-                            }
+            Button(
+                onClick = {
+                    if (!showOtpField) {
+                        if (activity != null) {
+                            viewModel.sendInitialOtp("+91$phoneNumber", activity)
                         } else {
-                            viewModel.verifyOtp(otp)
+                            scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(56.dp),
-
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = if (!showOtpField) "Send OTP" else "Verify OTP",
-                        fontSize = 16.sp,
-                        style = ShopSmartTypography.headlineLarge
-                    )
-                }
-
-                Spacer(Modifier.height(24.dp))
-                if (!showOtpField) {
-                    Text(
-                        text = "By continuing, you agree to our Terms & Privacy Policy",
-                        style = ShopSmartTypography.labelSmall,
-                        fontSize = 14.sp,
-
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                        lineHeight = 1.5.em
-                    )
+                    } else {
+                        viewModel.verifyOtp(otp)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                enabled = !isLoading
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 2.dp)
                 } else {
-                    TextButton(onClick = { viewModel.resetState() }) {
-                        Text("Use a different number")
+                    Text(if (!showOtpField) "Send OTP" else "Verify OTP", fontSize = 16.sp, style = ShopSmartTypography.headlineLarge)
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+
+            if (showOtpField) {
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                    TextButton(onClick = { viewModel.resetState() }, enabled = !isLoading) {
+                        Text("Change Number")
+                    }
+                    TextButton(
+                        enabled = !isTimerRunning && !isLoading,
+                        onClick = {
+                            if (activity != null) {
+                                ticks = initialTime
+                                isTimerRunning = true
+                                viewModel.resendOtp("+91$phoneNumber", activity)
+                            }
+                        }
+                    ) {
+                        val minutes = ticks / 60
+                        val seconds = ticks % 60
+                        Text(if (isTimerRunning) "Resend OTP in ${String.format("%02d:%02d", minutes, seconds)}" else "Resend OTP")
                     }
                 }
+            } else {
+                Text("By continuing, you agree to our Terms & Privacy Policy", style = ShopSmartTypography.labelSmall, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 32.dp), lineHeight = 1.5.em)
             }
         }
     }
 }
 
 @Composable
-fun PhoneInputSection(
-    modifier: Modifier = Modifier,
-    phoneNumber: String,
-    onPhoneNumberChange: (String) -> Unit
-) {
+fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit, enabled: Boolean) {
     Card(
-        modifier = modifier
-            .fillMaxWidth(0.95f)
-            .padding(8.dp),
-        // FROM: CardDefaults.cardColors(containerColor = Color.White)
+        modifier = Modifier.fillMaxWidth(0.95f).padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.padding(horizontal = 24.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
         ) {
-            // FROM: color = Color(0xFF333333)
             Text("+91", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            // FROM: tint = Color.Blue
             Icon(Icons.Default.Phone, "Phone", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 8.dp).size(20.dp))
             Spacer(Modifier.width(8.dp))
-            // FROM: color = Color.Gray
-            VerticalDivider(modifier = modifier.height(28.dp), color = MaterialTheme.colorScheme.outline)
+            VerticalDivider(modifier = Modifier.height(28.dp), color = MaterialTheme.colorScheme.outline)
             TextField(
                 value = phoneNumber,
                 onValueChange = onPhoneNumberChange,
                 placeholder = { Text("Phone number") },
+                enabled = enabled,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                // REMOVED: Hardcoded transparent colors to use theme defaults
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent
                 )
             )
         }
@@ -242,18 +213,14 @@ fun PhoneInputSection(
 }
 
 @Composable
-fun OtpInputSection(
-    modifier: Modifier = Modifier,
-    otp: String,
-    onOtpChange: (String) -> Unit
-) {
+fun OtpInputSection(otp: String, onOtpChange: (String) -> Unit, enabled: Boolean) {
     OutlinedTextField(
         value = otp,
         onValueChange = onOtpChange,
         label = { Text("6-Digit OTP") },
+        enabled = enabled,
         singleLine = true,
         modifier = Modifier.fillMaxWidth(0.8f),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
-        // Let the default OutlinedTextField colors handle the theming
     )
 }
