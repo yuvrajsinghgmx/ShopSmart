@@ -1,9 +1,11 @@
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils import timezone
 from datetime import timedelta
+
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
+from django.contrib.gis.db import models as gis_models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 
 
 class User(AbstractUser):
@@ -43,8 +45,7 @@ class Shop(models.Model):
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to='shops/', null=True, blank=True)
     address = models.TextField()
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    location = gis_models.PointField()
     category = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
