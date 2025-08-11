@@ -1,23 +1,46 @@
-import os
-import random
+import logging
+
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-import logging
+
 from .models import Product, Shop
-from .permissions import IsOwnerOfShop
-from .serializers import  ProductSerializer
+from .permissions import IsOwnerOfShop, IsShopOwnerRole
+from .serializers import ProductSerializer, ShopSerializer
 
 load_dotenv()
+User = get_user_model()
 
 
 logger = logging.getLogger(__name__)
 
+
+class ShopListCreateView(generics.ListCreateAPIView):
+    queryset = Shop.objects.all()
+    serializer_class = ShopSerializer
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated, IsShopOwnerRole]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+        
 class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOfShop]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated, IsOwnerOfShop]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     def get_queryset(self):
         shop_pk = self.kwargs['shop_pk']
