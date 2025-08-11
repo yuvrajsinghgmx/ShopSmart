@@ -20,3 +20,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env
+config
