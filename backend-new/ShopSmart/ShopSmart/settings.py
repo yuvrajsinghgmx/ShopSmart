@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 import mainapp.firebase_init
+import dj_database_url
 
 load_dotenv()
 
@@ -58,11 +59,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ShopSmart.wsgi.application'
 
+# Database configuration
+#For Development, using SQLite
+# Uncomment the following lines to use SQLite for development
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# For Production
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL')
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
