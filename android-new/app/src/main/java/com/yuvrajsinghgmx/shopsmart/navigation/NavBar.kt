@@ -14,7 +14,6 @@ import com.yuvrajsinghgmx.shopsmart.screens.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
-
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileViewModel
@@ -39,7 +38,7 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
         }) }
         composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
         composable(BottomNavItem.Profile.route) {
-            UserProfileScreen(
+            UserProfileScreen (
                 user = userProfileViewModel.getUserData()
             )
         }
