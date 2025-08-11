@@ -19,7 +19,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileViewModel
 
 @Composable
-fun NavHost(navController: NavHostController, padding: PaddingValues) {
+fun AppNavHost(navController: NavHostController, padding: PaddingValues) {
     val sharedViewModel: SharedShopViewModel = viewModel()
 
     val userProfileViewModel: UserProfileViewModel = hiltViewModel()

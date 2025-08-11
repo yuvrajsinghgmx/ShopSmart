@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
 import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.state.AuthState
@@ -58,7 +59,19 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             repository.verifyOtp(verificationId, otp).collect { state ->
                 _authState.value = state
+
             }
+
+            val user = FirebaseAuth.getInstance().currentUser
+            user?.getIdToken(true)
+                ?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val idToken = task.result?.token
+                        println("🔥 Firebase ID Token: $idToken")
+                    } else {
+                        task.exception?.printStackTrace()
+                    }
+                }
         }
     }
 
