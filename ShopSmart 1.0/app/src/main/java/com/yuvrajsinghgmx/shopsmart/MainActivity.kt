@@ -35,25 +35,42 @@ class MainActivity : BaseActivity() {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
 
+        setContent {
+    val context = LocalContext.current
+    val themePreferences = remember { ThemePreferences(context) }
+    val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
+
+    ShopSmartTheme(
+        darkTheme = isDarkMode
+    ) {
+        val viewModel: ShoppingListViewModel = hiltViewModel()
+        val navController = rememberNavController()
+        Navigation(
+            viewModel = viewModel,
+            navController = navController,
+            voiceToTextParser = voiceToTextParser
+        )
+    }
+}
 
 
-            setContent {
-            val currentTheme = ThemeManager.currentTheme.collectAsState()
+            // setContent {
+            // val currentTheme = ThemeManager.currentTheme.collectAsState()
 
-            ShopSmartTheme(
-                darkTheme = when (currentTheme.value) {
-                    Theme.LIGHT -> false
-                    Theme.DARK -> true
-                    Theme.SYSTEM -> isSystemInDarkTheme()
-                }
-            ) {
-                val viewModel: ShoppingListViewModel = hiltViewModel()
-                val navController = rememberNavController()
-                Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
+            // ShopSmartTheme(
+            //     darkTheme = when (currentTheme.value) {
+        //             Theme.LIGHT -> false
+        //             Theme.DARK -> true
+        //             Theme.SYSTEM -> isSystemInDarkTheme()
+        //         }
+        //     ) {
+        //         val viewModel: ShoppingListViewModel = hiltViewModel()
+        //         val navController = rememberNavController()
+        //         Navigation(viewModel = viewModel, navController = navController, voiceToTextParser = voiceToTextParser)
 
 
 
-            }
-        }
+        //     }
+        // }
     }
 }
