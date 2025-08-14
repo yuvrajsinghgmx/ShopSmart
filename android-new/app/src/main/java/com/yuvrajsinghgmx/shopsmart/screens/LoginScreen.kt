@@ -130,13 +130,21 @@ fun LoginScreen(
             Button(
                 onClick = {
                     if (!showOtpField) {
-                        if (activity != null) {
-                            viewModel.sendInitialOtp("+91$phoneNumber", activity)
+                        if (phoneNumber.length == 10) {
+                            if (activity != null) {
+                                viewModel.sendInitialOtp("+91$phoneNumber", activity)
+                            } else {
+                                scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
+                            }
                         } else {
-                            scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
+                            scope.launch { snackbarHostState.showSnackbar("Please enter a valid 10-digit number.") }
                         }
                     } else {
-                        viewModel.verifyOtp(otp)
+                        if (otp.length == 6) {
+                            viewModel.verifyOtp(otp)
+                        } else {
+                            scope.launch { snackbarHostState.showSnackbar("Please enter the 6-digit OTP.") }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(56.dp),
@@ -169,12 +177,8 @@ fun LoginScreen(
                         val minutes = ticks / 60
                         val seconds = ticks % 60
                         val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-
-                        Text(
-                            if (isTimerRunning) "Resend OTP in $formattedTime" else "Resend OTP"
-                        )
+                        Text(if (isTimerRunning) "Resend OTP in $formattedTime" else "Resend OTP")
                     }
-
                 }
             } else {
                 Text("By continuing, you agree to our Terms & Privacy Policy", style = ShopSmartTypography.labelSmall, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 32.dp), lineHeight = 1.5.em)
@@ -224,9 +228,9 @@ fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit
 fun OtpInputSection(otp: String, onOtpChange: (String) -> Unit, enabled: Boolean) {
     OutlinedTextField(
         value = otp,
-        onValueChange = { otplength ->
-            if (otplength.length <= 6) {
-                onOtpChange(otplength)
+        onValueChange = { newText ->
+            if (newText.length <= 6) {
+                onOtpChange(newText)
             }
         },
         label = { Text("6-Digit OTP") },
