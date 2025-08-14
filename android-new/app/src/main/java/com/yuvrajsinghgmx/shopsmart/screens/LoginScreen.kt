@@ -31,6 +31,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser.Auth
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,9 +54,7 @@ fun LoginScreen(
     var isTimerRunning by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-
     val activity = context as? ComponentActivity
-
     val isLoading = authState is AuthState.Loading
 
     LaunchedEffect(authState) {
@@ -131,13 +130,21 @@ fun LoginScreen(
             Button(
                 onClick = {
                     if (!showOtpField) {
-                        if (activity != null) {
-                            viewModel.sendInitialOtp("+91$phoneNumber", activity)
+                        if (phoneNumber.length == 10) {
+                            if (activity != null) {
+                                viewModel.sendInitialOtp("+91$phoneNumber", activity)
+                            } else {
+                                scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
+                            }
                         } else {
-                            scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
+                            scope.launch { snackbarHostState.showSnackbar("Please enter a valid 10-digit number.") }
                         }
                     } else {
-                        viewModel.verifyOtp(otp)
+                        if (otp.length == 6) {
+                            viewModel.verifyOtp(otp)
+                        } else {
+                            scope.launch { snackbarHostState.showSnackbar("Please enter the 6-digit OTP.") }
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(56.dp),
@@ -169,7 +176,8 @@ fun LoginScreen(
                     ) {
                         val minutes = ticks / 60
                         val seconds = ticks % 60
-                        Text(if (isTimerRunning) "Resend OTP in ${String.format("%02d:%02d", minutes, seconds)}" else "Resend OTP")
+                        val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                        Text(if (isTimerRunning) "Resend OTP in $formattedTime" else "Resend OTP")
                     }
                 }
             } else {
@@ -197,7 +205,11 @@ fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit
             VerticalDivider(modifier = Modifier.height(28.dp), color = MaterialTheme.colorScheme.outline)
             TextField(
                 value = phoneNumber,
-                onValueChange = onPhoneNumberChange,
+                onValueChange = { newText ->
+                    if (newText.length <= 10) {
+                        onPhoneNumberChange(newText)
+                    }
+                },
                 placeholder = { Text("Phone number") },
                 enabled = enabled,
                 modifier = Modifier.fillMaxWidth(),
@@ -216,7 +228,11 @@ fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit
 fun OtpInputSection(otp: String, onOtpChange: (String) -> Unit, enabled: Boolean) {
     OutlinedTextField(
         value = otp,
-        onValueChange = onOtpChange,
+        onValueChange = { newText ->
+            if (newText.length <= 6) {
+                onOtpChange(newText)
+            }
+        },
         label = { Text("6-Digit OTP") },
         enabled = enabled,
         singleLine = true,
