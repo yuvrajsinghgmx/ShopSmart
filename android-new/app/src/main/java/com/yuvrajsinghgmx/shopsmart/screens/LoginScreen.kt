@@ -31,6 +31,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser.Auth
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,9 +54,7 @@ fun LoginScreen(
     var isTimerRunning by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-
     val activity = context as? ComponentActivity
-
     val isLoading = authState is AuthState.Loading
 
     LaunchedEffect(authState) {
@@ -169,8 +168,13 @@ fun LoginScreen(
                     ) {
                         val minutes = ticks / 60
                         val seconds = ticks % 60
-                        Text(if (isTimerRunning) "Resend OTP in ${String.format("%02d:%02d", minutes, seconds)}" else "Resend OTP")
+                        val formattedTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+
+                        Text(
+                            if (isTimerRunning) "Resend OTP in $formattedTime" else "Resend OTP"
+                        )
                     }
+
                 }
             } else {
                 Text("By continuing, you agree to our Terms & Privacy Policy", style = ShopSmartTypography.labelSmall, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 32.dp), lineHeight = 1.5.em)
@@ -197,7 +201,11 @@ fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit
             VerticalDivider(modifier = Modifier.height(28.dp), color = MaterialTheme.colorScheme.outline)
             TextField(
                 value = phoneNumber,
-                onValueChange = onPhoneNumberChange,
+                onValueChange = { newText ->
+                    if (newText.length <= 10) {
+                        onPhoneNumberChange(newText)
+                    }
+                },
                 placeholder = { Text("Phone number") },
                 enabled = enabled,
                 modifier = Modifier.fillMaxWidth(),
@@ -216,7 +224,11 @@ fun PhoneInputSection(phoneNumber: String, onPhoneNumberChange: (String) -> Unit
 fun OtpInputSection(otp: String, onOtpChange: (String) -> Unit, enabled: Boolean) {
     OutlinedTextField(
         value = otp,
-        onValueChange = onOtpChange,
+        onValueChange = { otplength ->
+            if (otplength.length <= 6) {
+                onOtpChange(otplength)
+            }
+        },
         label = { Text("6-Digit OTP") },
         enabled = enabled,
         singleLine = true,

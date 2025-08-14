@@ -18,12 +18,14 @@ import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.viewmodeluser.AuthViewModel
 
 @Composable
 fun NavHost(navController: NavHostController, padding: PaddingValues) {
     val sharedViewModel: SharedShopViewModel = viewModel()
 
     val userProfileViewModel: UserProfileViewModel = hiltViewModel()
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -40,7 +42,7 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
         composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
         composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
-                user = userProfileViewModel.getUserData()
+                user = userProfileViewModel.getUserData(),
             )
         }
         composable("shopDetails") {
