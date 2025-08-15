@@ -67,6 +67,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.7.3")
     implementation("androidx.compose.ui:ui-graphics:1.7.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.3")
+    implementation ("androidx.datastore:datastore-preferences:1.1.0")
     implementation(libs.androidx.material3)
     implementation(libs.androidx.webkit)
     implementation("com.google.android.material:material:1.12.0")

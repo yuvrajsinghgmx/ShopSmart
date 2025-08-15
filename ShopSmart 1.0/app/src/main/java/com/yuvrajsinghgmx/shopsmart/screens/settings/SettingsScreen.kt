@@ -1,4 +1,11 @@
 package com.yuvrajsinghgmx.shopsmart.screens.settings
+import androidx.compose.material3.Switch
+import androidx.compose.runtime.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.yuvrajsinghgmx.shopsmart.screens.preferences.ThemePreferences
+import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -91,9 +98,14 @@ fun SettingsScreen(navController: NavController) {
                     SettingsItem(title = "Language", icon = R.drawable.language_24px) {
                         navController.navigate("language")
                     }
-                    SettingsItem(title = "Theme", icon = R.drawable.contrast_24px) {
-                        navController.navigate("theme")
-                    }
+                    // SettingsItem(title = "Theme", icon = R.drawable.contrast_24px) {
+                    //     navController.navigate("theme")
+                    // }
+                    val context = LocalContext.current
+val themePreferences = remember { ThemePreferences(context) }
+
+ThemeToggleSetting(themePreferences)
+
                     SettingsItem(title = "Notifications", icon = R.drawable.bell) {
                         navController.navigate("notifications")
                     }
@@ -253,5 +265,40 @@ fun SettingsItem(
                 fontWeight = FontWeight.Normal
             )
         }
+    }
+}
+
+@Composable
+fun ThemeToggleSetting(themePreferences: ThemePreferences) {
+    val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.contrast_24px),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            colorFilter = ColorFilter.tint(Color(0xFF637478))
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = "Dark Mode",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color(0xFF637478),
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(
+            checked = isDarkMode,
+            onCheckedChange = { newValue ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    themePreferences.setDarkMode(newValue)
+                }
+            }
+        )
     }
 }
