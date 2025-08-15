@@ -22,4 +22,4 @@ document.querySelectorAll(".nav-link").forEach(link => {
     loadPage(link.dataset.page);
   });
 });
-loadPage("../home/home.html");
+loadPage("home/home.html");
