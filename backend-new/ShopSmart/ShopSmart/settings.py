@@ -11,10 +11,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()  # 'development' or 'production'
 
-DEBUG = True
 AUTH_USER_MODEL = "mainapp.User"
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -44,7 +46,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'ShopSmart.urls'
 
 TEMPLATES = [
@@ -64,32 +65,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ShopSmart.wsgi.application'
 
-# Database configuration
-#For Development, using PostgreSQL
-# Uncomment the following lines to use SQLite for development
+# Database & GIS Config
+if ENVIRONMENT == "development":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': os.getenv('DB_NAME', 'dev_db'),
+            'USER': os.getenv('DB_USER', 'postgres'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
+            'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Use the PostGIS engine
-#         'NAME': os.getenv('DB_NAME'),
-#         'USER': os.getenv('DB_USER'),
-#         'PASSWORD': os.getenv('DB_PASSWORD'),
-#         'HOST': os.getenv('DB_HOST'),
-#         'PORT': os.getenv('DB_PORT'),
-#     }
-# }
+    # Local GDAL paths (adjust for your OS)
+    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "C:/OSGeo4W/bin/gdal311.dll")
+    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH", "C:/OSGeo4W/bin/geos_c.dll")
+    PROJ_LIBRARY_PATH = os.getenv("PROJ_LIBRARY_PATH", "C:/OSGeo4W/bin/proj.dll")
 
-# Paths to OSGeo4W libraries, and also set C:/OSGeo4W/bin/ in envirnment variable as well.
-# GDAL_LIBRARY_PATH = 'C:/OSGeo4W/bin/gdal311.dll'
-# GEOS_LIBRARY_PATH = 'C:/OSGeo4W/bin/geos_c.dll'
-# PROJ_LIBRARY_PATH = 'C:/OSGeo4W/bin/proj.dll'
-
-# For Production
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL')
-    )
-}
+else:  # Production
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL')
+        )
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -134,7 +133,6 @@ CACHES = {
         },
     },
 }
-
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
