@@ -10,13 +10,13 @@
   <h2>Firebase id_token Generator</h2>
 
   <div>
-    <input id="phone-number" type="tel" value="+919999999999">
+    <input id="phone-number" type="tel" placeholder="+919999999999">
     <button id="send-otp-btn">Send OTP</button>
     <div id="recaptcha-container"></div>
   </div>
 
   <div>
-    <input id="otp" type="text" value="000000" disabled>
+    <input id="otp" type="text" placeholder="Enter OTP" disabled>
     <button id="verify-otp-btn" disabled>Verify & Get Token</button>
   </div>
 
@@ -43,21 +43,32 @@
     const tokenOutput = document.getElementById('token-output');
     const statusDiv = document.getElementById('status');
 
-    function setStatus(msg) { statusDiv.textContent = msg; }
-
-    function setupRecaptcha() {
-      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
+    function setStatus(msg) {
+      statusDiv.textContent = msg;
     }
 
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal',
+      callback: function(response) {
+        console.log("reCAPTCHA solved:", response);
+      }
+    });
+    recaptchaVerifier.render();
+
     sendOtpBtn.onclick = () => {
-      setupRecaptcha();
+      const phoneNumber = phoneInput.value.trim();
+      if (!phoneNumber.startsWith("+")) {
+        setStatus("Please enter a valid phone number with country code.");
+        return;
+      }
+
       setStatus("Sending OTP...");
-      auth.signInWithPhoneNumber(phoneInput.value, window.recaptchaVerifier)
+      auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
         .then(conf => {
           window.confirmationResult = conf;
           otpInput.disabled = false;
           verifyOtpBtn.disabled = false;
-          setStatus("OTP sent.");
+          setStatus("OTP sent to " + phoneNumber);
         })
         .catch(err => setStatus("Error: " + err.message));
     };
@@ -68,7 +79,7 @@
         .then(res => res.user.getIdToken())
         .then(token => {
           tokenOutput.textContent = token;
-          setStatus("Token generated.");
+          setStatus("Token generated successfully.");
         })
         .catch(err => setStatus("Error: " + err.message));
     };
