@@ -1,0 +1,58 @@
+{
+  "info": {
+    "name": "ShopSmart API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Send OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/send-otp/", "host": ["{{baseUrl}}"], "path": ["api", "send-otp", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"country_code\": \"+91\",\n  \"phone\": \"9999999999\"\n}"}
+      }
+    },
+    {
+      "name": "Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/verify-otp/", "host": ["{{baseUrl}}"], "path": ["api", "verify-otp", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"country_code\": \"+91\",\n  \"phone\": \"9999999999\",\n  \"otp\": \"1234\"\n}"}
+      }
+    },
+    {
+      "name": "Get Onboarding",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/onboarding/", "host": ["{{baseUrl}}"], "path": ["api", "onboarding", ""]}
+      }
+    },
+    {
+      "name": "Update Onboarding",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/onboarding/", "host": ["{{baseUrl}}"], "path": ["api", "onboarding", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"role\": \"CUSTOMER\",\n  \"full_name\": \"John Doe\",\n  \"current_address\": \"221B Baker Street\",\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"location_radius_km\": 10,\n  \"onboarding_completed\": true\n}"}
+      }
+    }
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://127.0.0.1:8000"},
+    {"key": "accessToken", "value": ""}
+  ]
+}
+
+

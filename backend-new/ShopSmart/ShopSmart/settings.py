@@ -92,7 +92,14 @@ USE_TZ = True
 # Static files
 STATIC_URL = 'static/'
 
+# Media files (for user profile images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Use custom user model
+AUTH_USER_MODEL = 'mainapp.User'
 
 # ✅ Django REST framework configuration
 REST_FRAMEWORK = {

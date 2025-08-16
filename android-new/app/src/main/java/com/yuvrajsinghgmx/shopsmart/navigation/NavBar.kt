@@ -23,25 +23,25 @@ fun NavHost(navController: NavHostController, padding: PaddingValues) {
 
     val userProfileViewModel: UserProfileViewModel = hiltViewModel()
 
-    NavHost(
+    androidx.navigation.compose.NavHost(
         navController = navController,
         startDestination = BottomNavItem.Home.route,
         modifier = Modifier.padding(padding)
     ) {
-        composable(BottomNavItem.Home.route) {
+        androidx.navigation.compose.composable(BottomNavItem.Home.route) {
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
-        composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
+        androidx.navigation.compose.composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
             sharedViewModel.setSelectedShop(shop)
             navController.navigate("shopDetails")
         }) }
-        composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
-        composable(BottomNavItem.Profile.route) {
+        androidx.navigation.compose.composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
+        androidx.navigation.compose.composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
                 user = userProfileViewModel.getUserData()
             )
         }
-        composable("shopDetails") {
+        androidx.navigation.compose.composable("shopDetails") {
             ShopDetail(sharedViewModel = sharedViewModel)
         }
     }

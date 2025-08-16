@@ -13,8 +13,15 @@ class User(AbstractUser):
 
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
+
+    # Onboarding/profile fields
+    full_name = models.CharField(max_length=150, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    current_address = models.TextField(blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     location_radius_km = models.PositiveIntegerField(default=10)
+    onboarding_completed = models.BooleanField(default=False)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -129,8 +136,8 @@ class PhoneOTP(models.Model):
         return f"{self.phone_number} - {'Verified' if self.is_verified else 'Not Verified'}"
 
     def is_expired(self):
-        """Returns True if OTP is older than 5 minutes."""
-        return timezone.now() > self.created_at + timedelta(minutes=5)
+        """Returns True if OTP is older than 300 seconds (5 minutes)."""
+        return timezone.now() > self.created_at + timedelta(seconds=300)
 
     class Meta:
         indexes = [
