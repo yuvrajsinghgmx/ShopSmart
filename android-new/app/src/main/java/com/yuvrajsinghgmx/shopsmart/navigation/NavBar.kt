@@ -7,57 +7,106 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yuvrajsinghgmx.shopsmart.screens.LoginScreen
-import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
+import androidx.navigation.navigation
+import com.yuvrajsinghgmx.shopsmart.screens.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
-import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
+import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.UserProfileViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
+import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
+import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 
 @Composable
-fun AppNavHost(navController: NavHostController, padding: PaddingValues) {
+fun AppNavHost(
+    navController: NavHostController,
+    padding: PaddingValues
+) {
     val sharedViewModel: SharedShopViewModel = viewModel()
+    val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
+    val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
 
-    val userProfileViewModel: UserProfileViewModel = hiltViewModel()
-
+    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank()){
+        "main_graph"
+    }else{
+        "login_route"
+    }
     NavHost(
         navController = navController,
-        startDestination = "login_route",
+        startDestination = startDestination,
         modifier = Modifier.padding(padding)
     ) {
+        authGraph(navController,sharedAppViewModel)
+        mainGraph(navController,sharedAppViewModel,sharedViewModel)
+    }
+}
+
+fun NavGraphBuilder.authGraph(
+    navController: NavHostController,
+    sharedAppViewModel: SharedAppViewModel
+){
+    composable("login_route") {
+        LoginScreen(
+            onLogInSuccess = { isNewUser ->
+                if (isNewUser) {
+                    navController.navigate("onboarding") {
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                } else {
+                    navController.navigate("main_graph") {
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                }
+            },
+            modifier = Modifier,
+            viewModel = sharedAppViewModel,
+            AuthPrefs = sharedAppViewModel.authPrefs,
+        )
+    }
+
+    composable("onboarding") {
+        OnBoardingScreen(
+            onFinish = {
+                navController.navigate("main_graph") {
+                    popUpTo("onboarding") { inclusive = true }
+                }
+            }
+        )
+    }
+}
+
+fun NavGraphBuilder.mainGraph(
+    navController: NavController,
+    sharedAppViewModel: SharedAppViewModel,
+    sharedViewModel: SharedShopViewModel
+) {
+
+    navigation(BottomNavItem.Home.route, "main_graph") {
         composable(BottomNavItem.Home.route) {
             HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
         }
-        composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
-            sharedViewModel.setSelectedShop(shop)
-            navController.navigate("shopDetails")
-        }) }
-        composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
+        composable(BottomNavItem.Search.route) {
+            SearchScreen(onShopClick = { shop ->
+                sharedViewModel.setSelectedShop(shop)
+                navController.navigate("shopDetails")
+            })
+        }
+        composable(BottomNavItem.Saved.route) { SavedProductScreen(navController = navController) }
         composable(BottomNavItem.Profile.route) {
-            UserProfileScreen (
-                user = userProfileViewModel.getUserData()
+            UserProfileScreen(
+                user = sharedAppViewModel.getUserData(),
+                viewModel = sharedAppViewModel,
+                navController = navController
             )
         }
         composable("shopDetails") {
             ShopDetail(sharedViewModel = sharedViewModel)
         }
-
-        composable("login_route") {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(BottomNavItem.Home.route)
-                },
-                onExitClick = {
-                    navController.navigate(BottomNavItem.Home.route) {
-                        popUpTo("login_route") { inclusive = true }
-                    }
-                }
-            )
-        }
-
     }
 }

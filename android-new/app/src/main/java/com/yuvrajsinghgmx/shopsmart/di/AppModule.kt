@@ -1,11 +1,13 @@
 package com.yuvrajsinghgmx.shopsmart.di
 
+import android.app.Application
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepositoryImpl
 import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.service.AuthService
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.service.AuthServiceImpl
+import com.yuvrajsinghgmx.shopsmart.screens.auth.service.AuthService
+import com.yuvrajsinghgmx.shopsmart.screens.auth.service.AuthServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +24,12 @@ object AppModule {
     }
     @Provides
     @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+    fun provideFirebaseAuth(app: Application): FirebaseAuth {
+        if (FirebaseApp.getApps(app).isEmpty()) {
+            FirebaseApp.initializeApp(app)
+        }
+        return FirebaseAuth.getInstance()
+    }
 
     @Provides
     @Singleton

@@ -1,8 +1,8 @@
-package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.service
+package com.yuvrajsinghgmx.shopsmart.screens.auth.service
 
 import android.app.Activity
 import com.google.firebase.auth.PhoneAuthProvider
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.state.AuthState
+import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import kotlinx.coroutines.flow.Flow
 
 interface AuthService {

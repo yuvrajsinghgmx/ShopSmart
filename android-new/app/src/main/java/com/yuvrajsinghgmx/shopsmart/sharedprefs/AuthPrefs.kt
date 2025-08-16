@@ -3,8 +3,14 @@ package com.yuvrajsinghgmx.shopsmart.sharedprefs
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthPrefs(context: Context) {
+@Singleton
+class AuthPrefs @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
@@ -15,7 +21,8 @@ class AuthPrefs(context: Context) {
         userId: Int,
         name: String,
         phone: String,
-        profilePic: String?
+        profilePic: String?,
+        isNewUser: Boolean
     ) {
         prefs.edit().apply {
             putString("access_token", accessToken)
@@ -24,6 +31,7 @@ class AuthPrefs(context: Context) {
             putString("name", name)
             putString("phone", phone)
             putString("profile_pic", profilePic)
+            putBoolean("is_new_user",isNewUser )
             apply()
         }
     }
@@ -34,6 +42,7 @@ class AuthPrefs(context: Context) {
     fun getName(): String? = prefs.getString("name", null)
     fun getPhone(): String? = prefs.getString("phone", null)
     fun getProfilePic(): String? = prefs.getString("profile_pic", null)
+    fun isNewUser(): Boolean = prefs.getBoolean("is_new_user", false)
 
     fun clearAuthData() {
         prefs.edit { clear() }
