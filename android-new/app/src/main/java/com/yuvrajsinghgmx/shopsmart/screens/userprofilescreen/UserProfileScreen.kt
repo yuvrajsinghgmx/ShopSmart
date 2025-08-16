@@ -39,11 +39,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.modelclass.User
+import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 
 @Composable
-fun UserProfileScreen(user: User) {
+fun UserProfileScreen(
+    user: User,
+    viewModel: SharedAppViewModel,
+    navController: NavController
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -242,7 +248,12 @@ fun UserProfileScreen(user: User) {
 
             // Logout Button
             Button(
-                onClick = { /* handle logout */ },
+                onClick = {
+                    viewModel.logout()
+                    navController.navigate("login_route") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

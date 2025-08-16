@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.service
+package com.yuvrajsinghgmx.shopsmart.screens.auth.service
 
 import android.app.Activity
 import com.google.firebase.FirebaseException
@@ -6,9 +6,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen.state.AuthState
+import com.yuvrajsinghgmx.shopsmart.modelclass.DjangoAuthResponse
+import com.yuvrajsinghgmx.shopsmart.modelclass.userInfo
+import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.TimeUnit
@@ -28,9 +32,13 @@ class AuthServiceImpl @Inject constructor(
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 auth.signInWithCredential(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        trySend(AuthState.AuthSuccess)
+                        trySend(AuthState.firebaseAuthSuccess)
                     } else {
-                        trySend(AuthState.Error(task.exception?.message ?: "Auto-verification failed."))
+                        trySend(
+                            AuthState.Error(
+                                task.exception?.message ?: "Auto-verification failed."
+                            )
+                        )
                     }
                 }
             }
@@ -40,18 +48,14 @@ class AuthServiceImpl @Inject constructor(
             }
 
             override fun onCodeSent(
-                verificationId: String,
-                token: PhoneAuthProvider.ForceResendingToken
+                verificationId: String, token: PhoneAuthProvider.ForceResendingToken
             ) {
                 trySend(AuthState.CodeSent(verificationId, token))
             }
         }
 
-        val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(callbacks)
+        val optionsBuilder = PhoneAuthOptions.newBuilder(auth).setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS).setActivity(activity).setCallbacks(callbacks)
 
         // Add the token for resend requests
         if (resendingToken != null) {
@@ -67,7 +71,7 @@ class AuthServiceImpl @Inject constructor(
         val credential = PhoneAuthProvider.getCredential(verificationId, otp)
         auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                trySend(AuthState.AuthSuccess)
+                trySend(AuthState.firebaseAuthSuccess)
             } else {
                 trySend(AuthState.Error(task.exception?.message ?: "Invalid OTP."))
             }
