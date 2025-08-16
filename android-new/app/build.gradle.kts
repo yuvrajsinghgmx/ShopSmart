@@ -12,7 +12,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.yuvrajsinghgmx.shopsmart"
+        applicationId = "com.yuvrajsinghgmx.shopsmartgmx"
         minSdk = 30
         targetSdk = 36
         versionCode = 3
