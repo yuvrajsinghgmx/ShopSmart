@@ -6,9 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.yuvrajsinghgmx.shopsmart.navigation.AppNavHost
+import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavItem
 import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavigationBar
-import com.yuvrajsinghgmx.shopsmart.navigation.NavHost
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,12 +23,24 @@ class MainActivity : ComponentActivity() {
         setContent {
             ShopSmartTheme {
                 val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
+                val bottomNavRoutes = listOf(
+                    BottomNavItem.Home.route,
+                    BottomNavItem.Search.route,
+                    BottomNavItem.Saved.route,
+                    BottomNavItem.Profile.route
+                )
+
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBar(navController = navController)
+                        if (currentRoute in bottomNavRoutes) {
+                            BottomNavigationBar(navController = navController)
+                        }
                     },
                     content = { padding ->
-                        NavHost(navController,padding)
+                        AppNavHost(navController,padding)
                     }
                 )
             }

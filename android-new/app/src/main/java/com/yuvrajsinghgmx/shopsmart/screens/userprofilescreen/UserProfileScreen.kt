@@ -1,4 +1,3 @@
-package com.yuvrajsinghgmx.shopsmart.screens.userprofilescreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,6 +25,7 @@ import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DividerDefaults
@@ -40,11 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.modelclass.User
+import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 
 @Composable
-fun UserProfileScreen(user: User) {
+fun UserProfileScreen(
+    user: User,
+    viewModel: SharedAppViewModel,
+    navController: NavController
+) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -196,46 +202,20 @@ fun UserProfileScreen(user: User) {
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
-                    MenuItem(
-                        icon = Icons.Outlined.LocationOn,
-                        text = "Delivery Radius",
-                        trailingText = "10 km"
-                    )
+                    MenuItem(icon = Icons.Outlined.LocationOn, text = "Delivery Radius", trailingText = "10 km", onClick = {})
                     if (user.userType == "Shopowner") {
-                        HorizontalDivider(
-                            Modifier,
-                            DividerDefaults.Thickness,
-                            color = MaterialTheme.colorScheme.outlineVariant
-                        )
-                        MenuItem(
-                            icon = Icons.Outlined.Add,
-                            text = "Add New Product"
-                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        MenuItem(icon = Icons.Outlined.Add, text = "Add New Product", onClick = {})
                     }
-                    HorizontalDivider(
-                        Modifier,
-                        DividerDefaults.Thickness,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                    MenuItem(icon = Icons.Outlined.Bookmark, text = "Saved Items")
-                    HorizontalDivider(
-                        Modifier,
-                        DividerDefaults.Thickness,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                    MenuItem(icon = Icons.Outlined.Star, text = "My Reviews")
-                    HorizontalDivider(
-                        Modifier,
-                        DividerDefaults.Thickness,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                    MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings")
-                    HorizontalDivider(
-                        Modifier,
-                        DividerDefaults.Thickness,
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
-                    MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Help Center")
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MenuItem(icon = Icons.Outlined.Bookmark, text = "Saved Items", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MenuItem(icon = Icons.Outlined.Star, text = "My Reviews", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Help Center", onClick = {})
+
                 }
             }
 
@@ -243,7 +223,12 @@ fun UserProfileScreen(user: User) {
 
             // Logout Button
             Button(
-                onClick = { /* handle logout */ },
+                onClick = {
+                    viewModel.logout()
+                    navController.navigate("login_route") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -276,13 +261,14 @@ fun UserProfileScreen(user: User) {
 private fun MenuItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
-    trailingText: String? = null
+    trailingText: String? = null,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
-            .clickable { /* logic to route */ },
+            .clickable(onClick = onClick), // Use the passed lambda here
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

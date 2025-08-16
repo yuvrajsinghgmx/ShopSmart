@@ -1,61 +1,31 @@
 from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+master
 from .models import Product, User
 
-
-class SendOTPSerializer(serializers.Serializer):
-    country_code = serializers.CharField(
-        max_length=5,
-        default="+91",
-        help_text="Country code (e.g., +91)"
-    )
-    phone = serializers.CharField(
-        max_length=15,
-        help_text="Phone number to send OTP to"
-    )
-
-    def validate(self, data):
-        phone = data.get("phone")
-        country_code = data.get("country_code")
-
-        if not phone.isdigit():
-            raise serializers.ValidationError("Phone number must contain only digits.")
-        if not country_code.startswith("+") or not country_code[1:].isdigit():
-            raise serializers.ValidationError("Invalid country code.")
-        if len(phone) < 10:
-            raise serializers.ValidationError("Phone number must be at least 10 digits long.")
-
-        return data
+from .models import Product, Shop
+master
 
 
-class VerifyOTPSerializer(serializers.Serializer):
-    country_code = serializers.CharField(
-        max_length=5,
-        default="+91",
-        help_text="Country code used"
-    )
-    phone = serializers.CharField(
-        max_length=15,
-        help_text="Phone number used for verification"
-    )
-    otp = serializers.CharField(
-        max_length=6,
-        help_text="OTP received on phone"
-    )
+class ShopSerializer(GeoFeatureModelSerializer):
+    owner = serializers.StringRelatedField(read_only=True)
 
-    def validate(self, data):
-        phone = data.get("phone")
-        otp = data.get("otp")
-        country_code = data.get("country_code")
+    class Meta:
+        model = Shop
+        geo_field = "location"
+        fields = [
+            'id',
+            'owner',
+            'name',
+            'image',
+            'address',
+            'location',
+            'category',
+            'description',
+            'created_at',
+        ]
 
-        if not phone.isdigit():
-            raise serializers.ValidationError("Phone number must contain only digits.")
-        if not otp.isdigit():
-            raise serializers.ValidationError("OTP must contain only digits.")
-        if not country_code.startswith("+") or not country_code[1:].isdigit():
-            raise serializers.ValidationError("Invalid country code.")
-
-        return data
 
 class ProductSerializer(serializers.ModelSerializer):
     shop = serializers.PrimaryKeyRelatedField(read_only=True)

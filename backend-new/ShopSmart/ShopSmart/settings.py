@@ -1,8 +1,11 @@
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
+import mainapp.firebase_init
+import dj_database_url
 
-# Load .env variables
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,10 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
 
 DEBUG = True
+AUTH_USER_MODEL = "mainapp.User"
+ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = []
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,9 +23,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     # Third-party apps
     'rest_framework',
+    'rest_framework_gis',
     'rest_framework_simplejwt.token_blacklist',
 
     # Your app
@@ -39,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'ShopSmart.urls'
 
@@ -59,15 +64,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ShopSmart.wsgi.application'
 
-# Database
+# Database configuration
+#For Development, using PostgreSQL
+# Uncomment the following lines to use SQLite for development
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Use the PostGIS engine
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT'),
+#     }
+# }
+
+# Paths to OSGeo4W libraries, and also set C:/OSGeo4W/bin/ in envirnment variable as well.
+# GDAL_LIBRARY_PATH = 'C:/OSGeo4W/bin/gdal311.dll'
+# GEOS_LIBRARY_PATH = 'C:/OSGeo4W/bin/geos_c.dll'
+# PROJ_LIBRARY_PATH = 'C:/OSGeo4W/bin/proj.dll'
+
+# For Production
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL')
+    )
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -83,9 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
@@ -98,10 +120,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+master
 # Use custom user model
 AUTH_USER_MODEL = 'mainapp.User'
 
 # ✅ Django REST framework configuration
+
+master
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -111,7 +136,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-# ✅ Redis cache setup for rate limiting or OTP expiry logic
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -122,10 +146,11 @@ CACHES = {
     },
 }
 
-# ✅ Optional: JWT Token lifetime settings
-from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,        
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }

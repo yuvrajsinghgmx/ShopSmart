@@ -1,9 +1,8 @@
-import os
-import random
+import logging
 
 from dotenv import load_dotenv
-from twilio.rest import Client
 from django.shortcuts import get_object_or_404
+master
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
@@ -69,21 +68,23 @@ class SendOTPView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+from django.contrib.auth import get_user_model
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+from .models import Product, Shop
+from .permissions import IsOwnerOfShop, IsShopOwnerRole
+from .serializers import ProductSerializer, ShopSerializer
+
+load_dotenv()
+master
 User = get_user_model()
 
-@permission_classes([AllowAny])
-class VerifyOTPView(APIView):
-    def post(self, request):
-        serializer = VerifyOTPSerializer(data=request.data)
-        if serializer.is_valid():
-            phone = serializer.validated_data['phone']
-            otp = serializer.validated_data['otp']
 
-            try:
-                phone_obj = PhoneOTP.objects.get(phone_number=phone)
-            except PhoneOTP.DoesNotExist:
-                return Response({'error': 'Phone number not found'}, status=status.HTTP_404_NOT_FOUND)
+logger = logging.getLogger(__name__)
 
+master
             if phone_obj.is_expired():
                 return Response({"error": "OTP has expired"}, status=400)
 
@@ -112,9 +113,31 @@ class VerifyOTPView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ShopListCreateView(generics.ListCreateAPIView):
+    queryset = Shop.objects.all()
+    serializer_class = ShopSerializer
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated, IsShopOwnerRole]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
+master
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+        
 class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOfShop]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated, IsOwnerOfShop]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     def get_queryset(self):
         shop_pk = self.kwargs['shop_pk']
