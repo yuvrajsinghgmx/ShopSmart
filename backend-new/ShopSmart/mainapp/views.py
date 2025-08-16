@@ -3,18 +3,39 @@ import logging
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from .models import Product, Shop
 from .permissions import IsOwnerOfShop, IsShopOwnerRole
-from .serializers import ProductSerializer, ShopSerializer
+from .serializers import ProductSerializer, UserRoleSerializer, UserProfileSerializer, ShopSerializer
 
 load_dotenv()
+
 User = get_user_model()
 
-
 logger = logging.getLogger(__name__)
+
+
+class SetUserRoleView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        
+        role_serializer = UserRoleSerializer(data=request.data)
+        if role_serializer.is_valid():
+            new_role = role_serializer.validated_data['role']
+            
+            user.role = new_role
+            user.save()
+            
+            profile_serializer = UserProfileSerializer(user)
+            return Response(profile_serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(role_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
