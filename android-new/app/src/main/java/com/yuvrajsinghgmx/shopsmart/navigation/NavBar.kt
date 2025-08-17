@@ -32,16 +32,33 @@ fun AppNavHost(
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
 
+master
+    val userProfileViewModel: UserProfileViewModel = hiltViewModel()
+
+    androidx.navigation.compose.NavHost()
+      
     val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank()){
         "main_graph"
     }else{
         "login_route"
     }
     NavHost(
+master
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.padding(padding)
     ) {
+master
+        androidx.navigation.compose.composable(BottomNavItem.Home.route) {
+            HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
+        }
+        androidx.navigation.compose.composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
+            sharedViewModel.setSelectedShop(shop)
+            navController.navigate("shopDetails")
+        }) }
+        androidx.navigation.compose.composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
+        androidx.navigation.compose.composable(BottomNavItem.Profile.route) {
+          
         authGraph(navController,sharedAppViewModel)
         mainGraph(navController,sharedAppViewModel,sharedViewModel)
     }
@@ -99,13 +116,14 @@ fun NavGraphBuilder.mainGraph(
         }
         composable(BottomNavItem.Saved.route) { SavedProductScreen(navController = navController) }
         composable(BottomNavItem.Profile.route) {
+master
             UserProfileScreen(
                 user = sharedAppViewModel.getUserData(),
                 viewModel = sharedAppViewModel,
                 navController = navController
             )
         }
-        composable("shopDetails") {
+        androidx.navigation.compose.composable("shopDetails") {
             ShopDetail(sharedViewModel = sharedViewModel)
         }
     }

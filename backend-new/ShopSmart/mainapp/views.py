@@ -2,6 +2,73 @@ import logging
 
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
+master
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework import generics, status
+from django.utils import timezone
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+
+from .models import PhoneOTP, Product, Shop
+from .permissions import IsOwnerOfShop
+from .serializers import (
+    SendOTPSerializer,
+    ProductSerializer,
+    VerifyOTPSerializer,
+    UserOnboardingSerializer,
+)
+
+load_dotenv()
+
+
+def send_otp(phone):
+    otp = str(random.randint(1000, 9999))
+
+    account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    from_phone = os.getenv("TWILIO_PHONE_NUMBER")
+
+    if account_sid and auth_token and from_phone:
+        try:
+            client = Client(account_sid, auth_token)
+            message = client.messages.create(
+                body=f"Your OTP is {otp}",
+                from_=from_phone,
+                to=phone
+            )
+            print(f"OTP sent to {phone} via Twilio: SID={message.sid}")
+        except Exception as e:
+            print(f"Failed to send OTP via Twilio: {e}")
+    else:
+        print(f"[DEV MODE] OTP for {phone}: {otp}")
+
+    return otp
+
+@permission_classes([AllowAny])
+class SendOTPView(APIView):
+    def post(self, request):
+        serializer = SendOTPSerializer(data=request.data)
+        if serializer.is_valid():
+            phone = serializer.validated_data['phone']
+
+            otp = send_otp(phone)
+
+            # Update or create OTP entry and reset timestamp so TTL starts now
+            phone_obj, created = PhoneOTP.objects.update_or_create(
+                phone_number=phone,
+                defaults={'otp_code': otp, 'is_verified': False, 'created_at': timezone.now()}
+            )
+
+            return Response({'message': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -11,10 +78,39 @@ from .permissions import IsOwnerOfShop, IsShopOwnerRole
 from .serializers import ProductSerializer, ShopSerializer
 
 load_dotenv()
+master
 User = get_user_model()
 
 
 logger = logging.getLogger(__name__)
+
+master
+            if phone_obj.is_expired():
+                return Response({"error": "OTP has expired"}, status=400)
+
+            if phone_obj.otp_code == otp:
+                phone_obj.is_verified = True
+                phone_obj.save()
+                user, created = User.objects.get_or_create(
+                    phone_number=phone,
+                    defaults={'username': phone}
+                )
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                
+                return Response({
+                    'message': 'Phone number verified successfully',
+                    'access': access_token,
+                    'refresh': str(refresh),
+                    'is_new_user': created,
+                    'requires_onboarding': (not user.onboarding_completed),
+                    'role': user.role,
+                    'user_id': user.id,
+                }, status=status.HTTP_200_OK)
+
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -27,6 +123,7 @@ class ShopListCreateView(generics.ListCreateAPIView):
         else:
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
+master
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -50,3 +147,34 @@ class ProductListCreateView(generics.ListCreateAPIView):
         shop_pk = self.kwargs['shop_pk']
         shop = get_object_or_404(Shop, pk=shop_pk)
         serializer.save(shop=shop)
+
+
+class OnboardingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserOnboardingSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        serializer = UserOnboardingSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApiRootView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        base = request.build_absolute_uri('/')[:-1]
+        return Response({
+            'message': 'ShopSmart API is running',
+            'endpoints': {
+                'send_otp': f"{base}/api/send-otp/",
+                'verify_otp': f"{base}/api/verify-otp/",
+                'onboarding': f"{base}/api/onboarding/",
+                'admin': f"{base}/admin/",
+            }
+        }, status=status.HTTP_200_OK)

@@ -1,7 +1,11 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+master
+from .models import Product, User
+
 from .models import Product, Shop
+master
 
 
 class ShopSerializer(GeoFeatureModelSerializer):
@@ -39,3 +43,34 @@ class ProductSerializer(serializers.ModelSerializer):
             'images',
             'created_at'
         ]
+
+
+class UserOnboardingSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(choices=User.Role.choices, required=False)
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'phone_number',
+            'role',
+            'full_name',
+            'profile_image',
+            'current_address',
+            'latitude',
+            'longitude',
+            'location_radius_km',
+            'onboarding_completed',
+        ]
+        read_only_fields = ['id', 'phone_number']
+
+    def validate(self, attrs):
+        # If user is completing onboarding, ensure minimal required fields
+        if attrs.get('onboarding_completed'):
+            required_fields = ['full_name']
+            for field in required_fields:
+                if not attrs.get(field):
+                    raise serializers.ValidationError({field: 'This field is required to complete onboarding.'})
+        # Disallow changing role after onboarding is completed
+        if 'role' in attrs and getattr(self.instance, 'onboarding_completed', False):
+            raise serializers.ValidationError({'role': 'Cannot change role after onboarding is completed.'})
+        return attrs
