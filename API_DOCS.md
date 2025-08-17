@@ -1,0 +1,6 @@
+| Endpoint             | Method | Auth Required | Request Body                                                | Response Body                                          | Description              |
+|----------------------|--------|---------------|-------------------------------------------------------------|--------------------------------------------------------|--------------------------|
+| /otp/send            | POST   | ❌            | `{ "contact": "user_contact" }`                             | `{ "message": "OTP sent successfully", "session_id": "..." }` | Send OTP                 |
+| /otp/verify          | POST   | ❌            | `{ "session_id": "...", "otp": "123456" }`                  | `{ "message": "OTP verified successfully", "token": "...", "user_id": 1 }` | Verify OTP               |
+| /onboarding/{userId} | GET    | ✅            | -                                                           | `{ "user_id": 1, "status": "...", "details": { ... }, "onboarding_completed": true }` | Get onboarding details  |
+| /onboarding/{userId} | PUT    | ✅            | `{ "name": "John Doe", "address": "123 Main Street" }`      | `{ "user_id": 1, "status": "...", "details": { ... }, "onboarding_completed": true }` | Update onboarding info  |
