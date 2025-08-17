@@ -32,99 +32,81 @@ fun AppNavHost(
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
 
-master
-    val userProfileViewModel: UserProfileViewModel = hiltViewModel()
-
-    androidx.navigation.compose.NavHost()
-      
-    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank()){
+    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank()) {
         "main_graph"
-    }else{
+    } else {
         "login_route"
     }
+
+    fun NavGraphBuilder.authGraph(
+        navController: NavHostController,
+        sharedAppViewModel: SharedAppViewModel
+    ) {
+        composable("login_route") {
+            LoginScreen(
+                onLogInSuccess = { isNewUser ->
+                    if (isNewUser) {
+                        navController.navigate("onboarding") {
+                            popUpTo("login_route") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("main_graph") {
+                            popUpTo("login_route") { inclusive = true }
+                        }
+                    }
+                },
+                modifier = Modifier,
+                viewModel = sharedAppViewModel,
+                AuthPrefs = sharedAppViewModel.authPrefs,
+            )
+        }
+
+        composable("onboarding") {
+            OnBoardingScreen(
+                onFinish = {
+                    navController.navigate("main_graph") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
+    }
+    fun NavGraphBuilder.mainGraph(
+        navController: NavController,
+        sharedAppViewModel: SharedAppViewModel,
+        sharedViewModel: SharedShopViewModel
+    ) {
+        navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
+            composable(BottomNavItem.Home.route) {
+                HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
+            }
+            composable(BottomNavItem.Search.route) {
+                SearchScreen(onShopClick = { shop ->
+                    sharedViewModel.setSelectedShop(shop)
+                    navController.navigate("shopDetails")
+                })
+            }
+            composable(BottomNavItem.Saved.route) {
+                SavedProductScreen(navController = navController)
+            }
+            composable(BottomNavItem.Profile.route) {
+                UserProfileScreen(
+                    user = sharedAppViewModel.getUserData(),
+                    viewModel = sharedAppViewModel,
+                    navController = navController
+                )
+            }
+            composable("shopDetails") {
+                ShopDetail(sharedViewModel = sharedViewModel)
+            }
+        }
+    }
     NavHost(
-master
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.padding(padding)
     ) {
-master
-        androidx.navigation.compose.composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
-        }
-        androidx.navigation.compose.composable(BottomNavItem.Search.route) { SearchScreen(onShopClick = { shop ->
-            sharedViewModel.setSelectedShop(shop)
-            navController.navigate("shopDetails")
-        }) }
-        androidx.navigation.compose.composable(BottomNavItem.Saved.route) { SavedProductScreen(navController=navController) }
-        androidx.navigation.compose.composable(BottomNavItem.Profile.route) {
-          
-        authGraph(navController,sharedAppViewModel)
-        mainGraph(navController,sharedAppViewModel,sharedViewModel)
-    }
-}
-
-fun NavGraphBuilder.authGraph(
-    navController: NavHostController,
-    sharedAppViewModel: SharedAppViewModel
-){
-    composable("login_route") {
-        LoginScreen(
-            onLogInSuccess = { isNewUser ->
-                if (isNewUser) {
-                    navController.navigate("onboarding") {
-                        popUpTo("login_route") { inclusive = true }
-                    }
-                } else {
-                    navController.navigate("main_graph") {
-                        popUpTo("login_route") { inclusive = true }
-                    }
-                }
-            },
-            modifier = Modifier,
-            viewModel = sharedAppViewModel,
-            AuthPrefs = sharedAppViewModel.authPrefs,
-        )
-    }
-
-    composable("onboarding") {
-        OnBoardingScreen(
-            onFinish = {
-                navController.navigate("main_graph") {
-                    popUpTo("onboarding") { inclusive = true }
-                }
-            }
-        )
-    }
-}
-
-fun NavGraphBuilder.mainGraph(
-    navController: NavController,
-    sharedAppViewModel: SharedAppViewModel,
-    sharedViewModel: SharedShopViewModel
-) {
-
-    navigation(BottomNavItem.Home.route, "main_graph") {
-        composable(BottomNavItem.Home.route) {
-            HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
-        }
-        composable(BottomNavItem.Search.route) {
-            SearchScreen(onShopClick = { shop ->
-                sharedViewModel.setSelectedShop(shop)
-                navController.navigate("shopDetails")
-            })
-        }
-        composable(BottomNavItem.Saved.route) { SavedProductScreen(navController = navController) }
-        composable(BottomNavItem.Profile.route) {
-master
-            UserProfileScreen(
-                user = sharedAppViewModel.getUserData(),
-                viewModel = sharedAppViewModel,
-                navController = navController
-            )
-        }
-        androidx.navigation.compose.composable("shopDetails") {
-            ShopDetail(sharedViewModel = sharedViewModel)
-        }
+        authGraph(navController, sharedAppViewModel)
+        mainGraph(navController, sharedAppViewModel, sharedViewModel)
     }
 }

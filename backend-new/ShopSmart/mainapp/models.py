@@ -125,25 +125,5 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.username}"
-master
 
 
-class PhoneOTP(models.Model):
-    phone_number = models.CharField(max_length=15, unique=True)
-    otp_code = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_verified = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.phone_number} - {'Verified' if self.is_verified else 'Not Verified'}"
-
-    def is_expired(self):
-        """Returns True if OTP is older than 300 seconds (5 minutes)."""
-        return timezone.now() > self.created_at + timedelta(seconds=300)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['phone_number']),
-        ]
-
-master
