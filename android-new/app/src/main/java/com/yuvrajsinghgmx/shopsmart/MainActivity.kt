@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yuvrajsinghgmx.shopsmart.navigation.AppNavHost
+import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavItem
 import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavigationBar
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,9 +26,16 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
+                val bottomNavRoutes = listOf(
+                    BottomNavItem.Home.route,
+                    BottomNavItem.Search.route,
+                    BottomNavItem.Saved.route,
+                    BottomNavItem.Profile.route
+                )
+
                 Scaffold(
                     bottomBar = {
-                        if (currentRoute != "login_route") {
+                        if (currentRoute in bottomNavRoutes) {
                             BottomNavigationBar(navController = navController)
                         }
                     },

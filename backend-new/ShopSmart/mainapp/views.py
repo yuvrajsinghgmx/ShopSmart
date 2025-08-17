@@ -1,21 +1,29 @@
 import logging
-
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Product, Shop
 from .permissions import IsOwnerOfShop, IsShopOwnerRole
 from .serializers import ProductSerializer, UserRoleSerializer, UserProfileSerializer, ShopSerializer
+
+
+User = get_user_model()
+
+from .models import Product, Shop
+from .serializers import (
+    ProductSerializer,
+    ShopSerializer,
+    UserOnboardingSerializer,
+)
 
 load_dotenv()
 
 User = get_user_model()
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,7 +60,7 @@ class ShopListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-        
+
 class ProductListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
@@ -71,3 +79,34 @@ class ProductListCreateView(generics.ListCreateAPIView):
         shop_pk = self.kwargs['shop_pk']
         shop = get_object_or_404(Shop, pk=shop_pk)
         serializer.save(shop=shop)
+
+
+class OnboardingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserOnboardingSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        serializer = UserOnboardingSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApiRootView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        base = request.build_absolute_uri('/')[:-1]
+        return Response({
+            'message': 'ShopSmart API is running',
+            'endpoints': {
+                'send_otp': f"{base}/api/send-otp/",
+                'verify_otp': f"{base}/api/verify-otp/",
+                'onboarding': f"{base}/api/onboarding/",
+                'admin': f"{base}/admin/",
+            }
+        }, status=status.HTTP_200_OK)

@@ -15,8 +15,15 @@ class User(AbstractUser):
 
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
+
+    # Onboarding/profile fields
+    full_name = models.CharField(max_length=150, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    current_address = models.TextField(blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     location_radius_km = models.PositiveIntegerField(default=10)
+    onboarding_completed = models.BooleanField(default=False)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -118,3 +125,5 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.username}"
+
+

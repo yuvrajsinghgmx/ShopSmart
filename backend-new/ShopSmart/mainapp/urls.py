@@ -1,12 +1,20 @@
 from django.urls import path
-
+from .views import ProductListCreateView, ShopListCreateView
+from .firebaseauth_views import FirebaseAuthView,LogoutView
+>
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .firebaseauth_views import FirebaseAuthView, LogoutView
 from .views import ProductListCreateView, SetUserRoleView, ShopListCreateView
 
 
+
+
+from .views import SendOTPView, VerifyOTPView, ProductListCreateView, OnboardingView, ApiRootView
+
 urlpatterns = [
+    path('', ApiRootView.as_view(), name='api-root'),
+    path('onboarding/', OnboardingView.as_view(), name='onboarding'),
     # Auth
     path("auth/firebase/", FirebaseAuthView.as_view(), name="firebase-auth"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
