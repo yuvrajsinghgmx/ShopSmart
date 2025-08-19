@@ -1,7 +1,7 @@
 import logging
+
 from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -9,19 +9,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-
 from .permissions import IsOwnerOfShop, IsShopOwnerRole
-from .serializers import ProductSerializer, UserRoleSerializer, UserProfileSerializer, ShopSerializer
-
+from .serializers import ProductSerializer, UserRoleSerializer, UserProfileSerializer, ShopSerializer, UserOnboardingSerializer
+from .models import Product, Shop
 
 User = get_user_model()
-
-from .models import Product, Shop
-from .serializers import (
-    ProductSerializer,
-    ShopSerializer,
-    UserOnboardingSerializer,
-)
 
 load_dotenv()
 
