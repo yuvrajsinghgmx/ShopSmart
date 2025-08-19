@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Shop, Product, FavoriteShop, FavoriteProduct, ShopReview, ProductReview, PhoneOTP
+
+from .models import User, Shop, Product, FavoriteShop, FavoriteProduct, ShopReview, ProductReview
 
 
 @admin.register(User)
@@ -30,4 +31,3 @@ admin.site.register(FavoriteShop)
 admin.site.register(FavoriteProduct)
 admin.site.register(ShopReview)
 admin.site.register(ProductReview)
-admin.site.register(PhoneOTP)

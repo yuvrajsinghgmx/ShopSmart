@@ -1,11 +1,10 @@
+from django.contrib.auth import get_user_model
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
-from firebase_admin import auth as firebase_auth
-from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+from firebase_admin import auth as firebase_auth
 from firebase_admin.auth import InvalidIdTokenError, ExpiredIdTokenError, RevokedIdTokenError
-
 
 User = get_user_model()
 
@@ -57,8 +56,6 @@ class FirebaseAuthView(APIView):
             return Response({"error": "Invalid or expired ID token"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Authentication failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 class LogoutView(APIView):

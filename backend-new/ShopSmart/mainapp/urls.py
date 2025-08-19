@@ -1,15 +1,9 @@
 from django.urls import path
-from .views import ProductListCreateView, ShopListCreateView
-from .firebaseauth_views import FirebaseAuthView,LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .firebaseauth_views import FirebaseAuthView, LogoutView
-from .views import ProductListCreateView, SetUserRoleView, ShopListCreateView
+from .views import ProductListCreateView, SetUserRoleView, ShopListCreateView, OnboardingView, ApiRootView
 
-
-
-
-from .views import SendOTPView, VerifyOTPView, ProductListCreateView, OnboardingView, ApiRootView
 
 urlpatterns = [
     path('', ApiRootView.as_view(), name='api-root'),

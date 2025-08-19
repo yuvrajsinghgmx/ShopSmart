@@ -27,6 +27,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'phone_number']
 
+
 class ShopSerializer(GeoFeatureModelSerializer):
     owner = serializers.StringRelatedField(read_only=True)
 
