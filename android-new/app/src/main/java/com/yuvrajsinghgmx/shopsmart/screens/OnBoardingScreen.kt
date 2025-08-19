@@ -305,8 +305,14 @@ fun OnBoardingScreen(
                     }
 
                     // Navigate to next screen
-                    navController.navigate("main_graph"){
-                        popUpTo("login_route") { inclusive = true }
+                    if (selectedRole == UserRole.CUSTOMER) {
+                        navController.navigate("main_graph") {
+                            popUpTo("login_route") { inclusive = true }
+                        }
+                    } else if (selectedRole == UserRole.SHOP_OWNER) {
+                        navController.navigate("addshop"){
+                            popUpTo("login_route") { inclusive = true }
+                        }
                     }
                 }
                 /*onFinish()*/},

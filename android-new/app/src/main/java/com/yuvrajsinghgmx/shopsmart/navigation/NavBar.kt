@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.yuvrajsinghgmx.shopsmart.screens.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.screens.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
@@ -63,6 +64,12 @@ fun AppNavHost(
 
         composable("onboarding") {
             OnBoardingScreen(
+                navController = navController,
+            )
+        }
+
+        composable("addshop") {
+            AddShopScreen (
                 navController = navController,
             )
         }
