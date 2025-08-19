@@ -92,7 +92,7 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
             modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
         )
 
-        // Profile Photo Section
+        //// Profile Photo Section
         Box(
             modifier = Modifier
                 .size(120.dp)
