@@ -63,11 +63,7 @@ fun AppNavHost(
 
         composable("onboarding") {
             OnBoardingScreen(
-                onFinish = {
-                    navController.navigate("main_graph") {
-                        popUpTo("onboarding") { inclusive = true }
-                    }
-                }
+                navController = navController,
             )
         }
     }

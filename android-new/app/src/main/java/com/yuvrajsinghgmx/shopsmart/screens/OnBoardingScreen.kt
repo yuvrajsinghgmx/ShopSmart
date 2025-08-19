@@ -1,5 +1,10 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.net.Uri
+import android.util.Patterns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,20 +39,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.yuvrajsinghgmx.shopsmart.modelclass.UserRegistration
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.PurpleGrey40
 import com.yuvrajsinghgmx.shopsmart.ui.theme.PurpleGrey80
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /*@Composable
 fun OnBoardingScreen(onFinish: () -> Unit) {
@@ -70,10 +85,29 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
 }*/
 
 @Composable
-fun OnBoardingScreen(onFinish: () -> Unit) {
+fun OnBoardingScreen(
+    navController: NavController,
+) {
+
+    val context = LocalContext.current
+    val userDataStore = remember { UserDataStore(context) }
+    val scope = rememberCoroutineScope()
+
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Error states
+    var nameError by remember { mutableStateOf(false) }
+    var roleError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+
+    // Image Picker launcher
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+    }
 
     Column(
         modifier = Modifier
@@ -98,15 +132,24 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
                 .size(120.dp)
                 .clip(CircleShape)
                 .background(Color(0xFFF5F5F5))
-                .clickable { /* Handle photo selection */ },
+                .clickable { launcher.launch("image/*") },
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.CameraAlt,
-                contentDescription = "Add Photo",
-                tint = NavySecondary,
-                modifier = Modifier.size(32.dp)
-            )
+            if (imageUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(imageUri),
+                    contentDescription = "Profile Photo",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = "Add Photo",
+                    tint = NavySecondary,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
 
         Text(
@@ -131,7 +174,7 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
 
             OutlinedTextField(
                 value = fullName,
-                onValueChange = { fullName = it },
+                onValueChange = { if (it.length <= 16 && !it.contains("\n")) fullName = it },
                 placeholder = {
                     Text(
                         text = "Enter your full name",
@@ -139,6 +182,8 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                isError = nameError,
+                singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color(0xFFDDD6FE),
@@ -147,6 +192,9 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
                     focusedContainerColor = Color.White
                 )
             )
+            if (nameError) {
+                Text("Name is required", color = Color.Red, fontSize = 12.sp)
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -181,6 +229,10 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
             )
         }
 
+        if (roleError) {
+            Text("Please select a role", color = Color.Red, fontSize = 12.sp)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         // Email Field
@@ -205,6 +257,8 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = emailError,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color(0xFFDDD6FE),
@@ -213,6 +267,10 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
                     focusedContainerColor = Color.White
                 )
             )
+
+            if (emailError) {
+                Text("Invalid email format", color = Color.Red, fontSize = 12.sp)
+            }
 
             Text(
                 text = "You can add this later",
@@ -224,9 +282,34 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Continue Button
+            // Continue Button
         Button(
-            onClick = { onFinish() },
+            onClick = {
+
+                nameError = fullName.isBlank()
+                roleError = selectedRole == null
+                emailError = email.isNotBlank() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+                if (!nameError && !roleError && !emailError && selectedRole != null) {
+                    // Create UserRegistration object
+                    val user = UserRegistration(
+                        fullName = fullName.trim(),
+                        email = email.takeIf { it.isNotBlank() },
+                        role = selectedRole!!,
+                        profileImageUri = imageUri?.toString()
+                    )
+
+                    // Save to DataStore (async, lifecycle-aware)
+                    scope.launch(Dispatchers.IO) {
+                        userDataStore.saveUser(user)
+                    }
+
+                    // Navigate to next screen
+                    navController.navigate("main_graph"){
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                }
+                /*onFinish()*/},
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
