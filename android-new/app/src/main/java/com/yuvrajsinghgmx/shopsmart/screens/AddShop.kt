@@ -1,6 +1,13 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,9 +62,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.Place
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
@@ -71,11 +88,22 @@ fun AddShopScreen(navController: NavController) {
     var shopDescription by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Select category") }
     var expanded by remember { mutableStateOf(false) }
+    var isError by remember { mutableStateOf(false) }
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var isPickingLocation by remember { mutableStateOf(false) }
+    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
 
     val context = LocalContext.current
     val userDataStore = remember { UserDataStore(context) }
 
     val user by userDataStore.userFlow.collectAsState(initial = null)
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+    }
 
     LaunchedEffect(user) {
         user?.let {
@@ -165,14 +193,23 @@ fun AddShopScreen(navController: NavController) {
                             shape = CircleShape
                         )
                         .background(Color(0xFFF8F8F8))
-                        .clickable { /* Handle photo selection */ }
+                        .clickable { launcher.launch("image/*")  }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = "Add photo",
-                        tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(30.dp)
-                    )
+                    if (imageUri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUri),
+                            contentDescription = "Profile Photo",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = "Add Photo",
+                            tint = NavySecondary, //Color(0xFF4CAF50),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -209,7 +246,8 @@ fun AddShopScreen(navController: NavController) {
                     focusedBorderColor = Color(0xFF4CAF50),
                     unfocusedBorderColor = Color(0xFFE5E5E5)
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -280,21 +318,36 @@ fun AddShopScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = { phoneNumber = it },
+                onValueChange = { input ->
+                    // Allow only digits and limit length to 10
+                    val filtered = input.filter { it.isDigit() }.take(10)
+
+                    phoneNumber = filtered
+                    isError = filtered.length != 10 && filtered.isNotEmpty()
+                },
                 placeholder = {
                     Text(
-                        text = "+1 (555) 000-0000",
+                        text = "Enter 10-digit number",
                         color = Color(0xFFBBBBBB)
                     )
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4CAF50),
-                    unfocusedBorderColor = Color(0xFFE5E5E5)
+                    focusedBorderColor = if (isError) Color.Red else Color(0xFF4CAF50),
+                    unfocusedBorderColor = if (isError) Color.Red else Color(0xFFE5E5E5)
                 ),
+                isError = isError,
                 shape = RoundedCornerShape(8.dp)
             )
+
+            if (isError) {
+                Text(
+                    text = "Phone number must be exactly 10 digits",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -307,11 +360,10 @@ fun AddShopScreen(navController: NavController) {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Map Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(if (isPickingLocation) 400.dp else 120.dp) // expand height when picking
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFF0F0F0))
                     .border(
@@ -321,20 +373,37 @@ fun AddShopScreen(navController: NavController) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // Simulate map with location marker
-                Icon(
+
+                selectedLocation?.let { location ->
+                    val markerState = remember(location) { MarkerState(position = location) }
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize(),
+                        cameraPositionState = rememberCameraPositionState {
+                            position = CameraPosition.fromLatLngZoom(location, 12f)
+                        },
+                        uiSettings = MapUiSettings(
+                            scrollGesturesEnabled = false,
+                            zoomControlsEnabled = false,
+                            tiltGesturesEnabled = false
+                        )
+                    ) {
+                        Marker(state = markerState, title = "Selected Location")
+                    }
+                } ?: Icon(
                     imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Location marker",
-                    tint = NavySecondary,
+                    contentDescription = "No location",
+                    tint = Color.Gray,
                     modifier = Modifier.size(30.dp)
                 )
+
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // Pick Location Button
             Button(
-                onClick = { /* Handle map location picker */ },
+                onClick = { isPickingLocation = true
+                          },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = NavySecondary
@@ -350,7 +419,20 @@ fun AddShopScreen(navController: NavController) {
                 )
             }
 
+            if (isPickingLocation) {
+                FullScreenMapPickerDialog(
+                    initialLocation = selectedLocation,
+                    onLocationConfirmed = { location ->
+                        selectedLocation = location
+                        isPickingLocation = false
+                    },
+                    onDismiss = { isPickingLocation = false }
+                )
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
+
+
 
             // Shop Description Field
             Text(
@@ -363,7 +445,15 @@ fun AddShopScreen(navController: NavController) {
 
             OutlinedTextField(
                 value = shopDescription,
-                onValueChange = { shopDescription = it },
+                onValueChange = { input ->
+                    val words = input.trim().split("\\s+".toRegex()).filter { it.isNotEmpty() }
+                    if (words.size <= 1000) {
+                        shopDescription = input
+                        isError = false
+                    } else {
+                        isError = true
+                    }
+                },
                 placeholder = {
                     Text(
                         text = "Tell customers about your shop...",
@@ -374,12 +464,21 @@ fun AddShopScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(100.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4CAF50),
-                    unfocusedBorderColor = Color(0xFFE5E5E5)
+                    focusedBorderColor = if (isError) Color.Red else Color(0xFF4CAF50),
+                    unfocusedBorderColor = if (isError) Color.Red else Color(0xFFE5E5E5)
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 4
+                maxLines = 4,
+                isError = isError
             )
+
+            if (isError) {
+                Text(
+                    text = "Maximum limit of 1000 words reached",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(40.dp))
 
