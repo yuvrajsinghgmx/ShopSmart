@@ -11,7 +11,7 @@ class ShopSmartApp : Application(){
         super.onCreate()
         FirebaseApp.initializeApp(this)
         if (!Places.isInitialized()) {
-            Places.initialize(this, "AIzaSyAc1jC_dLPuiFCDODMbGgJcyIKRJYUWGKI")
+            Places.initialize(this, "")
         }
     }
 }
