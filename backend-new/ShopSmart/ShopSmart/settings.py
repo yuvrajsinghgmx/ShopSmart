@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     # Your app
-    'mainapp',
+    'mainapp.apps.MainappConfig',  # Use the AppConfig class
 ]
 
 MIDDLEWARE = [
@@ -76,7 +76,6 @@ if ENVIRONMENT == "development":
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }
-
     # Local GDAL paths (adjust for your OS)
     GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "C:/OSGeo4W/bin/gdal311.dll")
     GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH", "C:/OSGeo4W/bin/geos_c.dll")
@@ -85,7 +84,8 @@ if ENVIRONMENT == "development":
 else:  # Production
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
+            default=os.getenv('DATABASE_URL'),
+            engine='django.contrib.gis.db.backends.postgis' # Ensure PostGIS engine is used
         )
     }
 
@@ -140,7 +140,7 @@ CACHES = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,        
+    "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }

@@ -8,9 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.reverse import reverse
 
 from .permissions import IsOwnerOfShop, IsShopOwnerRole
-from .serializers import ProductSerializer, UserRoleSerializer, UserProfileSerializer, ShopSerializer, UserOnboardingSerializer
+from .serializers import ProductSerializer, ShopSerializer, UserOnboardingSerializer
 from .models import Product, Shop
 
 User = get_user_model()
@@ -19,25 +20,6 @@ load_dotenv()
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
-
-
-class SetUserRoleView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        
-        role_serializer = UserRoleSerializer(data=request.data)
-        if role_serializer.is_valid():
-            new_role = role_serializer.validated_data['role']
-            
-            user.role = new_role
-            user.save()
-            
-            profile_serializer = UserProfileSerializer(user)
-            return Response(profile_serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(role_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -93,14 +75,14 @@ class OnboardingView(APIView):
 class ApiRootView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        base = request.build_absolute_uri('/')[:-1]
+    def get(self, request, format=None):
         return Response({
             'message': 'ShopSmart API is running',
             'endpoints': {
-                'send_otp': f"{base}/api/send-otp/",
-                'verify_otp': f"{base}/api/verify-otp/",
-                'onboarding': f"{base}/api/onboarding/",
-                'admin': f"{base}/admin/",
+                'auth-firebase': reverse('firebase-auth', request=request, format=format),
+                'auth-refresh': reverse('token-refresh', request=request, format=format),
+                'auth-logout': reverse('logout', request=request, format=format),
+                'onboarding': reverse('onboarding', request=request, format=format),
+                'shops': reverse('shop-list-create', request=request, format=format),
             }
         }, status=status.HTTP_200_OK)

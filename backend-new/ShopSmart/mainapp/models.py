@@ -38,7 +38,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['username', 'email']
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
         return f"{self.username} ({self.role})"
@@ -122,5 +122,3 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.product.name} by {self.user.username}"
-
-
