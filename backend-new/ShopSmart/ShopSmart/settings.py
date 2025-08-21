@@ -4,18 +4,26 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 import dj_database_url
-
+import platform
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = False
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()  # 'development' or 'production'
 
 AUTH_USER_MODEL = "mainapp.User"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+FIREBASE_STORAGE_BUCKET = os.getenv('FIREBASE_STORAGE_BUCKET', 'shopsmartgmx.firebasestorage.app')
+
+# Image Upload Configuration
+SHOP_IMAGE_LIMIT = int(os.getenv('SHOP_IMAGE_LIMIT', 3))
+PRODUCT_IMAGE_LIMIT = int(os.getenv('PRODUCT_IMAGE_LIMIT', 5))
+DOCUMENT_IMAGE_LIMIT = int(os.getenv('DOCUMENT_IMAGE_LIMIT', 5))
+MAX_IMAGE_SIZE_MB = int(os.getenv('MAX_IMAGE_SIZE_MB', 5))
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,13 +33,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-
-    # Third-party apps
     'rest_framework',
     'rest_framework_gis',
     'rest_framework_simplejwt.token_blacklist',
-
-    # Your app
     'mainapp',
 ]
 
@@ -77,11 +81,6 @@ if ENVIRONMENT == "development":
         }
     }
 
-    # Local GDAL paths (adjust for your OS)
-    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "C:/OSGeo4W/bin/gdal311.dll")
-    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH", "C:/OSGeo4W/bin/geos_c.dll")
-    PROJ_LIBRARY_PATH = os.getenv("PROJ_LIBRARY_PATH", "C:/OSGeo4W/bin/proj.dll")
-
 else:  # Production
     DATABASES = {
         'default': dj_database_url.config(
@@ -89,6 +88,16 @@ else:  # Production
         )
     }
 
+system = platform.system()
+
+if system == "Windows":
+    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "C:/OSGeo4W/bin/gdal311.dll")
+    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH", "C:/OSGeo4W/bin/geos_c.dll")
+    PROJ_LIBRARY_PATH = os.getenv("PROJ_LIBRARY_PATH", "C:/OSGeo4W/bin/proj.dll")
+else:
+    GDAL_LIBRARY_PATH = os.getenv("GDAL_LIBRARY_PATH", "/lib/x86_64-linux-gnu/libgdal.so")
+    GEOS_LIBRARY_PATH = os.getenv("GEOS_LIBRARY_PATH", "/lib/x86_64-linux-gnu/libgeos_c.so")
+    PROJ_LIBRARY_PATH = os.getenv("PROJ_LIBRARY_PATH", "/lib/x86_64-linux-gnu/libproj.so")
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -138,7 +147,7 @@ CACHES = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=100),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,        
     "BLACKLIST_AFTER_ROTATION": True,

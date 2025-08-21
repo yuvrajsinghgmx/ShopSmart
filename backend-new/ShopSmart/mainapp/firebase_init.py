@@ -1,7 +1,6 @@
 import os
 import json
 import firebase_admin
-
 from firebase_admin import credentials
 from dotenv import load_dotenv
 
@@ -14,4 +13,6 @@ cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(cred_dict)
-    firebase_admin.initialize_app(cred)
+    firebase_admin.initialize_app(cred, {
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET")
+    })
