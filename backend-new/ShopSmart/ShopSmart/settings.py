@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
 DEBUG = False
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()  # 'development' or 'production'
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production").lower()
 
 AUTH_USER_MODEL = "mainapp.User"
 
@@ -81,11 +81,11 @@ if ENVIRONMENT == "development":
         }
     }
 
-else:  # Production
+else:
+    db_config = dj_database_url.parse(os.getenv('DATABASE_URL'))
+    db_config['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
-        )
+        'default': db_config
     }
 
 system = platform.system()
