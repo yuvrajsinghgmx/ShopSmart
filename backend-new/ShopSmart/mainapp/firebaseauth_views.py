@@ -11,7 +11,6 @@ User = get_user_model()
 
 class FirebaseAuthView(APIView):
     permission_classes = [permissions.AllowAny]
-    authentication_classes = []
 
     def post(self, request):
         id_token = request.data.get("id_token")
@@ -34,8 +33,9 @@ class FirebaseAuthView(APIView):
             full_name = user.get_full_name().strip()
             role = user.role
 
-            # Renamed 'is_new_user' to 'requires_onboarding' for clarity
-            requires_onboarding = created or not user.onboarding_completed
+            is_new_user = False
+            if not full_name or not role:
+                is_new_user = True
 
             refresh = RefreshToken.for_user(user)
 
@@ -48,12 +48,12 @@ class FirebaseAuthView(APIView):
                     "name": full_name,
                     "role": role,
                     "profile_pic": user.profile_image.url if user.profile_image else None,
-                    "requires_onboarding": requires_onboarding
+                    "is_new_user": is_new_user
                 }
             }, status=status.HTTP_200_OK)
 
-        except (InvalidIdTokenError, ExpiredIdTokenError, RevokedIdTokenError) as e:
-            return Response({"error": "Invalid or expired Firebase ID token.", "details": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+        except (InvalidIdTokenError, ExpiredIdTokenError, RevokedIdTokenError):
+            return Response({"error": "Invalid or expired ID token"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": f"Authentication failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
