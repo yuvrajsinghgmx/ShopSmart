@@ -21,7 +21,7 @@ from .views import (
     AdminShopsListView, AdminPendingShopsView, ApproveShopView,
     
 
-    ProductListCreateView, SetUserRoleView, ShopListCreateView, 
+    ProductListCreateView, ShopListCreateView, 
     OnboardingView, ApiRootView
 )
 
@@ -37,7 +37,6 @@ urlpatterns = [
     path("auth/firebase/", FirebaseAuthView.as_view(), name="firebase-auth"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path('profile/set-role/', SetUserRoleView.as_view(), name='set-user-role'),
 
     # Shop endpoints
     path('shops/', ShopListCreateView.as_view(), name='shop-list-create'),
