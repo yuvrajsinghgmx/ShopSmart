@@ -1,26 +1,14 @@
 import logging
-
-from dotenv import load_dotenv
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import Distance
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-
-from .permissions import IsOwnerOfShop, IsShopOwnerRole
-from .serializers import ProductSerializer, ShopSerializer, UserOnboardingSerializer
-from .models import Product, Shop
-
-User = get_user_model()
-
-load_dotenv()
-
-User = get_user_model()
-logger = logging.getLogger(__name__)
-
 
 class ShopListCreateView(generics.ListCreateAPIView):
     queryset = Shop.objects.all()
@@ -72,17 +60,12 @@ class OnboardingView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class ApiRootView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
         return Response({
             'message': 'ShopSmart API is running',
+            'version': '1.0',
             'endpoints': {
-                'auth-firebase': reverse('firebase-auth', request=request, format=format),
-                'auth-refresh': reverse('token-refresh', request=request, format=format),
-                'auth-logout': reverse('logout', request=request, format=format),
-                'onboarding': reverse('onboarding', request=request, format=format),
-                'shops': reverse('shop-list-create', request=request, format=format),
-            }
-        }, status=status.HTTP_200_OK)

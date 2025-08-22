@@ -28,7 +28,8 @@ def initialize_firebase():
         firebase_admin.initialize_app(cred)
         logger.info("Firebase Admin SDK initialized successfully.")
 
-    except json.JSONDecodeError:
-        logger.error("Failed to parse FIREBASE_CREDENTIALS_JSON. Check if it's valid JSON.")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred during Firebase initialization: {e}")
+if not firebase_admin._apps:
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred, {
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET")
+    })
