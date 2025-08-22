@@ -34,6 +34,10 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({"role": "Role cannot be changed after onboarding is complete."})
         return data
 
+    def update(self, instance, validated_data):
+        validated_data['onboarding_completed'] = True
+        return super().update(instance, validated_data)
+
 
 class ShopSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
