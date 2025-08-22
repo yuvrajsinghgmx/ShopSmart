@@ -1,348 +1,58 @@
 {
-	"info": {
-		"_postman_id": "8a8f1b6e-c6a6-4f4d-8b8b-1e5b22b7c43c",
-		"name": "ShopSmart API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "12345"
-	},
-	"item": [
-		{
-			"name": "Auth",
-			"item": [
-				{
-					"name": "Firebase Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"const response = pm.response.json();",
-									"if (response && response.access) {",
-									"    pm.collectionVariables.set(\"accessToken\", response.access);",
-									"}",
-									"if (response && response.refresh) {",
-									"    pm.collectionVariables.set(\"refreshToken\", response.refresh);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"id_token\": \"your-firebase-id-token-here\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/firebase/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"firebase",
-								""
-							]
-						},
-						"description": "Login or register a user by verifying a Firebase ID token. The test script automatically saves the returned `access` and `refresh` tokens."
-					},
-					"response": []
-				},
-				{
-					"name": "Refresh Token",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refresh\": \"{{refreshToken}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/refresh/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"refresh",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Logout",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"refresh\": \"{{refreshToken}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/logout/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Onboarding",
-			"item": [
-				{
-					"name": "Get Onboarding Details",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/onboarding/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"onboarding",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Onboarding",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"role\": \"CUSTOMER\",\n  \"full_name\": \"John Doe\",\n  \"current_address\": \"221B Baker Street, London\",\n  \"latitude\": 51.5238, \n  \"longitude\": -0.1586,\n  \"location_radius_km\": 15,\n  \"onboarding_completed\": true\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/onboarding/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"onboarding",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Shops",
-			"item": [
-				{
-					"name": "List Shops",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/shops/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"shops",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Shop",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const response = pm.response.json();",
-									"if (response && response.id) {",
-									"    pm.collectionVariables.set(\"shopId\", response.id);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"The Corner Store\",\n    \"address\": \"123 Main St, Anytown\",\n    \"location\": {\n        \"type\": \"Point\",\n        \"coordinates\": [-74.0060, 40.7128] \n    },\n    \"category\": \"Groceries\",\n    \"description\": \"Your friendly neighborhood grocery store.\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/shops/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"shops",
-								""
-							]
-						},
-						"description": "Create a new shop. You must be authenticated as a SHOP_OWNER. The test script saves the new shop's ID to the `shopId` variable."
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Products",
-			"item": [
-				{
-					"name": "List Products for Shop",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/shops/{{shopId}}/products/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"shops",
-								"{{shopId}}",
-								"products",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Product for Shop",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Organic Milk\",\n    \"price\": \"3.99\",\n    \"description\": \"1 Gallon, Whole Milk\",\n    \"category\": \"Dairy\",\n    \"stock_quantity\": 50\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/shops/{{shopId}}/products/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"shops",
-								"{{shopId}}",
-								"products",
-								""
-							]
-						},
-						"description": "Add a new product to a shop specified by `shopId`. You must be the owner of the shop."
-					},
-					"response": []
-				}
-			]
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{accessToken}}",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": "http://127.0.0.1:8000"
-		},
-		{
-			"key": "accessToken",
-			"value": ""
-		},
-		{
-			"key": "refreshToken",
-			"value": ""
-		},
-		{
-			"key": "shopId",
-			"value": ""
-		}
-	]
+  "info": {
+    "name": "ShopSmart API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Send OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/send-otp/", "host": ["{{baseUrl}}"], "path": ["api", "send-otp", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"country_code\": \"+91\",\n  \"phone\": \"9999999999\"\n}"}
+      }
+    },
+    {
+      "name": "Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/verify-otp/", "host": ["{{baseUrl}}"], "path": ["api", "verify-otp", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"country_code\": \"+91\",\n  \"phone\": \"9999999999\",\n  \"otp\": \"1234\"\n}"}
+      }
+    },
+    {
+      "name": "Get Onboarding",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/onboarding/", "host": ["{{baseUrl}}"], "path": ["api", "onboarding", ""]}
+      }
+    },
+    {
+      "name": "Update Onboarding",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+        ],
+        "url": {"raw": "{{baseUrl}}/api/onboarding/", "host": ["{{baseUrl}}"], "path": ["api", "onboarding", ""]},
+        "body": {"mode": "raw", "raw": "{\n  \"role\": \"CUSTOMER\",\n  \"full_name\": \"John Doe\",\n  \"current_address\": \"221B Baker Street\",\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"location_radius_km\": 10,\n  \"onboarding_completed\": true\n}"}
+      }
+    }
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://127.0.0.1:8000"},
+    {"key": "accessToken", "value": ""}
+  ]
 }
+
+

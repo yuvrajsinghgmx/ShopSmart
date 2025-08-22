@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'rest_framework_simplejwt.token_blacklist',
     'mainapp',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +81,11 @@ if ENVIRONMENT == "development":
         }
     }
 
+else:
+    db_config = dj_database_url.parse(os.getenv('DATABASE_URL'))
+    db_config['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+    DATABASES = {
+        'default': db_config
     }
 
 system = platform.system()
@@ -143,7 +149,7 @@ CACHES = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=100),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,
+    "ROTATE_REFRESH_TOKENS": True,        
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
