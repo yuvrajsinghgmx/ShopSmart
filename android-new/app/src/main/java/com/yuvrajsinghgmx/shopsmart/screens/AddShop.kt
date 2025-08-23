@@ -1,10 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -25,14 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -68,7 +60,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.Place
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -86,7 +77,8 @@ fun AddShopScreen(navController: NavController) {
     var shopName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var shopDescription by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Select category") }
+    var shopCategory by remember { mutableStateOf("Select category") }
+    var shopAddress by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var isError by remember { mutableStateOf(false) }
 
@@ -94,7 +86,10 @@ fun AddShopScreen(navController: NavController) {
     var isPickingLocation by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
-    val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
+    val isFormValid = shopName.isNotBlank() &&
+            shopCategory != "Select category" &&
+            phoneNumber.length == 10 &&
+            shopAddress.isNotBlank()
 
     val context = LocalContext.current
     val userDataStore = remember { UserDataStore(context) }
@@ -267,7 +262,7 @@ fun AddShopScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = selectedCategory,
+                    value = shopCategory,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = {
@@ -297,7 +292,7 @@ fun AddShopScreen(navController: NavController) {
                         DropdownMenuItem(
                             text = { Text(text = category) },
                             onClick = {
-                                selectedCategory = category
+                                shopCategory = category
                                 expanded = false
                             }
                         )
@@ -422,8 +417,9 @@ fun AddShopScreen(navController: NavController) {
             if (isPickingLocation) {
                 FullScreenMapPickerDialog(
                     initialLocation = selectedLocation,
-                    onLocationConfirmed = { location ->
+                    onLocationConfirmed = { location, address ->
                         selectedLocation = location
+                        shopAddress = address
                         isPickingLocation = false
                     },
                     onDismiss = { isPickingLocation = false }
@@ -468,7 +464,6 @@ fun AddShopScreen(navController: NavController) {
                     unfocusedBorderColor = if (isError) Color.Red else Color(0xFFE5E5E5)
                 ),
                 shape = RoundedCornerShape(8.dp),
-                maxLines = 4,
                 isError = isError
             )
 
@@ -487,11 +482,13 @@ fun AddShopScreen(navController: NavController) {
                 onClick = { navController.navigate("main_graph"){
                     popUpTo("login_route") { inclusive = true }
                 } },
+                enabled = isFormValid,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {

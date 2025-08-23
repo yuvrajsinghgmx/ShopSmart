@@ -11,7 +11,8 @@ class ShopSmartApp : Application(){
         super.onCreate()
         FirebaseApp.initializeApp(this)
         if (!Places.isInitialized()) {
-            Places.initialize(this, "")
+            Places.initializeWithNewPlacesApiEnabled(this, BuildConfig.MAPS_API_KEY)
         }
+        Places.createClient(this)
     }
 }
