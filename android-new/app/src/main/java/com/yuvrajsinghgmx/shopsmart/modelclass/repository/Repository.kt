@@ -1,6 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.modelclass.repository
 
 import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
+import com.yuvrajsinghgmx.shopsmart.modelclass.Review
+import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
 import com.yuvrajsinghgmx.shopsmart.modelclass.User
 import java.util.UUID
@@ -437,5 +440,38 @@ class Repository @Inject constructor() {
                 longitude = 77.2099
             ))
         )
+    }
+
+    fun getReviewsFor(target: ReviewTarget): Pair<RatingSummary, List<Review>> {
+        return when (target) {
+            is ReviewTarget.Product -> getProductReviews()
+            is ReviewTarget.Shop -> getShopReviews()
+        }
+    }
+
+    private fun getShopReviews(): Pair<RatingSummary, List<Review>> {
+        val summary = RatingSummary(
+            average = 4.5,
+            totalRatings = 112,
+            distribution = mapOf(5 to 70, 4 to 20, 3 to 10, 2 to 5, 1 to 0)
+        )
+        val reviews = listOf(
+            Review("1", "Sarah M.", "", 5, "Great service and amazing products!", "2025-08-15T10:30:00Z", 24),
+            Review("2", "Michael R.", "", 4, "Good selection of items and competitive prices.", "2025-08-20T15:00:00Z", 18),
+            Review("3", "Emma L.", "", 5, "Excellent experience! Exactly what I was looking for.", "2025-08-20T15:00:00Z", 15))
+        return summary to reviews
+    }
+
+    fun getProductReviews(): Pair<RatingSummary, List<Review>> {
+        val summary = RatingSummary(
+            average = 4.5,
+            totalRatings = 112,
+            distribution = mapOf(5 to 70, 4 to 20, 3 to 10, 2 to 5, 1 to 0)
+        )
+        val reviews = listOf(
+            Review("1", "Sarah M.", "", 5, "Great service and amazing products!", "2025-08-15T10:30:00Z", 24),
+            Review("2", "Michael R.", "", 4, "Good selection of items and competitive prices.", "2025-08-20T15:00:00Z", 18),
+            Review("3", "Emma L.", "", 5, "Excellent experience! Exactly what I was looking for.", "2025-08-20T15:00:00Z", 15))
+        return summary to reviews
     }
 }
