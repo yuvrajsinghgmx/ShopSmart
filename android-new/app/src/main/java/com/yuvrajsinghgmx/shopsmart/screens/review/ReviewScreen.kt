@@ -46,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.request.ImageRequest
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
@@ -57,7 +58,7 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.LightGreyy
 import com.yuvrajsinghgmx.shopsmart.ui.theme.TextPrimary
 
 @Composable
-fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel()) {
+fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel(),navController: NavController) {
     val summary by viewModel.summary.collectAsState()
     val reviews by viewModel.reviews.collectAsState(emptyList())
 
@@ -66,7 +67,7 @@ fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel()) {
             .fillMaxSize()
             .padding(top = 13.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
     ) {
-        TopBar()
+        TopBar(navController)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 10.dp)
@@ -98,7 +99,7 @@ fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +113,7 @@ fun TopBar() {
         )
 
         IconButton(
-            onClick = { },
+            onClick = {navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
             Icon(
