@@ -19,23 +19,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'username', 'phone_number']
 
 
-class UserRoleSerializer(serializers.Serializer):
-    role = serializers.ChoiceField(choices=User.Role.choices)
-
-
 class UserOnboardingSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'full_name', 'profile_image', 'current_address', 
-            'latitude', 'longitude', 'location_radius_km'
+            'role', 'full_name', 'profile_image', 'current_address', 
+            'latitude', 'longitude', 'location_radius_km', 'onboarding_completed'
         ]
-    
+
+    def validate(self, data):
+        # Ensure role cannot be changed after onboarding is complete.
+        if self.instance and self.instance.onboarding_completed:
+            if 'role' in data:
+                raise serializers.ValidationError({"role": "Role cannot be changed after onboarding is complete."})
+        return data
+
     def update(self, instance, validated_data):
-        instance = super().update(instance, validated_data)
-        instance.onboarding_completed = True
-        instance.save()
-        return instance
+        validated_data['onboarding_completed'] = True
+        return super().update(instance, validated_data)
 
 
 class ShopSerializer(serializers.ModelSerializer):

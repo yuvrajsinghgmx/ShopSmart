@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -14,7 +15,7 @@ from .permissions import (
     IsOwnerOfApprovedShop, IsAdmin
 )
 from .serializers import (
-    ProductSerializer, ProductDetailSerializer, UserRoleSerializer, 
+    ProductSerializer, ProductDetailSerializer, 
     UserProfileSerializer, ShopSerializer, ShopDetailSerializer, 
     UserOnboardingSerializer, ShopReviewSerializer, ProductReviewSerializer,
     FavoriteShopSerializer, FavoriteProductSerializer,
@@ -24,26 +25,6 @@ from .models import Product, Shop, ShopReview, ProductReview, FavoriteShop, Favo
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
-
-
-
-class SetUserRoleView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        
-        role_serializer = UserRoleSerializer(data=request.data)
-        if role_serializer.is_valid():
-            new_role = role_serializer.validated_data['role']
-            
-            user.role = new_role
-            user.save()
-            
-            profile_serializer = UserProfileSerializer(user)
-            return Response(profile_serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(role_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -114,7 +95,6 @@ class ApiRootView(APIView):
                 'firebase_auth': f"{base}/api/auth/firebase/",
                 'token_refresh': f"{base}/api/auth/refresh/",
                 'logout': f"{base}/api/auth/logout/",
-                'set_user_role': f"{base}/api/profile/set-role/",
                 
                 # Shop Endpoints
                 'shops_list': f"{base}/api/shops/",
