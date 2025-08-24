@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('mainapp.urls')),  # API root at '/'
-    path('api/', include('mainapp.urls')),  # API also available under '/api/'
+    path('', include('mainapp.urls')),
+    path('api/', include('mainapp.urls')),
 ]
 
 if settings.DEBUG:

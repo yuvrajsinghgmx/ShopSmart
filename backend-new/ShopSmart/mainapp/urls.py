@@ -22,7 +22,8 @@ from .views import (
     
 
     ProductListCreateView, ShopListCreateView, 
-    OnboardingView, ApiRootView
+    OnboardingView, ApiRootView,
+    health_check,
 )
 
 
@@ -65,5 +66,7 @@ urlpatterns = [
     path('admin/shops/', AdminShopsListView.as_view(), name='admin-shops-list'),
     path('admin/shops/pending/', AdminPendingShopsView.as_view(), name='admin-pending-shops'),
     path('admin/shops/<int:pk>/approve/', ApproveShopView.as_view(), name='approve-shop'),
+
+    path('health/', health_check, name='health-check'),
     
 ]
