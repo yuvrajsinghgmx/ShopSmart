@@ -13,7 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-
+local.defaults.properties
 # Kotlin specific
 *.kotlin_module
 *.class
