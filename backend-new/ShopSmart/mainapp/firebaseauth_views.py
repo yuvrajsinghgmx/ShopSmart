@@ -49,7 +49,7 @@ class FirebaseAuthView(APIView):
                     "phone_number": phone,
                     "name": full_name,
                     "role": role,
-                    "profile_pic": getattr(user, "profile_image", None).url if getattr(user, "profile_image", None) else None,
+                    "profile_pic": user.profile_image,
                     "is_new_user": is_new_user
                 }
             }, status=status.HTTP_200_OK)

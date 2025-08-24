@@ -15,7 +15,7 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     full_name = models.CharField(max_length=150, blank=True)
-    profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    profile_image = models.URLField(max_length=1024, null=True, blank=True)
     current_address = models.TextField(blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)

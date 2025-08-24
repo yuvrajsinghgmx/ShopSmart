@@ -20,12 +20,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserOnboardingSerializer(serializers.ModelSerializer):
+    profile_image_upload = serializers.ImageField(write_only=True, required=False, allow_null=True)
+
     class Meta:
         model = User
         fields = [
             'role', 'full_name', 'profile_image', 'current_address', 
-            'latitude', 'longitude', 'location_radius_km', 'onboarding_completed'
+            'latitude', 'longitude', 'location_radius_km', 'onboarding_completed',
+            'profile_image_upload'
         ]
+        extra_kwargs = {
+            'profile_image': {'read_only': True}
+        }
 
     def validate(self, data):
         # Ensure role cannot be changed after onboarding is complete.
@@ -35,6 +41,22 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        image_file = validated_data.pop('profile_image_upload', None)
+        
+        if image_file:
+            firebase_manager = FirebaseStorageManager()
+            
+            # Delete old image from Firebase if it exists
+            if instance.profile_image:
+                firebase_manager.delete_multiple_images([instance.profile_image])
+            
+            # Upload new image and get the URL
+            image_urls = firebase_manager.upload_multiple_images(
+                [image_file], 'profiles', 1
+            )
+            if image_urls:
+                instance.profile_image = image_urls[0]
+
         validated_data['onboarding_completed'] = True
         return super().update(instance, validated_data)
 
