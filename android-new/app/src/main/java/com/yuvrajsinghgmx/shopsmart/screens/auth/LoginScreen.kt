@@ -63,14 +63,15 @@ import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: SharedAppViewModel ,
+    viewModel: SharedAppViewModel,
     onLogInSuccess: (Boolean) -> Unit,
-    AuthPrefs: AuthPrefs
+    authPrefs: AuthPrefs
 ) {
     val authState by viewModel.authState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -80,12 +81,11 @@ fun LoginScreen(
     var otp by remember { mutableStateOf("") }
     var showOtpField by remember { mutableStateOf(false) }
 
-    val initialTime = 120 // 2 minutes
+    val initialTime = 120
     var ticks by remember { mutableIntStateOf(initialTime) }
     var isTimerRunning by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-
     val activity = context as? ComponentActivity
 
     val isLoading = authState is AuthState.Loading
@@ -98,7 +98,7 @@ fun LoginScreen(
                 scope.launch { snackbarHostState.showSnackbar("OTP Sent!") }
             }
             is AuthState.AuthSuccess -> {
-                AuthPrefs.saveAuthData(
+                authPrefs.saveAuthData(
                     accessToken = state.djangoAuthResponse.access,
                     refreshToken = state.djangoAuthResponse.refresh,
                     userId = state.djangoAuthResponse.user.id,
@@ -109,7 +109,10 @@ fun LoginScreen(
                 )
                 onLogInSuccess(state.djangoAuthResponse.user.isNewUser)
             }
-
+            is AuthState.firebaseAuthSuccess -> {
+                scope.launch { snackbarHostState.showSnackbar("Verified automatically!") }
+                onLogInSuccess(false)
+            }
             is AuthState.Error -> {
                 scope.launch { snackbarHostState.showSnackbar(state.message) }
             }
@@ -122,7 +125,7 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(key1 = isTimerRunning) {
+    LaunchedEffect(isTimerRunning) {
         if (isTimerRunning) {
             while (ticks > 0) {
                 delay(1000)
@@ -144,6 +147,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // 🔹 Logo
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -160,27 +164,30 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                if (!showOtpField) "Enter your mobile number to continue" else "We've sent a code to your number",
+                if (!showOtpField) "Enter your mobile number to continue"
+                else "We've sent a code to your number",
                 style = ShopSmartTypography.bodyLarge,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(24.dp))
 
+            Spacer(Modifier.height(24.dp))
             if (!showOtpField) {
                 PhoneInputSection(phoneNumber, { phoneNumber = it }, !isLoading)
             } else {
                 OtpInputSection(otp, { otp = it }, !isLoading)
             }
-            Spacer(Modifier.height(16.dp))
 
+            Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
                     if (!showOtpField) {
                         if (activity != null) {
                             viewModel.sendInitialOtp("+91$phoneNumber", activity)
                         } else {
-                            scope.launch { snackbarHostState.showSnackbar("Error: Could not perform action.") }
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Error: Could not perform action.")
+                            }
                         }
                     } else {
                         viewModel.verifyOtp(otp)
@@ -191,7 +198,7 @@ fun LoginScreen(
                     .padding(horizontal = 16.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = !isLoading
+                enabled = !isLoading && (!showOtpField || otp.isNotEmpty())
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -207,11 +214,22 @@ fun LoginScreen(
                     )
                 }
             }
-            Spacer(Modifier.height(24.dp))
 
+            Spacer(Modifier.height(24.dp))
             if (showOtpField) {
-                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                    TextButton(onClick = { viewModel.resetState() }, enabled = !isLoading) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    Arrangement.SpaceBetween,
+                    Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = {
+                            viewModel.resetState()
+                            ticks = initialTime
+                            isTimerRunning = false
+                        },
+                        enabled = !isLoading
+                    ) {
                         Text("Change Number")
                     }
                     TextButton(
@@ -228,14 +246,18 @@ fun LoginScreen(
                         val seconds = ticks % 60
                         Text(
                             if (isTimerRunning) "Resend OTP in ${
-                                String.format(
-                                    "%02d:%02d",
-                                    minutes,
-                                    seconds
-                                )
+                                String.format(Locale.US,"%02d:%02d", minutes, seconds)
                             }" else "Resend OTP"
                         )
                     }
+                }
+                if (isLoading) {
+                    Text(
+                        "Verifying automatically…",
+                        style = ShopSmartTypography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
             } else {
                 Text(

@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
 DEBUG = False
-ENVIRONMENT = os.getenv("ENVIRONMENT", "production").lower()
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
 
 AUTH_USER_MODEL = "mainapp.User"
 

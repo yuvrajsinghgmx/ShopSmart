@@ -40,6 +40,32 @@ class FirebaseAuthView(APIView):
                 is_new_user = True
 
             refresh = RefreshToken.for_user(user)
+            favorite_shops = []
+            for fav_shop in user.favorite_shops.select_related('shop').all():
+                shop = fav_shop.shop
+                favorite_shops.append({
+                    "id": shop.id,
+                    "shop_id": getattr(shop, "shop_id", None),
+                    "name": shop.name,
+                    "images": getattr(shop, "images", []),
+                    "address": shop.address,
+                    "category": shop.category,
+                    "description": shop.description,
+                    "is_approved": getattr(shop, "is_approved", None),
+                })
+            favorite_products = []
+            for fav_product in user.favorite_products.select_related('product').all():
+                product = fav_product.product
+                favorite_products.append({
+                    "id": product.id,
+                    "product_id": getattr(product, "product_id", None),
+                    "name": product.name,
+                    "images": getattr(product, "images", []),
+                    "price": str(product.price),
+                    "category": product.category,
+                    "description": product.description,
+                    "stock_quantity": product.stock_quantity,
+                })
 
             return Response({
                 "access": str(refresh.access_token),

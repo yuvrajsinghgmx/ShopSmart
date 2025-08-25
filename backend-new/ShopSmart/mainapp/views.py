@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 import logging
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -470,3 +471,7 @@ class ApproveShopView(generics.UpdateAPIView):
             }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+def health_check(request):
+    return JsonResponse({'ok': True})

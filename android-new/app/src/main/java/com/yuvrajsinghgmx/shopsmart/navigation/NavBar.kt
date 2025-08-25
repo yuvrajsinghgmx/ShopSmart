@@ -58,7 +58,7 @@ fun AppNavHost(
                 },
                 modifier = Modifier,
                 viewModel = sharedAppViewModel,
-                AuthPrefs = sharedAppViewModel.authPrefs,
+                authPrefs = sharedAppViewModel.authPrefs,
             )
         }
 
