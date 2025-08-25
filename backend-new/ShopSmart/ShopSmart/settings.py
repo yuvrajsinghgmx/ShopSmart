@@ -17,6 +17,8 @@ AUTH_USER_MODEL = "mainapp.User"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 FIREBASE_STORAGE_BUCKET = os.getenv('FIREBASE_STORAGE_BUCKET', 'shopsmartgmx.firebasestorage.app')
+FIREBASE_CREDENTIALS_JSON = os.getenv('FIREBASE_CREDENTIALS_JSON')
+
 
 # Image Upload Configuration
 SHOP_IMAGE_LIMIT = int(os.getenv('SHOP_IMAGE_LIMIT', 3))
@@ -36,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'rest_framework_simplejwt.token_blacklist',
-    'mainapp',
+    'mainapp.apps.MainappConfig', # Use full path to ensure ready() is called
 ]
 
 MIDDLEWARE = [

@@ -36,29 +36,42 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # Ensure role cannot be changed after onboarding is complete.
         if self.instance and self.instance.onboarding_completed:
-            if 'role' in data:
+            if 'role' in data and self.instance.role != data['role']:
                 raise serializers.ValidationError({"role": "Role cannot be changed after onboarding is complete."})
         return data
 
     def update(self, instance, validated_data):
+        # Pop the image file from validated_data so super().update doesn't see it.
         image_file = validated_data.pop('profile_image_upload', None)
-        
+        instance = super().update(instance, validated_data)
+
         if image_file:
             firebase_manager = FirebaseStorageManager()
             
             # Delete old image from Firebase if it exists
             if instance.profile_image:
-                firebase_manager.delete_multiple_images([instance.profile_image])
+                firebase_manager.delete_image(instance.profile_image)
             
-            # Upload new image and get the URL
-            image_urls = firebase_manager.upload_multiple_images(
-                [image_file], 'profiles', 1
+            # Upload the new image and get its public URL.
+            image_url = firebase_manager.upload_image(
+                image_file=image_file, 
+                folder='profiles'
             )
-            if image_urls:
-                instance.profile_image = image_urls[0]
+            
+            # If the upload was successful, update the profile_image field on the instance.
+            if image_url:
+                instance.profile_image = image_url
+                # **THIS IS THE CRITICAL FIX:**
+                # We must explicitly save the instance again to persist the profile_image change.
+                # We use `update_fields` for efficiency, so it only hits the database for this one column.
+                instance.save(update_fields=['profile_image'])
+        
+        # The user's onboarding is now considered complete after any update.
+        if not instance.onboarding_completed:
+            instance.onboarding_completed = True
+            instance.save(update_fields=['onboarding_completed'])
 
-        validated_data['onboarding_completed'] = True
-        return super().update(instance, validated_data)
+        return instance
 
 
 class ShopSerializer(serializers.ModelSerializer):
