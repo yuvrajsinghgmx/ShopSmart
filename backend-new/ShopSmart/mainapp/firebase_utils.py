@@ -1,11 +1,9 @@
 import os
 import uuid
 from typing import List, Optional
-from django.conf import settings
-import firebase_admin
-from firebase_admin import credentials, storage
+from firebase_admin import storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
-from .firebase_init import cred 
+
 
 class FirebaseStorageManager:
     """
@@ -13,16 +11,14 @@ class FirebaseStorageManager:
     """
     
     def __init__(self):
-        if not firebase_admin._apps:
-            # Initialize Firebase Admin SDK using credentials from settings
-            if settings.FIREBASE_CREDENTIALS:
-                firebase_admin.initialize_app(cred, {
-                    'storageBucket': settings.FIREBASE_STORAGE_BUCKET
-                })
-            else:
-                raise ValueError("Firebase credentials not found in settings")
-        
-        self.bucket = storage.bucket()
+        """
+        Initializes the Firebase Storage Manager.
+        The Firebase app should be initialized on app startup via mainapp/apps.py.
+        """
+        try:
+            self.bucket = storage.bucket()
+        except Exception as e:
+            raise RuntimeError(f"Failed to get Firebase storage bucket. Is the app initialized? Error: {e}")
     
     def upload_image(self, image_file, folder: str, max_size_mb: int = 5) -> Optional[str]:
         """
@@ -125,13 +121,13 @@ class FirebaseStorageManager:
         """
         try:
             # Parse the URL to extract blob name
-            # Format: https://storage.googleapis.com/{bucket}/o/{blob_name}?alt=media&token={token}
-            if 'googleapis.com' in image_url and '/o/' in image_url:
-                blob_part = image_url.split('/o/')[1]
-                blob_name = blob_part.split('?')[0]
-                # URL decode the blob name
+            # Format: https://storage.googleapis.com/{bucket_name}/o/{blob_name}?alt=media
+            # A more robust way to parse, avoids issues with tokens
+            if f'storage.googleapis.com/{self.bucket.name}/' in image_url:
+                # The blob name is everything after the bucket name, url-encoded
+                blob_name_encoded = image_url.split(f'{self.bucket.name}/')[1].split('?')[0]
                 import urllib.parse
-                return urllib.parse.unquote(blob_name)
+                return urllib.parse.unquote(blob_name_encoded)
         except Exception:
             pass
         return None
