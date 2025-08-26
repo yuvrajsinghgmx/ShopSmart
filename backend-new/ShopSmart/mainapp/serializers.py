@@ -105,7 +105,7 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'id', 'shop_id', 'name', 'images', 'address', 'category', 
-            'description', 'is_approved', 'owner_name', 'distance', 
+            'description', 'is_approved', 'owner_name', 'distance', "shop_type",
             'is_favorite', 'reviews_count', 'average_rating', 'created_at',
             # Write-only fields
             'image_uploads', 'document_uploads', 'latitude', 'longitude'
@@ -204,7 +204,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'product_id', 'name', 'price', 'description', 'category', 
+            'id', 'product_id', 'name', 'price', 'description', 'category', "product_type",
             'stock_quantity', 'images', 'shop_name', 'shop_id', 'is_favorite',
             'reviews_count', 'average_rating', 'created_at',
             # Write-only fields
