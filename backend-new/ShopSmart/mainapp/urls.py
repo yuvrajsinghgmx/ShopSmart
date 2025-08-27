@@ -1,5 +1,3 @@
-# Complete updated urls.py
-
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -7,7 +5,7 @@ from .firebaseauth_views import FirebaseAuthView, LogoutView
 from .views import (
     # Core views
     LoadHomeView, ShopDetailView, ProductDetailView,
-    PostShopReviewView, PostProductReviewView,
+    PostShopReviewView, PostProductReviewView, ChoicesView,
     
     # Favorites
     FavoriteShopsView, FavoriteProductsView, 
@@ -33,6 +31,7 @@ urlpatterns = [
     # Core endpoints
     path('load/', LoadHomeView.as_view(), name='load-home'),
     path('onboarding/', OnboardingView.as_view(), name='onboarding'),
+    path("choices/", ChoicesView.as_view(), name="choices"),
     
     # Auth endpoints
     path("auth/firebase/", FirebaseAuthView.as_view(), name="firebase-auth"),

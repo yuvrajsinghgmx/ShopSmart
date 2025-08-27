@@ -1,10 +1,11 @@
+import string
+import random
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as gis_models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-import string
-import random
+from .choices import ShopTypes, ProductTypes
 
 
 class User(AbstractUser):
@@ -48,6 +49,8 @@ class Shop(models.Model):
     shop_id = models.CharField(max_length=20, unique=True, editable=False)  
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shops")
     name = models.CharField(max_length=100)
+
+    shop_type = models.CharField(max_length=50, choices=ShopTypes.choices)
     
     images = models.JSONField(default=list, help_text="List of image URLs from Firebase Storage")
     
@@ -92,6 +95,8 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     category = models.CharField(max_length=50)
     stock_quantity = models.PositiveIntegerField(default=0)
+
+    product_type = models.CharField(max_length=50, choices=ProductTypes.choices)
     
     images = models.JSONField(default=list, help_text="List of image URLs from Firebase Storage")
     

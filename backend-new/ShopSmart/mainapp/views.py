@@ -1,5 +1,5 @@
-from django.http import JsonResponse
 import logging
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
+from .choices import ShopTypes, ProductTypes
 from .permissions import (
     IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner, 
     IsOwnerOfApprovedShop, IsAdmin
@@ -212,6 +213,15 @@ class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductDetailSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+
+
+class ChoicesView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        return Response({
+            "shop_types": [choice[0] for choice in ShopTypes.choices],
+            "product_types": [choice[0] for choice in ProductTypes.choices],
+        })
 
 
 class PostShopReviewView(generics.CreateAPIView):
