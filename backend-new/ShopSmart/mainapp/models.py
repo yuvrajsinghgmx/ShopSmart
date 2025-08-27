@@ -13,6 +13,7 @@ class User(AbstractUser):
         CUSTOMER = "CUSTOMER", _("Customer")
         SHOP_OWNER = "SHOP_OWNER", _("Shop Owner")
 
+    email = models.EmailField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     full_name = models.CharField(max_length=150, blank=True)
@@ -39,7 +40,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['username', 'email']
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return f"{self.username} ({self.role})"
@@ -61,6 +62,8 @@ class Shop(models.Model):
     location = gis_models.PointField()
     category = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
+    
+    position = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(3)])
     
     # Approval system
     is_approved = models.BooleanField(default=False)
@@ -98,6 +101,8 @@ class Product(models.Model):
 
     product_type = models.CharField(max_length=50, choices=ProductTypes.choices)
     
+    position = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(3)])
+
     images = models.JSONField(default=list, help_text="List of image URLs from Firebase Storage")
     
     created_at = models.DateTimeField(auto_now_add=True)
