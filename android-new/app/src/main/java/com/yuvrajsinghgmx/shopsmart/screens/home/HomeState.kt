@@ -12,5 +12,6 @@ data class HomeState(
     val shops: List<Shop> = emptyList(),
     val nearbyShops: List<Shop> = emptyList(),
     val searchQuery: String? = null,
-    val searchResults: List<SearchResult> = emptyList()
+    val searchResults: List<SearchResult> = emptyList(),
+    val selectedCategory: String = "All"
 )
