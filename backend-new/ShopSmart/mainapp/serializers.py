@@ -12,11 +12,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'phone_number', 'role', 'full_name', 
+            'id', 'username', 'phone_number', 'email', 'role', 'full_name', 
             'profile_image', 'current_address', 'latitude', 'longitude', 
             'location_radius_km', 'onboarding_completed'
         ]
-        read_only_fields = ['id', 'username', 'phone_number']
+        read_only_fields = ['id', 'username', 'phone_number', 'role']
 
 
 class UserOnboardingSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'role', 'full_name', 'profile_image', 'current_address', 
+            'role', 'full_name', 'email', 'profile_image', 'current_address', 
             'latitude', 'longitude', 'location_radius_km', 'onboarding_completed',
             'profile_image_upload'
         ]
@@ -105,7 +105,7 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = [
             'id', 'shop_id', 'name', 'images', 'address', 'category', 
-            'description', 'is_approved', 'owner_name', 'distance', "shop_type",
+            'description', 'is_approved', 'owner_name', 'distance', "shop_type", 'position',
             'is_favorite', 'reviews_count', 'average_rating', 'created_at',
             # Write-only fields
             'image_uploads', 'document_uploads', 'latitude', 'longitude'
@@ -205,7 +205,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'product_id', 'name', 'price', 'description', 'category', "product_type",
-            'stock_quantity', 'images', 'shop_name', 'shop_id', 'is_favorite',
+            'stock_quantity', 'images', 'position', 'shop_name', 'shop_id', 'is_favorite',
             'reviews_count', 'average_rating', 'created_at',
             # Write-only fields
             'image_uploads'
