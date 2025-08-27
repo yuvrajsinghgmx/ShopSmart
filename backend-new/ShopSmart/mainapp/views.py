@@ -223,7 +223,7 @@ class ChoicesView(APIView):
             "product_types": [choice[0] for choice in ProductTypes.choices],
         })
 
-
+#region Review
 class PostShopReviewView(generics.CreateAPIView):
     """
     Post a review for a shop
@@ -258,6 +258,24 @@ class PostProductReviewView(generics.CreateAPIView):
         serializer.save(user=self.request.user, product=product)
 
 
+class ShopReviewsListView(generics.ListAPIView):
+    serializer_class = ShopReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        shop_pk = self.kwargs['shop_pk']
+        return ShopReview.objects.filter(shop__pk=shop_pk)
+
+
+class ProductReviewsListView(generics.ListAPIView):
+    serializer_class = ProductReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        product_pk = self.kwargs['product_pk']
+        return ProductReview.objects.filter(product__pk=product_pk)
+    
+#region Favorite
 class ToggleFavoriteShopView(APIView):
     """Add or remove a shop from favorites"""
     permission_classes = [IsAuthenticated]
@@ -430,7 +448,7 @@ class AdminShopsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
     
     def get_queryset(self):
-        return Shop.objects.filter(is_approved=True).select_related('owner')
+        return Shop.objects.select_related('owner')
 
 
 class AdminPendingShopsView(generics.ListAPIView):
@@ -453,7 +471,7 @@ class ApproveShopView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsAdmin]
     lookup_field = 'pk'
     
-    def update(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         shop = self.get_object()
         serializer = self.get_serializer(shop, data=request.data, partial=True)
         

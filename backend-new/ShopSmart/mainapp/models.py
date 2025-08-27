@@ -5,13 +5,10 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as gis_models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from .choices import ShopTypes, ProductTypes
+from .choices import ShopTypes, ProductTypes,Role
 
 
 class User(AbstractUser):
-    class Role(models.TextChoices):
-        CUSTOMER = "CUSTOMER", _("Customer")
-        SHOP_OWNER = "SHOP_OWNER", _("Shop Owner")
 
     email = models.EmailField(blank=True, null=True)
     phone_number = models.CharField(max_length=15, unique=True)
@@ -55,7 +52,6 @@ class Shop(models.Model):
     
     images = models.JSONField(default=list, help_text="List of image URLs from Firebase Storage")
     
-    # Document images for verification
     document_images = models.JSONField(default=list, help_text="List of document image URLs for shop verification")
     
     address = models.TextField()

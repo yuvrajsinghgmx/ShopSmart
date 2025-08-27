@@ -21,7 +21,7 @@ from .views import (
 
     ProductListCreateView, ShopListCreateView, 
     OnboardingView, ApiRootView,
-    health_check,
+    health_check,ShopReviewsListView, ProductReviewsListView
 )
 
 
@@ -43,11 +43,13 @@ urlpatterns = [
     path('shops/<int:pk>/', ShopDetailView.as_view(), name='shop-detail'),
     path('shops/<int:shop_pk>/products/', ProductListCreateView.as_view(), name='product-list-create'),
     path('shops/<int:shop_pk>/reviews/', PostShopReviewView.as_view(), name='post-shop-review'),
+    path('shops/<int:shop_pk>/get/reviews/',ShopReviewsListView.as_view(), name='get-shop-reviews'),
     path('shops/<int:shop_pk>/toggle-favorite/', ToggleFavoriteShopView.as_view(), name='toggle-favorite-shop'),
     
     # Product endpoints
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('products/<int:product_pk>/reviews/', PostProductReviewView.as_view(), name='post-product-review'),
+    path('products/<int:product_pk>/get/reviews/',ProductReviewsListView.as_view(), name='get-product-reviews'),
     path('products/<int:product_pk>/toggle-favorite/', ToggleFavoriteProductView.as_view(), name='toggle-favorite-product'),
     
     # Favorites endpoints

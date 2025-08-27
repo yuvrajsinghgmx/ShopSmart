@@ -78,8 +78,10 @@ class IsAdmin(BasePermission):
     Permission for admin users only
     """
     def has_permission(self, request, view):
+        user = request.user
         return (
-            request.user.is_authenticated and 
-            request.user.is_staff and 
-            request.user.is_superuser
+            user.is_authenticated and (
+                user.is_superuser or
+                getattr(user, 'role', None) == User.Role.ADMIN
+            )
         )
