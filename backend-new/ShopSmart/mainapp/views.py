@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
+from django.contrib.gis.db.models.functions import Distance as GisDbDistance
 from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -158,19 +159,25 @@ class LoadHomeView(APIView):
             # Create user location point
             user_location = Point(user.longitude, user.latitude, srid=4326)
             
-            # Find nearby approved shops within user's radius
-            nearby_shops = Shop.objects.filter(
-                is_approved=True,
-                location__distance_lte=(user_location, Distance(km=user.location_radius_km))
-            ).select_related('owner').prefetch_related('products')
+            base_shops_qs = Shop.objects.filter(is_approved=True).annotate(distance=GisDbDistance('location', user_location)).select_related('owner').prefetch_related('products')
+
+            nearby_shops = base_shops_qs.filter(location__distance_lte=(user_location, Distance(km=user.location_radius_km))).order_by('distance')
+            
+            shops_to_process = list(nearby_shops)
+            
+            if shops_to_process:
+                message = f'Found {len(shops_to_process)} shops nearby'
+            else:
+                shops_to_process = list(base_shops_qs.order_by('distance')[:10])
+                message = 'No shops found in your radius. Showing the 10 nearest shops instead.'
             
             # Serialize shops with their products
             shops_data = []
-            for shop in nearby_shops:
+            for shop in shops_to_process:
                 shop_serializer = ShopSerializer(shop, context={'request': request})
                 
-                # Get products for this shop
-                products = shop.products.all()[:10]  # Limit to 10 products per shop
+                # Get all products for this shop
+                products = shop.products.all()
                 products_data = ProductSerializer(products, many=True, context={'request': request}).data
                 
                 shop_data = shop_serializer.data
@@ -178,7 +185,7 @@ class LoadHomeView(APIView):
                 shops_data.append(shop_data)
             
             return Response({
-                'message': f'Found {len(shops_data)} shops nearby',
+                'message': message,
                 'user_location': {
                     'latitude': user.latitude,
                     'longitude': user.longitude,

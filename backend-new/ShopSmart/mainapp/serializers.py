@@ -114,6 +114,9 @@ class ShopSerializer(serializers.ModelSerializer):
 
     def get_distance(self, obj):
         """Calculate distance from user's location"""
+        if hasattr(obj, 'distance') and obj.distance is not None:
+            return round(obj.distance.km, 2)
+
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             user = request.user
