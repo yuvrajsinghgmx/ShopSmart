@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.auth.state
 
 import com.google.firebase.auth.PhoneAuthProvider
-import com.yuvrajsinghgmx.shopsmart.modelclass.DjangoAuthResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.DjangoAuthResponse
 
 sealed class AuthState {
     object Idle : AuthState()
@@ -16,6 +16,4 @@ sealed class AuthState {
 
     object firebaseAuthSuccess : AuthState()
     data class Error(val message: String) : AuthState()
-    object newUser : AuthState()
-    object existingUser : AuthState()
 }

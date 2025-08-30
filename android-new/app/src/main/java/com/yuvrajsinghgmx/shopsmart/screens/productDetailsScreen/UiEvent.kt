@@ -1,6 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen
 
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 sealed class UiEvent {
     data class ShareProduct(val product: Product) : UiEvent()

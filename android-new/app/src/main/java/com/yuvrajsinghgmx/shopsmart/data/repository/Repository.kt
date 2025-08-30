@@ -1,11 +1,11 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass.repository
+package com.yuvrajsinghgmx.shopsmart.data.repository
 
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
-import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
-import com.yuvrajsinghgmx.shopsmart.modelclass.Review
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
-import com.yuvrajsinghgmx.shopsmart.modelclass.User
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.RatingSummary
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Review
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
 import java.util.UUID
 import javax.inject.Inject
 

@@ -14,12 +14,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.screens.AddShopScreen
-import com.yuvrajsinghgmx.shopsmart.screens.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
+import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -65,6 +65,7 @@ fun AppNavHost(
         composable("onboarding") {
             OnBoardingScreen(
                 navController = navController,
+                onboardingViewmodel = sharedAppViewModel
             )
         }
 

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 
 @Composable
 fun ShopCard(shop: Shop, onClick: () -> Unit) {

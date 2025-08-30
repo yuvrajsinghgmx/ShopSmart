@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
-import com.yuvrajsinghgmx.shopsmart.modelclass.Review
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.RatingSummary
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Review
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
+import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

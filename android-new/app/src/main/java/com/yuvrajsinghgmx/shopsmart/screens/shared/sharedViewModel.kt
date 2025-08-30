@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
-import com.yuvrajsinghgmx.shopsmart.modelclass.User
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepository
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
+import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
+import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
+import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,13 +18,32 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import retrofit2.HttpException
+import java.io.File
 
 @HiltViewModel
 class SharedAppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val onboardingRepository: OnboardingRepository,
     val authPrefs: AuthPrefs,
     private val repository: Repository
 ) : ViewModel() {
+
+//    init {
+//        pingServer()
+//    }
+//
+//    private fun pingServer() {
+//        viewModelScope.launch {
+//            try {
+//                val response = authRepository.pingServer()
+//                Log.d("AuthDebug", "Server response: $response")
+//            }catch (e: Exception){
+//                Log.e("AuthDebug", "Error pinging server: ${e.message}")
+//            }
+//        }
+//    }
+
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
     private val firebaseAuth = FirebaseAuth.getInstance()
@@ -80,11 +100,21 @@ class SharedAppViewModel @Inject constructor(
                 if (idToken != null) {
                     val response = authRepository.getDjangoToken(idToken)
                     Log.d("AuthDebug", "Django response: $response")
-                    _authState.value = AuthState.AuthSuccess(response)
+                    if (response.access.isBlank() || response.refresh.isBlank()) {
+                        Log.e("AuthDebug", "Missing tokens in response: $response")
+                        _authState.value = AuthState.Error("Login failed: missing tokens")
+                    }else {
+                        if (response.user.isNewUser) {
+                            _authState.value = AuthState.AuthSuccess(response)
+                        }
+                    }
                 } else {
                     _authState.value = AuthState.Error("Failed to retrieve Firebase ID token.")
                 }
             } catch (e: Exception) {
+                if (e is HttpException) {
+                    Log.e("AuthDebug", "HttpException: ${e.code()} - ${e.response()?.errorBody()?.string()}")
+                }
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
         }
@@ -103,4 +133,34 @@ class SharedAppViewModel @Inject constructor(
         authPrefs.clearAuthData()
         _authState.value = AuthState.Idle
     }
+
+    fun completeOnboarding(
+        role: String,
+        fullName: String,
+        address: String,
+        latitude: Double,
+        longitude: Double,
+        radius: Int,
+        imageFile: File?,
+        email: String
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = onboardingRepository.completeOnboarding(
+                    role = role,
+                    fullName = fullName,
+                    address = address,
+                    latitude = latitude,
+                    longitude = longitude,
+                    radius = radius,
+                    imageFile = imageFile,
+                    email = email
+                )
+                Log.d("AuthDebug", "Onboarding response: $response")
+            } catch (e: Exception) {
+                Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
+            }
+        }
+    }
+
 }

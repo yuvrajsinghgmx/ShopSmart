@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass
+package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 data class Product(
     val productId: Int,

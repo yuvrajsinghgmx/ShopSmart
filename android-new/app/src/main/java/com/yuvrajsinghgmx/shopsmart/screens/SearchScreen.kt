@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeEvent
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.MiniProductCard
