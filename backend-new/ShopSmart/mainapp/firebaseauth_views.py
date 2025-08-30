@@ -32,12 +32,8 @@ class FirebaseAuthView(APIView):
                 user.phone_number = phone
                 user.save()
 
-            full_name = user.get_full_name().strip()
+            full_name = user.full_name
             role = user.role
-
-            is_new_user = False
-            if not full_name or not role:
-                is_new_user = True
 
             refresh = RefreshToken.for_user(user)
             favorite_shops = []
@@ -76,7 +72,7 @@ class FirebaseAuthView(APIView):
                     "name": full_name,
                     "role": role,
                     "profile_pic": user.profile_image,
-                    "is_new_user": is_new_user
+                    "is_new_user": not user.onboarding_completed
                 }
             }, status=status.HTTP_200_OK)
 
