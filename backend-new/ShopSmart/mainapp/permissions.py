@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from django.contrib.auth import get_user_model
 from .models import Shop
+from .choices import Role
 
 User = get_user_model()
 
@@ -30,7 +31,7 @@ class IsShopOwnerRole(BasePermission):
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated and 
-            request.user.role == User.Role.SHOP_OWNER
+            request.user.role == Role.SHOP_OWNER 
         )
 
 
@@ -42,7 +43,7 @@ class IsApprovedShopOwner(BasePermission):
         if not request.user.is_authenticated:
             return False
         
-        if request.user.role != User.Role.SHOP_OWNER:
+        if request.user.role != Role.SHOP_OWNER:
             return False
             
         # Check if user has at least one approved shop
@@ -82,6 +83,6 @@ class IsAdmin(BasePermission):
         return (
             user.is_authenticated and (
                 user.is_superuser or
-                getattr(user, 'role', None) == User.Role.ADMIN
+                getattr(user, 'role', None) == Role.ADMIN
             )
         )
