@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.sharedprefs
+/*package com.yuvrajsinghgmx.shopsmart.sharedprefs
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -37,5 +37,5 @@ class UserDataStore(private val context: Context) {
 
         UserRegistration(fullName, email, role, uri)
     }
-}
+}*/
 

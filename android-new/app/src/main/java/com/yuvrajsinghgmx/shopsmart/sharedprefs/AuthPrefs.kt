@@ -3,6 +3,8 @@ package com.yuvrajsinghgmx.shopsmart.sharedprefs
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.yuvrajsinghgmx.shopsmart.modelclass.User
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,6 +16,8 @@ class AuthPrefs @Inject constructor(
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    private val gson = Gson()
 
     fun saveAuthData(
         accessToken: String,
@@ -46,5 +50,21 @@ class AuthPrefs @Inject constructor(
 
     fun clearAuthData() {
         prefs.edit { clear() }
+    }
+
+    fun saveUser(user: User) {
+        val json = gson.toJson(user)
+        prefs.edit().putString("user_data", json).apply()
+    }
+
+    fun getUser(): User? {
+        val json = prefs.getString("user_data", null)
+        return if (json != null) {
+            gson.fromJson(json, User::class.java)
+        } else null
+    }
+
+    fun clearUser() {
+        prefs.edit().remove("user_data").apply()
     }
 }

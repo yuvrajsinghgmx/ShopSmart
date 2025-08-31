@@ -65,12 +65,14 @@ fun AppNavHost(
         composable("onboarding") {
             OnBoardingScreen(
                 navController = navController,
+                authPrefs
             )
         }
 
         composable("addshop") {
             AddShopScreen (
                 navController = navController,
+                authPrefs
             )
         }
     }

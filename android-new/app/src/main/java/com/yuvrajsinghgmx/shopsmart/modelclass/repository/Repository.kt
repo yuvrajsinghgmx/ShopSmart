@@ -258,9 +258,9 @@ class Repository @Inject constructor() {
 
     fun getUserData(): User {
         return User(
-            userId = UUID.randomUUID().toString(),
+            userId = UUID.randomUUID().toString().toInt(),
             userName = "John Doe",
-            userPhoneNumber = 123456789,
+            userPhoneNumber = "123456789",
             userType = "Customer",
             savedProducts = listOf(
                 Product(

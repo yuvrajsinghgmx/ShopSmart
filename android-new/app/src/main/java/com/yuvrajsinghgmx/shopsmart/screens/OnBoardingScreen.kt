@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
@@ -50,19 +52,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.yuvrajsinghgmx.shopsmart.modelclass.UserRegistration
-import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore
+import com.yuvrajsinghgmx.shopsmart.modelclass.User
+import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
+/*import com.yuvrajsinghgmx.shopsmart.modelclass.UserRegistration
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore*/
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.PurpleGrey40
 import com.yuvrajsinghgmx.shopsmart.ui.theme.PurpleGrey80
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.util.UUID
 
 /*@Composable
 fun OnBoardingScreen(onFinish: () -> Unit) {
@@ -87,15 +90,16 @@ fun OnBoardingScreen(onFinish: () -> Unit) {
 @Composable
 fun OnBoardingScreen(
     navController: NavController,
+    authPrefs: AuthPrefs
 ) {
 
     val context = LocalContext.current
-    val userDataStore = remember { UserDataStore(context) }
+/*    val userDataStore = remember { UserDataStore(context) }*/
     val scope = rememberCoroutineScope()
 
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var selectedRole by remember { mutableStateOf<UserRole?>(null) }
+    var selectedRole by remember { mutableStateOf<String>("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     // Error states
@@ -215,16 +219,16 @@ fun OnBoardingScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RoleCard(
-                role = UserRole.CUSTOMER,
-                isSelected = selectedRole == UserRole.CUSTOMER,
-                onClick = { selectedRole = UserRole.CUSTOMER },
+                role = "Customer",
+                isSelected = selectedRole == "Customer",
+                onClick = { selectedRole = "Customer" },
                 modifier = Modifier.weight(1f)
             )
 
             RoleCard(
-                role = UserRole.SHOP_OWNER,
-                isSelected = selectedRole == UserRole.SHOP_OWNER,
-                onClick = { selectedRole = UserRole.SHOP_OWNER },
+                role = "Shopowner",
+                isSelected = selectedRole == "Shopowner",
+                onClick = { selectedRole = "Shopowner"},
                 modifier = Modifier.weight(1f)
             )
         }
@@ -287,29 +291,46 @@ fun OnBoardingScreen(
             onClick = {
 
                 nameError = fullName.isBlank()
-                roleError = selectedRole == null
+                roleError = false
                 emailError = email.isNotBlank() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-                if (!nameError && !roleError && !emailError && selectedRole != null) {
+                if (!nameError && !roleError && !emailError) {
                     // Create UserRegistration object
-                    val user = UserRegistration(
+     /*               val user = UserRegistration(
                         fullName = fullName.trim(),
                         email = email.takeIf { it.isNotBlank() },
                         role = selectedRole!!,
                         profileImageUri = imageUri?.toString()
+                    )*/
+
+                    val newUser = User(
+                        userId = UUID.randomUUID().toString().toInt(),
+                        userName = fullName.trim(),
+                        userType = selectedRole,
+                        profilePic = imageUri?.toString() ?: null,
+                        userPhoneNumber = ""
                     )
 
                     // Save to DataStore (async, lifecycle-aware)
-                    scope.launch(Dispatchers.IO) {
+/*                    scope.launch(Dispatchers.IO) {
                         userDataStore.saveUser(user)
-                    }
+                    }*/
+
+                    // Suppose you already have authPrefs injected or available
+                    authPrefs.saveUser(
+                       /* accessToken = authPrefs.getAccessToken(),   // replace with real one if you have it
+                        refreshToken = authPrefs.getRefreshToken(), // replace with real one*/
+                        user = newUser
+                    )
+
+
 
                     // Navigate to next screen
-                    if (selectedRole == UserRole.CUSTOMER) {
+                    if (selectedRole == "Customer") {
                         navController.navigate("main_graph") {
                             popUpTo("login_route") { inclusive = true }
                         }
-                    } else if (selectedRole == UserRole.SHOP_OWNER) {
+                    } else if (selectedRole == "Shopowner") {
                         navController.navigate("addshop"){
                             popUpTo("login_route") { inclusive = true }
                         }
@@ -346,13 +367,20 @@ fun OnBoardingScreen(
 
 @Composable
 fun RoleCard(
-    role: UserRole,
+    role: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val borderColor = if (isSelected) Color(0xFF6C5CE7) else Color(0xFFDDD6FE)
     val backgroundColor = if (isSelected) Color(0xFFF8F7FF) else Color.White
+
+    // Pick icon based on role
+    val icon = when (role) {
+        "Customer" -> Icons.Default.ShoppingBag
+        "Shopowner" -> Icons.Default.Person
+        else -> Icons.Default.Info // fallback if more roles added later
+    }
 
     Card(
         modifier = modifier
@@ -375,8 +403,8 @@ fun RoleCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = role.icon,
-                contentDescription = role.title,
+                imageVector = icon,
+                contentDescription = role, // dynamic description
                 tint = NavySecondary,
                 modifier = Modifier.size(32.dp)
             )
@@ -384,7 +412,7 @@ fun RoleCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = role.title,
+                text = role, // show the role name instead of fixed text
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = BackgroundDark,
@@ -394,10 +422,11 @@ fun RoleCard(
     }
 }
 
-enum class UserRole(val title: String, val icon: ImageVector) {
+
+/*enum class UserRole(val title: String, val icon: ImageVector) {
     CUSTOMER("Customer", Icons.Default.ShoppingBag),
     SHOP_OWNER("Shop Owner", Icons.Default.Store)
-}
+}*/
 
 /*@Preview(showBackground = true)
 @Composable

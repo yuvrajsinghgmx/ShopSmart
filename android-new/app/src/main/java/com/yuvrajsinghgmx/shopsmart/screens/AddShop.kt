@@ -66,14 +66,15 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
-import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
+/*import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore*/
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddShopScreen(navController: NavController) {
+fun AddShopScreen(navController: NavController, authPrefs: AuthPrefs) {
     var shopName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var shopDescription by remember { mutableStateOf("") }
@@ -86,27 +87,25 @@ fun AddShopScreen(navController: NavController) {
     var isPickingLocation by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
+    val user = remember { authPrefs.getUser() }
+
     val isFormValid = shopName.isNotBlank() &&
             shopCategory != "Select category" &&
             phoneNumber.length == 10 &&
             shopAddress.isNotBlank()
 
     val context = LocalContext.current
-    val userDataStore = remember { UserDataStore(context) }
-
-    val user by userDataStore.userFlow.collectAsState(initial = null)
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         imageUri = uri
     }
 
-    LaunchedEffect(user) {
+    LaunchedEffect(Unit) {
         user?.let {
-            Log.d("UserDataStore", "Full Name: ${it.fullName}")
-            Log.d("UserDataStore", "Email: ${it.email ?: "N/A"}")
-            Log.d("UserDataStore", "Role: ${it.role}")
-            Log.d("UserDataStore", "Profile URI: ${it.profileImageUri ?: "N/A"}")
-        } ?: Log.d("UserDataStore", "No user found")
+            Log.d("AddShopScreen", "User Name: ${it.userName}")
+            Log.d("AddShopScreen", "User Type: ${it.userType}")
+            Log.d("AddShopScreen", "Profile Image: ${it.profilePic}")
+        }
     }
 
     val categories = listOf(
