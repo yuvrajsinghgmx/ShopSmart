@@ -304,10 +304,10 @@ fun OnBoardingScreen(
                     )*/
 
                     val newUser = User(
-                        userId = UUID.randomUUID().toString().toInt(),
+                        userId = 0,
                         userName = fullName.trim(),
                         userType = selectedRole,
-                        profilePic = imageUri?.toString() ?: null,
+                        profilePic = imageUri?.toString(),
                         userPhoneNumber = ""
                     )
 
