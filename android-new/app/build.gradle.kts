@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.places)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.runtime)
+    implementation(libs.androidx.room.ktx)
     /*implementation(libs.secrets.gradle.plugin)*/
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -33,10 +33,10 @@ fun AppNavHost(
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
 
-    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank()) {
-        "main_graph"
-    } else {
+    val startDestination = if (authPrefs.getAccessToken().isNullOrBlank()) {
         "login_route"
+    } else {
+        "main_graph"
     }
 
     fun NavGraphBuilder.authGraph(
@@ -64,8 +64,12 @@ fun AppNavHost(
 
         composable("onboarding") {
             OnBoardingScreen(
-                navController = navController,
-                onboardingViewmodel = sharedAppViewModel
+                onboardingViewmodel = sharedAppViewModel,
+                onboardingComplete = {
+                    navController.navigate("main_graph") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
             )
         }
 

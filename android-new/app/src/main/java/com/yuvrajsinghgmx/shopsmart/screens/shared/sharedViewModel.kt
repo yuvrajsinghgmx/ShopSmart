@@ -4,6 +4,7 @@ import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
@@ -158,8 +159,12 @@ class SharedAppViewModel @Inject constructor(
                     email = email
                 )
                 Log.d("AuthDebug", "Onboarding response: $response")
+                if (response.onboardingCompleted){
+                    _authState.value = AuthState.onboardingSuccess
+                }
             } catch (e: Exception) {
                 Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
+                _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
         }
     }

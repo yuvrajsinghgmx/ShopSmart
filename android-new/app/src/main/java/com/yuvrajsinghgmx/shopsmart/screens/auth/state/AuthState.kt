@@ -16,4 +16,5 @@ sealed class AuthState {
 
     object firebaseAuthSuccess : AuthState()
     data class Error(val message: String) : AuthState()
+    object onboardingSuccess : AuthState()
 }
