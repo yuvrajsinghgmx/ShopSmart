@@ -18,10 +18,12 @@ from .views import (
     # Admin views
     AdminShopsListView, AdminPendingShopsView, ApproveShopView,
     
-
     ProductListCreateView, ShopListCreateView, 
     OnboardingView, ApiRootView,
-    health_check,ShopReviewsListView, ProductReviewsListView
+    health_check, ShopReviewsListView, ProductReviewsListView,
+
+    # views for helpful toggle
+    ToggleShopReviewHelpfulView, ToggleProductReviewHelpfulView,
 )
 
 
@@ -44,12 +46,14 @@ urlpatterns = [
     path('shops/<int:shop_pk>/products/', ProductListCreateView.as_view(), name='product-list-create'),
     path('shops/<int:shop_pk>/reviews/', PostShopReviewView.as_view(), name='post-shop-review'),
     path('shops/<int:shop_pk>/get/reviews/',ShopReviewsListView.as_view(), name='get-shop-reviews'),
+    path('shops/<int:shop_pk>/reviews/<int:review_pk>/toggle-helpful/', ToggleShopReviewHelpfulView.as_view(), name='toggle-shop-review-helpful'),
     path('shops/<int:shop_pk>/toggle-favorite/', ToggleFavoriteShopView.as_view(), name='toggle-favorite-shop'),
     
     # Product endpoints
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('products/<int:product_pk>/reviews/', PostProductReviewView.as_view(), name='post-product-review'),
     path('products/<int:product_pk>/get/reviews/',ProductReviewsListView.as_view(), name='get-product-reviews'),
+    path('products/<int:product_pk>/reviews/<int:review_pk>/toggle-helpful/', ToggleProductReviewHelpfulView.as_view(), name='toggle-product-review-helpful'),
     path('products/<int:product_pk>/toggle-favorite/', ToggleFavoriteProductView.as_view(), name='toggle-favorite-product'),
     
     # Favorites endpoints
