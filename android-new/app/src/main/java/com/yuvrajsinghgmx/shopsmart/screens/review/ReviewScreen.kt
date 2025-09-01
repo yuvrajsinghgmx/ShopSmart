@@ -19,8 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -52,48 +52,102 @@ import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
 import com.yuvrajsinghgmx.shopsmart.modelclass.Review
+import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
-import com.yuvrajsinghgmx.shopsmart.ui.theme.LightGreyy
 import com.yuvrajsinghgmx.shopsmart.ui.theme.TextPrimary
 
 @Composable
-fun ReviewScreen(viewModel: ReviewViewModel = hiltViewModel(),navController: NavController) {
-    val summary by viewModel.summary.collectAsState()
-    val reviews by viewModel.reviews.collectAsState(emptyList())
-
+fun ReviewScreen(
+    target: ReviewTarget,
+    viewModel: ReviewViewModel = hiltViewModel(),
+    navController: NavController
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(target) {
+        viewModel.loadReviews(
+            target
+        )
+    }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 13.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(top = 13.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
     ) {
         TopBar(navController)
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 10.dp)
+            modifier =
+                Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 10.dp)
         ) {
-            summary?.let {
-                item { RatingSummaryView(it) }
-            }
-            item { WriteReview(viewModel) }
-
-            item { ReviewTab(viewModel) }
-
-            items(reviews, key = { it.id }) { review ->
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    )
-                ) {
-                    ReviewItem(review)
+            when (uiState) {
+                is ReviewUiState.Loading -> {
+                    item {
+                        Text(
+                            text = "Loading reviews",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
 
+                is ReviewUiState.Error -> {
+                    item {
+                        Text(
+                            (uiState as ReviewUiState.Error).message,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                is ReviewUiState.Success -> {
+                    val summary = (uiState as ReviewUiState.Success).ratingSummary
+                    val reviews = (uiState as ReviewUiState.Success).reviews
+                    summary?.let {
+                        item {
+                            RatingSummaryView(it)
+                        }
+                    }
+                    item {
+                        WriteReview(
+                            viewModel,
+                            target
+                        )
+                    }
+                    item { ReviewTab(viewModel) }
+                    if (reviews.isEmpty()) {
+                        item {
+                            Text(
+                                text = "No Reviews yet",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else {
+                        items(reviews, key = { it.id }) { review ->
+                            Card(
+                                modifier = Modifier
+                                    .padding(
+                                        horizontal = 12.dp,
+                                        vertical = 6.dp
+                                    )
+                                    .fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                            ) { ReviewItem(review) }
+                        }
+                    }
+                }
             }
+
         }
     }
 }
@@ -111,10 +165,9 @@ fun TopBar(navController: NavController) {
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-
         IconButton(
-            onClick = {navController.popBackStack() },
-            modifier = Modifier.align(Alignment.CenterStart)
+            onClick =
+                { navController.popBackStack() }, modifier = Modifier.align(Alignment.CenterStart)
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBackIosNew,
@@ -132,13 +185,9 @@ fun RatingSummaryView(summary: RatingSummary) {
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
                 modifier = Modifier
                     .weight(0.3f)
@@ -151,55 +200,51 @@ fun RatingSummaryView(summary: RatingSummary) {
                 )
                 StarRating(summary.average.toFloat(), 5, 18.dp)
                 Text(
-                    text = "${summary.totalRatings} ratings",
-                    color = Color.Gray
+                    text = "${summary.totalRatings} ratings", color = Color.Gray
                 )
-
             }
             Column(
                 modifier = Modifier
                     .weight(0.7f)
                     .padding(5.dp)
             ) {
-                summary.distribution.toSortedMap(compareByDescending { it })
-                    .forEach { (star, percentage) ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        ) {
-                            Text(
-                                "$star★",
-                                color = TextPrimary,
-                                modifier = Modifier.width(25.dp)
-                            )
-                            LinearProgressIndicator(
-                                progress = percentage / 100f,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 8.dp)
-                                    .height(8.dp),
-                                color = GreenPrimary,
-                                trackColor = LightGreyy
-                            )
-                            Text(text = "$percentage%", modifier = Modifier.width(32.dp))
-                        }
+                summary.distribution.forEach { (star, percentage) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    ) {
+                        Text(
+                            "$star★",
+                            color = TextPrimary,
+                            modifier = Modifier.width(25.dp)
+                        )
+                        LinearProgressIndicator(
+                            progress =
+                                percentage / 100f,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 8.dp)
+                                .height(8.dp),
+                            color = GreenPrimary,
+                            trackColor = Color.LightGray
+                        )
+                        Text(text = "$percentage%", modifier = Modifier.width(32.dp))
                     }
+                }
             }
         }
     }
 }
 
 @Composable
-fun WriteReview(viewModel: ReviewViewModel) {
+fun WriteReview(viewModel: ReviewViewModel, target: ReviewTarget) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier.padding(10.dp),
@@ -209,45 +254,39 @@ fun WriteReview(viewModel: ReviewViewModel) {
                 text = "Write a Review",
                 style = MaterialTheme.typography.bodyLarge
             )
-            Row {
-                (1..5).forEach { index ->
-                    Icon(
-                        imageVector = if (index <= viewModel.rating) Icons.Default.Star
-                        else Icons.Default.StarOutline,
-                        contentDescription = "start $index",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clickable {
-                                //rating = index
-                                viewModel.onRatingSelected(index)
-                            }
-                    )
-                }
-            }
+            RatingSelector(viewModel.rating, viewModel::onRatingSelected)
             OutlinedTextField(
-                value = viewModel.reviewText,
-                onValueChange = { viewModel.onReviewTextChanged(it) },
-                placeholder = { Text("share your experience", color = Color.Gray) },
-                modifier = Modifier
+                value = viewModel.reviewText, onValueChange = {
+                    viewModel.onReviewTextChanged(
+                        it
+                    )
+                }, placeholder = {
+                    Text(
+                        "share your experience",
+                        color = Color.Gray
+                    )
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .height(130.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GreenPrimary,
-                    unfocusedBorderColor = Color.Gray
+                    focusedBorderColor = GreenPrimary, unfocusedBorderColor = Color.Gray
                 )
-
             )
             Button(
-                onClick = { viewModel.onSubmitReview() },
+                onClick = {
+                    viewModel.onSubmitReview(
+                        target
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = GreenPrimary
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
             ) {
-                Text("Post Review")
+                Text(
+                    "Post Review"
+                )
             }
         }
     }
@@ -262,24 +301,30 @@ fun ReviewTab(viewModel: ReviewViewModel) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Text(text = "All Reviews", style = MaterialTheme.typography.titleSmall)
+        Spacer(
+            modifier =
+                Modifier.width(10.dp)
+        )
         Text(
-            text = "All Reviews",
-            style = MaterialTheme.typography.titleSmall,
-
-            )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            text = "Most Recent",
+            text =
+                "Most Recent",
             style = MaterialTheme.typography.bodySmall,
             color = if (viewModel.selectedTab == "Most Recent") GreenPrimary else Color.Gray,
-            modifier = Modifier.clickable { viewModel.onTabSelected("Most Recent") }
-        )
+            modifier = Modifier.clickable {
+                viewModel.onTabSelected(
+                    "Most Recent"
+                )
+            })
         Text(
             text = "Most Helpful",
             color = if (viewModel.selectedTab == "Most Helpful") GreenPrimary else Color.Gray,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.clickable { viewModel.onTabSelected("Most Helpful") }
-        )
+            modifier = Modifier.clickable {
+                viewModel.onTabSelected(
+                    "Most Helpful"
+                )
+            })
     }
 }
 
@@ -291,14 +336,11 @@ fun ReviewItem(review: Review) {
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(review.userImage)
-                    .crossfade(true)
-                    .build(),
+                model = ImageRequest.Builder(
+                    LocalContext.current
+                ).data(review.userImage).crossfade(true).build(),
                 contentDescription = "profile picture",
                 modifier = Modifier
                     .size(40.dp)
@@ -309,28 +351,30 @@ fun ReviewItem(review: Review) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement =
+                    Arrangement.spacedBy(4.dp),
             ) {
                 Text(text = review.userName)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     StarRating(review.rating.toFloat(), 5, 12.dp)
                     Text(
-                        text = review.timeAgo,
+                        text =
+                            review.timeAgo,
                         modifier = Modifier.padding(start = 8.dp),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Gray
                     )
                 }
-
             }
         }
         Text(text = review.comment)
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(
+            modifier =
+                Modifier.height(2.dp)
+        )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement =
+                Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Outlined.ThumbUp,
@@ -338,7 +382,8 @@ fun ReviewItem(review: Review) {
                 tint = Color.Gray
             )
             Text(
-                text = "Helpful (${review.helpfulCount})",
+                text =
+                    "Helpful (${review.helpfulCount})",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
