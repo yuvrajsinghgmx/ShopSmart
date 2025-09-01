@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.modelclass
 
 data class Review(
-    val id: String,
+    val id: Int,
     val userName: String,
     val userImage: String?,
     val rating: Int,
@@ -14,10 +14,10 @@ data class Review(
 data class RatingSummary(
     val average: Double,
     val totalRatings: Int,
-    val distribution: Map<Int, Int>
+    val distribution: List<Pair<Int, Int>>
 )
 
 sealed class ReviewTarget {
-    data class Product(val productId: String, val name: String) : ReviewTarget()
-    data class Shop(val shopId: String, val name: String) : ReviewTarget()
+    data class Product(val productId: String) : ReviewTarget()
+    data class Shop(val shopId: String) : ReviewTarget()
 }
