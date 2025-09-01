@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass
+package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 import com.google.gson.annotations.SerializedName
 import com.yuvrajsinghgmx.shopsmart.screens.review.getTimeAgo
@@ -21,7 +21,7 @@ data class ReviewResponse(
     val helpfulCount: Int
 )
 
-fun ReviewResponse.toReview(): Review{
+fun ReviewResponse.toReview(): Review {
     return Review(
         id = id,
         userName = username,

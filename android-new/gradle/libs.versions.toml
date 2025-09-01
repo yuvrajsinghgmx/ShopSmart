@@ -16,6 +16,7 @@ mapsCompose = "6.6.0"
 places = "4.4.1"
 appcompat = "1.7.1"
 secretsGradlePlugin = "2.0.1"
+runtime = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

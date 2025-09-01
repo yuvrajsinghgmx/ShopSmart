@@ -1,15 +1,17 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass.repository
+package com.yuvrajsinghgmx.shopsmart.data.repository
 
 import android.app.Activity
+import android.util.Log
 import com.google.firebase.auth.PhoneAuthProvider
-import com.yuvrajsinghgmx.shopsmart.modelclass.DjangoAuthApi
-import com.yuvrajsinghgmx.shopsmart.modelclass.DjangoAuthResponse
-import com.yuvrajsinghgmx.shopsmart.modelclass.FirebaseIdTokenRequest
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.DjangoAuthResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.FirebaseIdTokenRequest
 import com.yuvrajsinghgmx.shopsmart.screens.auth.service.AuthService
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import retrofit2.HttpException
 
 interface AuthRepository {
     fun sendOtp(
@@ -46,16 +48,23 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDjangoToken(firebaseIdToken: String?): DjangoAuthResponse {
-        val body = FirebaseIdTokenRequest(firebaseIdToken)
-        val resp = djangoApi.exchangeFirebaseToken(body)
-        sharedPrefs.saveAuthData(
-            accessToken = resp.access,
-            refreshToken = resp.refresh,
-            userId = resp.user.id,
-            name = resp.user.name,
-            phone = resp.user.phoneNumber,
-            profilePic = resp.user.profilePic,
-            isNewUser = resp.user.isNewUser)
-        return resp
+        return try {
+            val body = FirebaseIdTokenRequest(firebaseIdToken)
+            val resp = djangoApi.exchangeFirebaseToken(body)
+            sharedPrefs.saveAuthData(
+                accessToken = resp.access,
+                refreshToken = resp.refresh,
+                userId = resp.user?.id,
+                name = resp.user?.name,
+                phone = resp.user?.phoneNumber,
+                profilePic = resp.user?.profilePic,
+                isNewUser = resp.user?.isNewUser == true
+            )
+            resp
+        }catch (e: HttpException){
+            val errorBody = e.response()?.errorBody()?.string()
+            Log.e("AuthDebug", "Auth API failed: ${e.code()} $errorBody")
+            throw e
+        }
     }
 }

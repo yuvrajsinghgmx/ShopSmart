@@ -1,7 +1,7 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass
+package com.yuvrajsinghgmx.shopsmart.data.interfaces
 
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.DjangoAuthResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.FirebaseIdTokenRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 

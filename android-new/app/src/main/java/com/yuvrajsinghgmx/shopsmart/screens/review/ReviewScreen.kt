@@ -50,9 +50,9 @@ import androidx.navigation.NavController
 import coil.request.ImageRequest
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
-import com.yuvrajsinghgmx.shopsmart.modelclass.Review
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.RatingSummary
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Review
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.TextPrimary

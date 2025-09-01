@@ -1,9 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.screens.savedProducts
 
 import androidx.lifecycle.ViewModel
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
+import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -101,17 +101,13 @@ fun LoginScreen(
                 authPrefs.saveAuthData(
                     accessToken = state.djangoAuthResponse.access,
                     refreshToken = state.djangoAuthResponse.refresh,
-                    userId = state.djangoAuthResponse.user.id,
-                    name = state.djangoAuthResponse.user.name,
-                    phone = state.djangoAuthResponse.user.phoneNumber,
+                    userId = state.djangoAuthResponse.user.id ?:0,
+                    name = state.djangoAuthResponse.user.name ?: "",
+                    phone = state.djangoAuthResponse.user.phoneNumber ?: "",
                     profilePic = state.djangoAuthResponse.user.profilePic,
                     isNewUser = state.djangoAuthResponse.user.isNewUser
                 )
                 onLogInSuccess(state.djangoAuthResponse.user.isNewUser)
-            }
-            is AuthState.firebaseAuthSuccess -> {
-                scope.launch { snackbarHostState.showSnackbar("Verified automatically!") }
-                onLogInSuccess(false)
             }
             is AuthState.Error -> {
                 scope.launch { snackbarHostState.showSnackbar(state.message) }

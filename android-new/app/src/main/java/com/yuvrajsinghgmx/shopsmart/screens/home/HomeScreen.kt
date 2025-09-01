@@ -29,6 +29,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ fun HomeScreen(
 ) {
     val state = viewModel.state.value
     val categories = listOf("All", "Groceries", "Fashion", "Electronics")
+    var selectedCategory by remember { mutableStateOf("All") }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -57,6 +60,7 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 20.dp)
     ) {
+        // Header
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -87,6 +91,7 @@ fun HomeScreen(
             }
         }
 
+        // Search Bar
         item {
             OutlinedTextField(
                 value = state.searchQuery ?: "",
@@ -108,18 +113,20 @@ fun HomeScreen(
             )
         }
 
+        // Categories
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(categories) { category ->
                     CategoryChip(
                         label = category,
-                        isSelected = state.selectedCategory == category,
-                        onClick = { viewModel.onEvent(HomeEvent.SelectCategory(category)) }
+                        isSelected = selectedCategory == category,
+                        onClick = { selectedCategory = category }
                     )
                 }
             }
         }
 
+        // Trending Products
         item {
             Column {
                 Text(
@@ -138,6 +145,7 @@ fun HomeScreen(
             }
         }
 
+        // Nearby Shops
         item {
             Text(
                 text = "Nearby Shops",

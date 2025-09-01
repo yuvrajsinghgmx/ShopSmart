@@ -3,7 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 

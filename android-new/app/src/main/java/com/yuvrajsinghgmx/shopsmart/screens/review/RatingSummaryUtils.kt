@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.review
 
-import com.yuvrajsinghgmx.shopsmart.modelclass.RatingSummary
-import com.yuvrajsinghgmx.shopsmart.modelclass.Review
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.RatingSummary
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Review
 
 fun calculateRatingSummary(reviews: List<Review>): RatingSummary {
     if (reviews.isEmpty()) {

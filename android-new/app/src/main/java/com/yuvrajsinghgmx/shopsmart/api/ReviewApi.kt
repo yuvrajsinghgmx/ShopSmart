@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.api
 
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewRequest
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewRequest
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

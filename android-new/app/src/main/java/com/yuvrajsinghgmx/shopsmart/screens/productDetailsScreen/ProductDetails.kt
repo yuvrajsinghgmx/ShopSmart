@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
 fun ProductDetails(

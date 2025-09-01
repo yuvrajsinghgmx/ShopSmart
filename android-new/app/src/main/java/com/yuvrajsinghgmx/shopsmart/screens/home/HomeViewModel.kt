@@ -4,10 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
-import com.yuvrajsinghgmx.shopsmart.modelclass.SearchResult
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SearchResult
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
+import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,6 +16,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
+    // Holds the result for UI: a pair of Product and corresponding Shop
     private val _state = mutableStateOf(
         HomeState(
             isLoading = false,
@@ -25,12 +26,13 @@ class HomeViewModel @Inject constructor(
             nearbyShops = emptyList(),
             searchQuery = null,
             searchResults = emptyList(),
-            error = null,
-            selectedCategory = "All"
+            error = null
         )
     )
     val state: State<HomeState> = _state
 
+
+    // Local caches (used for filtering, so we never lose the originals)
     private var allProducts: List<Product> = emptyList()
     private var allShops: List<Shop> = emptyList()
 
@@ -52,8 +54,7 @@ class HomeViewModel @Inject constructor(
                             shop = allShops.find { it.shopName == product.shopName || it.shopNumber.toString() == product.shopNumber }
                         )
                     },
-                    searchQuery = "",
-                    selectedCategory = "All"
+                    searchQuery = ""
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
@@ -66,32 +67,26 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.LoadProducts, is HomeEvent.LoadShops -> {
+            is HomeEvent.LoadProducts, is HomeEvent.LoadShops -> {/* These load once in init, so ignore here. */
             }
+
             is HomeEvent.Search -> {
                 _state.value = _state.value.copy(searchQuery = event.query)
                 filterResults(event.query)
             }
-            is HomeEvent.SelectCategory -> {
-                _state.value = _state.value.copy(selectedCategory = event.category)
-                filterByCategory(event.category)
-            }
         }
     }
 
-    private fun filterByCategory(category: String) {
-        val trimmed = category.trim()
-        val filtered = if (trimmed.equals("All", ignoreCase = true)) {
-            allProducts
-        } else {
-            allProducts.filter { it.category.equals(trimmed, ignoreCase = true) }
-        }
-        _state.value = _state.value.copy(products = filtered)
-    }
-
+    /**
+     * Filters products and shops for the search screen.
+     * - Products matching name/category are paired to their shop.
+     * - If shop name/category matches and not already included (no matching product), show the shop with product=null.
+     * - Handles edge cases gracefully.
+     */
     private fun filterResults(query: String) {
         val trimmed = query.trim()
         if (trimmed.isBlank()) {
+            // If blank, show all products and their shops.
             _state.value = _state.value.copy(
                 searchResults = allProducts.map { product ->
                     SearchResult(
@@ -106,6 +101,7 @@ class HomeViewModel @Inject constructor(
         val results = mutableListOf<SearchResult>()
         val lowerQ = trimmed.lowercase()
         val matchedShops = mutableSetOf<String>()
+        // Find all products matching query
         allProducts.forEach { product ->
             if (
                 product.name.contains(lowerQ, ignoreCase = true) ||
@@ -117,6 +113,7 @@ class HomeViewModel @Inject constructor(
                 results.add(SearchResult(product = product, shop = shop))
             }
         }
+        // Optionally: include shop rows for shops matching query (but with no matching product above)
         allShops.forEach { shop ->
             if (!matchedShops.contains(shop.shopName) &&
                 (shop.shopName.contains(lowerQ, ignoreCase = true) ||

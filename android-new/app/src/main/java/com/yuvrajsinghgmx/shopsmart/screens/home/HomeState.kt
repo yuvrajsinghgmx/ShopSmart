@@ -1,8 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
-import com.yuvrajsinghgmx.shopsmart.modelclass.SearchResult
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SearchResult
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 
 data class HomeState(
     val isLoading: Boolean = false,
@@ -12,6 +12,5 @@ data class HomeState(
     val shops: List<Shop> = emptyList(),
     val nearbyShops: List<Shop> = emptyList(),
     val searchQuery: String? = null,
-    val searchResults: List<SearchResult> = emptyList(),
-    val selectedCategory: String = "All"
+    val searchResults: List<SearchResult> = emptyList()
 )

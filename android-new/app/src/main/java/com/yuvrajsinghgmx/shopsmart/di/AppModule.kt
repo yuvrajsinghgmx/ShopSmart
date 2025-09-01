@@ -1,16 +1,19 @@
 package com.yuvrajsinghgmx.shopsmart.di
 
 import android.app.Application
+import android.content.Context
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepository
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.AuthRepositoryImpl
-import com.yuvrajsinghgmx.shopsmart.modelclass.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
+import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepositoryImpl
+import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.service.AuthService
 import com.yuvrajsinghgmx.shopsmart.screens.auth.service.AuthServiceImpl
+import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -46,5 +49,11 @@ object AppModule {
         authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository {
         return authRepositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthPrefs(@ApplicationContext context: Context): AuthPrefs {
+        return AuthPrefs(context)
     }
 }

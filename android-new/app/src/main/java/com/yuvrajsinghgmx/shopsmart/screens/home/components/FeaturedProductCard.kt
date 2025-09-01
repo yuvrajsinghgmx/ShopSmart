@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
 fun FeaturedProductCard(product: Product) {

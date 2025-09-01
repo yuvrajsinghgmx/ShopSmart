@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.places)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.runtime)
     /*implementation(libs.secrets.gradle.plugin)*/
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -86,4 +87,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.google.code.gson:gson:2.13.1")
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 }

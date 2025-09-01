@@ -18,16 +18,16 @@ class AuthPrefs @Inject constructor(
     fun saveAuthData(
         accessToken: String,
         refreshToken: String,
-        userId: Int,
-        name: String,
-        phone: String,
+        userId: Int?,
+        name: String?,
+        phone: String?,
         profilePic: String?,
         isNewUser: Boolean
     ) {
         prefs.edit().apply {
             putString("access_token", accessToken)
             putString("refresh_token", refreshToken)
-            putInt("user_id", userId)
+            userId?.let { putInt("user_id", it) }
             putString("name", name)
             putString("phone", phone)
             putString("profile_pic", profilePic)

@@ -43,7 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.modelclass.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.ProductImageFromUrl
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary

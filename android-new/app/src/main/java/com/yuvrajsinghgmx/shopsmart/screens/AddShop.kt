@@ -1,7 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -40,22 +39,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
@@ -66,7 +63,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
-import com.yuvrajsinghgmx.shopsmart.sharedprefs.UserDataStore
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
@@ -91,22 +87,8 @@ fun AddShopScreen(navController: NavController) {
             phoneNumber.length == 10 &&
             shopAddress.isNotBlank()
 
-    val context = LocalContext.current
-    val userDataStore = remember { UserDataStore(context) }
-
-    val user by userDataStore.userFlow.collectAsState(initial = null)
-
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         imageUri = uri
-    }
-
-    LaunchedEffect(user) {
-        user?.let {
-            Log.d("UserDataStore", "Full Name: ${it.fullName}")
-            Log.d("UserDataStore", "Email: ${it.email ?: "N/A"}")
-            Log.d("UserDataStore", "Role: ${it.role}")
-            Log.d("UserDataStore", "Profile URI: ${it.profileImageUri ?: "N/A"}")
-        } ?: Log.d("UserDataStore", "No user found")
     }
 
     val categories = listOf(
@@ -504,9 +486,3 @@ fun AddShopScreen(navController: NavController) {
         }
     }
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun AddShopScreenPreview() {
-    AddShopScreen()
-}*/

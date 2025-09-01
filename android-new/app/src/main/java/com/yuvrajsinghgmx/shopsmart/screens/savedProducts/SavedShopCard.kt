@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LikeColor
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 

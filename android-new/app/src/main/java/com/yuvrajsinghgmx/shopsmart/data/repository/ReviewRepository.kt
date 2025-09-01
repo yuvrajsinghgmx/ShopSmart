@@ -1,9 +1,9 @@
-package com.yuvrajsinghgmx.shopsmart.modelclass.repository
+package com.yuvrajsinghgmx.shopsmart.data.repository
 
 import com.yuvrajsinghgmx.shopsmart.api.ReviewApi
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewResponse
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewRequest
-import com.yuvrajsinghgmx.shopsmart.modelclass.ReviewTarget
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewRequest
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(private val reviewApi : ReviewApi){
