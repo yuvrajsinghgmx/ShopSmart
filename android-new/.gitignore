@@ -1,25 +1,22 @@
+# Android/Gradle
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.gradle/
 local.properties
-local.defaults.properties
-# Kotlin specific
-*.kotlin_module
-*.class
-*.kt.bak
-*.kts.bak
-*.kotlin_metadata
+/local.properties
+/local.defaults.properties
+
+# IntelliJ/Android Studio
+.idea/
+*.ipr
+*.iws
+
+# Build
+/build/
+app/release/
+captures/
+out/
+.cxx/
+.externalNativeBuild/
 
 # Jetpack Compose
 .compose-cache/
@@ -29,19 +26,8 @@ compose-metrics/
 compose-logs/
 compose-report/
 
-# Android Studio/IntelliJ
-.idea/
-.gradle/
-captures/
-build/
-app/release/
-out/
-.cxx/
-.externalNativeBuild/
+# Misc system files
 .DS_Store
-*.iml
-*.ipr
-*.iws
 *.log
 *.hprof
 *.orig
@@ -52,11 +38,6 @@ out/
 *.bak
 *.local
 *.user
-*.sublime-workspace
-*.sublime-project
-*.vscode/
-
-# Misc
 *.apk
 *.ap_*
 *.dex
@@ -64,6 +45,8 @@ out/
 *.jar
 *.war
 *.ear
+
+# Security/keystores
 *.db
 *.db-journal
 *.keystore
@@ -77,7 +60,11 @@ out/
 *.srl
 *.csr
 *.pub
+
+# VSCode / Sublime
+*.sublime-workspace
+*.sublime-project
+.vscode/
+
+# Firebase config
 app/google-services.json
-
-
-.idea/
