@@ -87,8 +87,6 @@ fun AddShopScreen(navController: NavController) {
             phoneNumber.length == 10 &&
             shopAddress.isNotBlank()
 
-    val context = LocalContext.current
-
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         imageUri = uri
     }

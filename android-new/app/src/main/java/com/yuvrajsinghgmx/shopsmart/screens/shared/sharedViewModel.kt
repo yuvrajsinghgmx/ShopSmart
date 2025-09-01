@@ -103,17 +103,18 @@ class SharedAppViewModel @Inject constructor(
                     if (response.access.isBlank() || response.refresh.isBlank()) {
                         Log.e("AuthDebug", "Missing tokens in response: $response")
                         _authState.value = AuthState.Error("Login failed: missing tokens")
-                    }else {
-                        if (response.user.isNewUser) {
-                            _authState.value = AuthState.AuthSuccess(response)
-                        }
+                    } else {
+                        _authState.value = AuthState.AuthSuccess(response)
                     }
                 } else {
                     _authState.value = AuthState.Error("Failed to retrieve Firebase ID token.")
                 }
             } catch (e: Exception) {
                 if (e is HttpException) {
-                    Log.e("AuthDebug", "HttpException: ${e.code()} - ${e.response()?.errorBody()?.string()}")
+                    Log.e(
+                        "AuthDebug",
+                        "HttpException: ${e.code()} - ${e.response()?.errorBody()?.string()}"
+                    )
                 }
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
@@ -124,7 +125,7 @@ class SharedAppViewModel @Inject constructor(
         _authState.value = AuthState.Idle
     }
 
-    fun getUserData(): User{
+    fun getUserData(): User {
         return repository.getUserData()
     }
 
