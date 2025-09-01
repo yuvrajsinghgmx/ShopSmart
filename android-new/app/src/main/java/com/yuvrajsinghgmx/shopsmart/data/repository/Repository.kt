@@ -1,9 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.data.repository
 
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.RatingSummary
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Review
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
 import java.util.UUID
@@ -13,7 +10,7 @@ class Repository @Inject constructor() {
     fun getProductList(): List<Product> {
         return listOf(
             Product(
-                productId = 1,
+                productId = "1",
                 name = "Premium Leather Tote Bag",
                 price = "$89.99",
                 category = "Bags",
@@ -25,7 +22,7 @@ class Repository @Inject constructor() {
                 distance = "2.1 km"
             ),
             Product(
-                productId = 2,
+                productId = "2",
                 name = "Classic Leather Backpack",
                 price = "$129.99",
                 category = "Bags",
@@ -37,7 +34,7 @@ class Repository @Inject constructor() {
                 distance = "3.4 km"
             ),
             Product(
-                productId = 3,
+                productId = "3",
                 name = "Handcrafted Leather Wallet",
                 price = "$49.99",
                 category = "Accessories",
@@ -49,7 +46,7 @@ class Repository @Inject constructor() {
                 distance = "4.2 km"
             ),
             Product(
-                productId = 4,
+                productId = "4",
                 name = "Wireless Earbuds",
                 price = "$59.99",
                 category = "Electronics",
@@ -61,7 +58,7 @@ class Repository @Inject constructor() {
                 distance = "1.7 km"
             ),
             Product(
-                productId = 5,
+                productId = "5",
                 name = "Fresh Gala Apples (1kg)",
                 price = "$3.99",
                 category = "Groceries",
@@ -73,7 +70,7 @@ class Repository @Inject constructor() {
                 distance = "2.4 km"
             ),
             Product(
-                productId = 6,
+                productId = "6",
                 name = "Whole Wheat Bread",
                 price = "$2.49",
                 category = "Groceries",
@@ -85,7 +82,7 @@ class Repository @Inject constructor() {
                 distance = "2.4 km"
             ),
             Product(
-                productId = 7,
+                productId = "7",
                 name = "Running Shoes",
                 price = "$79.99",
                 category = "Sportswear",
@@ -97,7 +94,7 @@ class Repository @Inject constructor() {
                 distance = "2.0 km"
             ),
             Product(
-                productId = 8,
+                productId = "8",
                 name = "Basketball",
                 price = "$29.99",
                 category = "Sportswear",
@@ -109,7 +106,7 @@ class Repository @Inject constructor() {
                 distance = "2.0 km"
             ),
             Product(
-                productId = 9,
+                productId = "9",
                 name = "Bestselling Novel",
                 price = "$14.99",
                 category = "Books",
@@ -121,7 +118,7 @@ class Repository @Inject constructor() {
                 distance = "2.1 km"
             ),
             Product(
-                productId = 10,
+                productId = "10",
                 name = "Children's Story Book",
                 price = "$8.99",
                 category = "Books",
@@ -133,7 +130,7 @@ class Repository @Inject constructor() {
                 distance = "2.1 km"
             ),
             Product(
-                productId = 11,
+                productId = "11",
                 name = "Pain Relief Balm",
                 price = "$5.99",
                 category = "Pharmacy",
@@ -145,7 +142,7 @@ class Repository @Inject constructor() {
                 distance = "0.5 km"
             ),
             Product(
-                productId = 12,
+                productId = "12",
                 name = "Custom Gift Basket",
                 price = "$34.99",
                 category = "Gifts",
@@ -157,7 +154,7 @@ class Repository @Inject constructor() {
                 distance = "1.0 km"
             ),
             Product(
-                productId = 13,
+                productId = "13",
                 name = "Fresh Gala Apples (1kg)",
                 price = "$3.99",
                 category = "Groceries",
@@ -174,7 +171,7 @@ class Repository @Inject constructor() {
         return listOf(
             Shop(
                 shopName = "Urban Leather Co.",
-                shopNumber = 101,
+                shopNumber = "101",
                 category = "Bags",
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
@@ -183,7 +180,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Leather Workshop",
-                shopNumber = 102,
+                shopNumber = "102",
                 category = "Bags",
                 distance = "3.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
@@ -192,7 +189,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Artisan Leather",
-                shopNumber = 103,
+                shopNumber = "103",
                 category = "Accessories",
                 distance = "4.2 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
@@ -201,7 +198,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "ElectroMart",
-                shopNumber = 104,
+                shopNumber = "104",
                 category = "Electronics",
                 distance = "1.7 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1580910051076-7b8375b3b14e?auto=format&fit=crop&w=400&q=80"),
@@ -210,7 +207,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Fresh Market",
-                shopNumber = 105,
+                shopNumber = "105",
                 category = "Groceries",
                 distance = "2.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80"),
@@ -219,7 +216,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Sports Unlimited",
-                shopNumber = 106,
+                shopNumber = "106",
                 category = "Sportswear",
                 distance = "2.0 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=400&q=80"),
@@ -228,7 +225,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Book Haven",
-                shopNumber = 107,
+                shopNumber = "107",
                 category = "Books",
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
@@ -237,7 +234,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Pharma Store",
-                shopNumber = 108,
+                shopNumber = "108",
                 category = "Pharmacy",
                 distance = "0.5 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1500937408085-8b75b7b6e0d2?auto=format&fit=crop&w=400&q=80"),
@@ -246,7 +243,7 @@ class Repository @Inject constructor() {
             ),
             Shop(
                 shopName = "Gift Paradise",
-                shopNumber = 109,
+                shopNumber = "109",
                 category = "Gifts",
                 distance = "1.0 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512428559087-c1e9b0a180ba?auto=format&fit=crop&w=400&q=80"),
@@ -264,7 +261,7 @@ class Repository @Inject constructor() {
             userType = "Customer",
             savedProducts = listOf(
                 Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -275,7 +272,7 @@ class Repository @Inject constructor() {
                     shopNumber = "107",
                     distance = "2.1 km"
                 ),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -285,7 +282,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -295,7 +292,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -305,7 +302,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -315,7 +312,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -325,7 +322,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -336,7 +333,7 @@ class Repository @Inject constructor() {
                     shopNumber = "107",
                     distance = "2.1 km"
                 ),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -346,7 +343,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -356,7 +353,7 @@ class Repository @Inject constructor() {
                     shopName = "Book Haven",
                     shopNumber = "107",
                     distance = "2.1 km"),Product(
-                    productId = 9,
+                    productId = "9",
                     name = "Bestselling Novel",
                     price = "$14.99",
                     category = "Books",
@@ -368,7 +365,7 @@ class Repository @Inject constructor() {
                     distance = "2.1 km")),
             savedShops = listOf(Shop(
                 shopName = "Artisan Leather",
-                shopNumber = 103,
+                shopNumber = "103",
                 category = "Accessories",
                 distance = "4.2 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
@@ -376,7 +373,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2111
             ),Shop(
                 shopName = "Leather Workshop",
-                shopNumber = 102,
+                shopNumber = "102",
                 category = "Bags",
                 distance = "3.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
@@ -384,7 +381,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2108
             ),Shop(
                 shopName = "Urban Leather Co.",
-                shopNumber = 101,
+                shopNumber = "101",
                 category = "Bags",
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
@@ -392,7 +389,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2099
             ),Shop(
                 shopName = "Artisan Leather",
-                shopNumber = 103,
+                shopNumber = "103",
                 category = "Accessories",
                 distance = "4.2 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
@@ -400,7 +397,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2111
             ),Shop(
                 shopName = "Leather Workshop",
-                shopNumber = 102,
+                shopNumber = "102",
                 category = "Bags",
                 distance = "3.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
@@ -408,7 +405,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2108
             ),Shop(
                 shopName = "Urban Leather Co.",
-                shopNumber = 101,
+                shopNumber = "101",
                 category = "Bags",
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
@@ -416,7 +413,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2099
             ),Shop(
                 shopName = "Artisan Leather",
-                shopNumber = 103,
+                shopNumber = "103",
                 category = "Accessories",
                 distance = "4.2 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
@@ -424,7 +421,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2111
             ),Shop(
                 shopName = "Leather Workshop",
-                shopNumber = 102,
+                shopNumber = "102",
                 category = "Bags",
                 distance = "3.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
@@ -432,7 +429,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2108
             ),Shop(
                 shopName = "Urban Leather Co.",
-                shopNumber = 101,
+                shopNumber = "101",
                 category = "Bags",
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
@@ -442,36 +439,4 @@ class Repository @Inject constructor() {
         )
     }
 
-    fun getReviewsFor(target: ReviewTarget): Pair<RatingSummary, List<Review>> {
-        return when (target) {
-            is ReviewTarget.Product -> getProductReviews()
-            is ReviewTarget.Shop -> getShopReviews()
-        }
-    }
-
-    private fun getShopReviews(): Pair<RatingSummary, List<Review>> {
-        val summary = RatingSummary(
-            average = 4.5,
-            totalRatings = 112,
-            distribution = mapOf(5 to 70, 4 to 20, 3 to 10, 2 to 5, 1 to 0)
-        )
-        val reviews = listOf(
-            Review("1", "Sarah M.", "", 5, "Great service and amazing products!", "2025-08-15T10:30:00Z", 24),
-            Review("2", "Michael R.", "", 4, "Good selection of items and competitive prices.", "2025-08-20T15:00:00Z", 18),
-            Review("3", "Emma L.", "", 5, "Excellent experience! Exactly what I was looking for.", "2025-08-20T15:00:00Z", 15))
-        return summary to reviews
-    }
-
-    fun getProductReviews(): Pair<RatingSummary, List<Review>> {
-        val summary = RatingSummary(
-            average = 4.5,
-            totalRatings = 112,
-            distribution = mapOf(5 to 70, 4 to 20, 3 to 10, 2 to 5, 1 to 0)
-        )
-        val reviews = listOf(
-            Review("1", "Sarah M.", "", 5, "Great service and amazing products!", "2025-08-15T10:30:00Z", 24),
-            Review("2", "Michael R.", "", 4, "Good selection of items and competitive prices.", "2025-08-20T15:00:00Z", 18),
-            Review("3", "Emma L.", "", 5, "Excellent experience! Exactly what I was looking for.", "2025-08-20T15:00:00Z", 15))
-        return summary to reviews
-    }
 }
