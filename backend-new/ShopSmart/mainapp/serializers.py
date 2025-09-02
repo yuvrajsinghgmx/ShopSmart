@@ -186,7 +186,7 @@ class ShopDetailSerializer(ShopSerializer):
     
     def get_recent_reviews(self, obj):
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
-        return ShopReviewSerializer(recent_reviews, many=True).data
+        return ShopReviewSerializer(recent_reviews, many=True, context=self.context).data
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -288,16 +288,27 @@ class ProductDetailSerializer(ProductSerializer):
     
     def get_recent_reviews(self, obj):
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
-        return ProductReviewSerializer(recent_reviews, many=True).data
+        return ProductReviewSerializer(recent_reviews, many=True, context=self.context).data
 
 
 class ShopReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.full_name', read_only=True)
+    helpful_count = serializers.SerializerMethodField()
+    is_helpful = serializers.SerializerMethodField()
     
     class Meta:
         model = ShopReview
-        fields = ['id', 'rating', 'comment', 'user_name', 'created_at']
+        fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
         read_only_fields = ['id', 'created_at']
+
+    def get_helpful_count(self, obj):
+        return obj.helpful_by.count()
+
+    def get_is_helpful(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return obj.helpful_by.filter(id=request.user.id).exists()
+        return False
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -307,11 +318,22 @@ class ShopReviewSerializer(serializers.ModelSerializer):
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.full_name', read_only=True)
+    helpful_count = serializers.SerializerMethodField()
+    is_helpful = serializers.SerializerMethodField()
     
     class Meta:
         model = ProductReview
-        fields = ['id', 'rating', 'comment', 'user_name', 'created_at']
+        fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
         read_only_fields = ['id', 'created_at']
+
+    def get_helpful_count(self, obj):
+        return obj.helpful_by.count()
+
+    def get_is_helpful(self, obj):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user') and request.user.is_authenticated:
+            return obj.helpful_by.filter(id=request.user.id).exists()
+        return False
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
