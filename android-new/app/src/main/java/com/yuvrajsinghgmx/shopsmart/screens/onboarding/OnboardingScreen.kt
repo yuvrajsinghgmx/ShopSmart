@@ -61,6 +61,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.location.LocationServices
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.ButtonLoader
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.utils.uriToFile
 import java.util.Locale
@@ -72,7 +73,7 @@ fun OnBoardingScreen(
 ) {
     val authState by onboardingViewmodel.authState.collectAsState()
     val context = LocalContext.current
-
+    val isOnboarding by onboardingViewmodel.isOnboarding.collectAsState()
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
@@ -252,18 +253,9 @@ fun OnBoardingScreen(
                     unfocusedBorderColor = Color.LightGray
                 )
             )
-
-
             if (emailError) {
                 Text("Invalid email format", color = Color.Red, fontSize = 12.sp)
             }
-
-            Text(
-                text = "You can add this later",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp)
-            )
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -302,28 +294,25 @@ fun OnBoardingScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
+            enabled = !isOnboarding,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(
-                text = "Continue",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            if(isOnboarding){
+                ButtonLoader()
+                return@Button
+            }else {
+                Text(
+                    text = "Continue",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Bottom text
-        Text(
-            text = "You can switch roles later from settings",
-            fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
     }
 }
 

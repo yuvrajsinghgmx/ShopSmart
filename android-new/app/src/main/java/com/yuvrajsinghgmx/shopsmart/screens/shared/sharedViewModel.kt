@@ -4,7 +4,6 @@ import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.copy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
@@ -135,7 +134,8 @@ class SharedAppViewModel @Inject constructor(
         authPrefs.clearAuthData()
         _authState.value = AuthState.Idle
     }
-
+    private val _isOnboarding = MutableStateFlow(false)
+    val isOnboarding: StateFlow<Boolean> = _isOnboarding
     fun completeOnboarding(
         role: String,
         fullName: String,
@@ -148,6 +148,7 @@ class SharedAppViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
+                _isOnboarding.value = true
                 val response = onboardingRepository.completeOnboarding(
                     role = role,
                     fullName = fullName,
@@ -165,6 +166,8 @@ class SharedAppViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
+            }finally {
+                _isOnboarding.value = false
             }
         }
     }

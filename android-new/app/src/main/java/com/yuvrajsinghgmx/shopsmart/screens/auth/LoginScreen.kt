@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.ButtonLoader
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 import kotlinx.coroutines.delay
@@ -197,11 +197,7 @@ fun LoginScreen(
                 enabled = !isLoading && (!showOtpField || otp.isNotEmpty())
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
+                    ButtonLoader()
                 } else {
                     Text(
                         if (!showOtpField) "Send OTP" else "Verify OTP",
