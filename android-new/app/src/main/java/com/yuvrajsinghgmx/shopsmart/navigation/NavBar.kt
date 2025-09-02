@@ -4,6 +4,9 @@ import UserProfileScreen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -13,13 +16,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.yuvrajsinghgmx.shopsmart.screens.AddShopScreen
+import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
+import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -63,10 +67,30 @@ fun AppNavHost(
         }
 
         composable("onboarding") {
+
+/*            val onboardingResult by sharedAppViewModel.onboardingResult.collectAsState()
+
+            // React to onboarding result and navigate
+            LaunchedEffect(onboardingResult) {
+                onboardingResult?.let { role ->
+                    when (role) {
+                        UserRole.CUSTOMER.title -> {
+                            navController.navigate("main_graph") {
+                                popUpTo("onboarding") { inclusive = true }
+                            }
+                        }
+                        UserRole.SHOP_OWNER.title -> {
+                            navController.navigate("addshop") {
+                                popUpTo("onboarding") { inclusive = true }
+                            }
+                        }
+                    }
+                }
+            }*/
             OnBoardingScreen(
                 onboardingViewmodel = sharedAppViewModel,
                 onboardingComplete = {
-                    navController.navigate("main_graph") {
+                    navController.navigate("addshop") {
                         popUpTo("onboarding") { inclusive = true }
                     }
                 }

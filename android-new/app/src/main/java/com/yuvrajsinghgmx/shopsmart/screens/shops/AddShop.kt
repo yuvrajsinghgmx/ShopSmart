@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.screens
+package com.yuvrajsinghgmx.shopsmart.screens.shops
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -39,6 +40,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,20 +51,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopRequest
+import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
@@ -69,7 +75,9 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddShopScreen(navController: NavController) {
+fun AddShopScreen(
+    viewModel: ShopViewModel = hiltViewModel(),
+    navController: NavController) {
     var shopName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var shopDescription by remember { mutableStateOf("") }
@@ -100,6 +108,37 @@ fun AddShopScreen(navController: NavController) {
         "Pharmacy",
         "Others"
     )
+
+    val shopResponse by viewModel.shopResponse.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(shopResponse) {
+        shopResponse?.let {
+            // ✅ Navigate only after successful API response
+            navController.navigate("main_graph") {
+                popUpTo("login_route") { inclusive = true }
+            }
+        }
+    }
+
+// Optional: show loader while API is running
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp), // or appropriate height
+        contentAlignment = Alignment.Center
+    ) {
+        if (loading) {
+            CircularProgressIndicator()
+        }
+    }
+
+
+// Optional: show error if API fails
+    error?.let {
+        Text(text = "Error: $it", color = Color.Red)
+    }
 
     Column(
         modifier = Modifier
@@ -461,9 +500,24 @@ fun AddShopScreen(navController: NavController) {
 
             // Save Shop Button
             Button(
-                onClick = { navController.navigate("main_graph"){
-                    popUpTo("login_route") { inclusive = true }
-                } },
+                onClick = {
+
+                    val request = AddShopRequest(
+                        name = shopName,
+                        category = shopCategory,
+                        address = shopAddress,
+                        description = shopDescription,
+                        latitude = selectedLocation?.latitude ?: 0.0,
+                        longitude = selectedLocation?.longitude ?: 0.0,
+                        image_uploads = listOf(imageUri?.lastPathSegment ?: "image.png"),
+                        document_uploads = emptyList()
+                    )
+
+                    viewModel.saveShop(request)
+
+
+                    //navController.navigate("main_graph"){ popUpTo("login_route") { inclusive = true } }
+                          },
                 enabled = isFormValid,
                 modifier = Modifier
                     .fillMaxWidth()

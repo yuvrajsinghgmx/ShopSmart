@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.yuvrajsinghgmx.shopsmart.api.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.Module
 import dagger.Provides
@@ -72,5 +73,10 @@ object NetworkModule {
     @Singleton
     fun provideReviewApi(retrofit: Retrofit): ReviewApi =
         retrofit.create(ReviewApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideShopApi(retrofit: Retrofit): ShopApi =
+        retrofit.create(ShopApi::class.java)
 }
 
