@@ -40,6 +40,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,9 +57,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.location.LocationServices
+import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.utils.uriToFile
@@ -65,10 +67,10 @@ import java.util.Locale
 
 @Composable
 fun OnBoardingScreen(
-    navController: NavController,
-    onboardingViewmodel: SharedAppViewModel
+    onboardingViewmodel: SharedAppViewModel,
+    onboardingComplete: () -> Unit
 ) {
-
+    val authState by onboardingViewmodel.authState.collectAsState()
     val context = LocalContext.current
 
     var fullName by remember { mutableStateOf("") }
@@ -82,6 +84,11 @@ fun OnBoardingScreen(
     var roleError by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
 
+    LaunchedEffect(authState) {
+        if (authState is AuthState.onboardingSuccess) {
+            onboardingComplete()
+        }
+    }
     // Image Picker launcher
 
     val launcher =
