@@ -1,19 +1,37 @@
 package com.yuvrajsinghgmx.shopsmart.data.repository
 
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopRequest
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ShopRepository @Inject constructor(private val api: ShopApi) {
-    suspend fun addShop(request: AddShopRequest): Result<AddShopResponse> {
+    suspend fun addShop(
+        name: RequestBody,
+        category: RequestBody,
+        address: RequestBody,
+        description: RequestBody,
+        latitude: RequestBody,
+        longitude: RequestBody,
+        shopType: RequestBody,
+        imageUploads: List<MultipartBody.Part>,
+        documentUploads: List<MultipartBody.Part>
+    ): Result<AddShopResponse> {
         return try {
-            val response = api.addShop(request)
-            if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
+            val response = api.addShop(
+                name, category, address, description,
+                latitude, longitude,shopType,
+                imageUploads, documentUploads
+            )
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Empty response body"))
             } else {
-                Result.failure(Exception("API Error: ${response.code()} - ${response.message()}"))
+                Result.failure(Exception("Error ${response.code()}: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

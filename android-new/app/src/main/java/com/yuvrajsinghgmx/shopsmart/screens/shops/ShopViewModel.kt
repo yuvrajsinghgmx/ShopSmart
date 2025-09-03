@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopRequest
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
 import com.yuvrajsinghgmx.shopsmart.data.repository.ShopRepository
@@ -14,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,10 +36,24 @@ class ShopViewModel @Inject constructor (private val repository: ShopRepository)
         fetchShops()
     }
 
-    fun saveShop(request: AddShopRequest) {
+    fun saveShop(
+        name: RequestBody,
+        category: RequestBody,
+        address: RequestBody,
+        description: RequestBody,
+        latitude: RequestBody,
+        longitude: RequestBody,
+        shopType: RequestBody,
+        imageUploads: List<MultipartBody.Part>,
+        documentUploads: List<MultipartBody.Part>
+    ) {
         viewModelScope.launch {
             _loading.value = true
-            val result = repository.addShop(request)
+            val result = repository.addShop(
+                name, category, address, description,
+                latitude, longitude, shopType,
+                imageUploads, documentUploads
+            )
             result.onSuccess {
                 _shopResponse.value = it
             }.onFailure {

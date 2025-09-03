@@ -68,38 +68,34 @@ fun AppNavHost(
 
         composable("onboarding") {
 
-/*            val onboardingResult by sharedAppViewModel.onboardingResult.collectAsState()
-
-            // React to onboarding result and navigate
-            LaunchedEffect(onboardingResult) {
-                onboardingResult?.let { role ->
+            OnBoardingScreen(
+                onboardingViewmodel = sharedAppViewModel,
+                onboardingComplete = { role ->
                     when (role) {
-                        UserRole.CUSTOMER.title -> {
+                        UserRole.CUSTOMER -> {
                             navController.navigate("main_graph") {
-                                popUpTo("onboarding") { inclusive = true }
+                                popUpTo("login_route") { inclusive = true }
                             }
                         }
-                        UserRole.SHOP_OWNER.title -> {
+                        UserRole.SHOP_OWNER -> {
                             navController.navigate("addshop") {
                                 popUpTo("onboarding") { inclusive = true }
                             }
                         }
                     }
                 }
-            }*/
-            OnBoardingScreen(
-                onboardingViewmodel = sharedAppViewModel,
-                onboardingComplete = {
-                    navController.navigate("addshop") {
-                        popUpTo("onboarding") { inclusive = true }
-                    }
-                }
+
             )
         }
 
         composable("addshop") {
             AddShopScreen (
                 navController = navController,
+                onShopAdded = {
+                    navController.navigate("main_graph") {
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                }
             )
         }
     }

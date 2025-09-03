@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -60,24 +61,26 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopRequest
-import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
+import okhttp3.MultipartBody
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddShopScreen(
     viewModel: ShopViewModel = hiltViewModel(),
-    navController: NavController) {
+    navController: NavController,
+    onShopAdded: () -> Unit) {
     var shopName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var shopDescription by remember { mutableStateOf("") }
@@ -90,6 +93,8 @@ fun AddShopScreen(
     var isPickingLocation by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
+    val context = LocalContext.current
+
     val isFormValid = shopName.isNotBlank() &&
             shopCategory != "Select category" &&
             phoneNumber.length == 10 &&
@@ -101,12 +106,9 @@ fun AddShopScreen(
 
     val categories = listOf(
         "Select category",
-        "Restaurant",
-        "Grocery Store",
-        "Electronics",
-        "Clothing",
-        "Pharmacy",
-        "Others"
+        "grocery",
+        "clothing",
+        "electronics",
     )
 
     val shopResponse by viewModel.shopResponse.collectAsState()
@@ -115,10 +117,7 @@ fun AddShopScreen(
 
     LaunchedEffect(shopResponse) {
         shopResponse?.let {
-            // ✅ Navigate only after successful API response
-            navController.navigate("main_graph") {
-                popUpTo("login_route") { inclusive = true }
-            }
+            onShopAdded()
         }
     }
 
@@ -498,25 +497,31 @@ fun AddShopScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            val imageParts = imageUri?.let {
+                listOf(uriToMultipart(context, it, "image_uploads"))
+            } ?: emptyList()
+
+            val documentParts = emptyList<MultipartBody.Part>()
+
             // Save Shop Button
             Button(
                 onClick = {
 
-                    val request = AddShopRequest(
-                        name = shopName,
-                        category = shopCategory,
-                        address = shopAddress,
-                        description = shopDescription,
-                        latitude = selectedLocation?.latitude ?: 0.0,
-                        longitude = selectedLocation?.longitude ?: 0.0,
-                        image_uploads = listOf(imageUri?.lastPathSegment ?: "image.png"),
-                        document_uploads = emptyList()
+                    val shopTypeRequestBody = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                    //viewModel.saveShop(request)
+                    viewModel.saveShop(
+                        name = shopName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        category = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        address = shopAddress.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        description = shopDescription.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        latitude = selectedLocation?.latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        longitude = selectedLocation?.longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        shopType = shopTypeRequestBody,
+                        imageUploads = imageParts,
+                        documentUploads = documentParts
                     )
 
-                    viewModel.saveShop(request)
-
-
-                    //navController.navigate("main_graph"){ popUpTo("login_route") { inclusive = true } }
                           },
                 enabled = isFormValid,
                 modifier = Modifier

@@ -69,7 +69,7 @@ import java.util.Locale
 @Composable
 fun OnBoardingScreen(
     onboardingViewmodel: SharedAppViewModel,
-    onboardingComplete: () -> Unit
+    onboardingComplete: (UserRole) -> Unit
 ) {
     val authState by onboardingViewmodel.authState.collectAsState()
     val context = LocalContext.current
@@ -87,10 +87,18 @@ fun OnBoardingScreen(
 
     LaunchedEffect(authState) {
         if (authState is AuthState.onboardingSuccess) {
-            onboardingComplete()
+            //onboardingComplete()
+            when (selectedRole) {
+                UserRole.CUSTOMER -> {
+                    onboardingComplete(UserRole.CUSTOMER)
+                }
+                UserRole.SHOP_OWNER -> {
+                    onboardingComplete(UserRole.SHOP_OWNER)
+                }
+                else -> { /* No role selected, do nothing */ }
+            }
         }
     }
-    // Image Picker launcher
 
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
