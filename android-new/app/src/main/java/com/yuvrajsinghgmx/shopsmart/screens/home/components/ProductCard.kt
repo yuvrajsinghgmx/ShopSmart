@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.home.components
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +29,7 @@ import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
-fun ProductCard(product: Product) {
+fun ProductCard(product: Product, onClick: () -> Unit) {
     val imageUrl = product.imageUrl.firstOrNull() ?: "https://i.imgur.com/7JD1z8M.jpeg"
     Log.d("ProductCard", "Loading image for: ${product.name}, URL: $imageUrl")
 
@@ -36,7 +37,8 @@ fun ProductCard(product: Product) {
         modifier = Modifier
             .width(170.dp)
             .height(265.dp)
-            .padding(end = 10.dp),
+            .padding(end = 10.dp)
+            .clickable{ onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
