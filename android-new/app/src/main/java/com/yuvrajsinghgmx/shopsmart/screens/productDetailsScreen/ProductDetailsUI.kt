@@ -42,12 +42,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.ProductImageFromUrl
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LightGreyy
+import com.yuvrajsinghgmx.shopsmart.R
 
 @Composable
 fun ProductDetailsUI(
@@ -78,7 +78,7 @@ fun ProductDetailsUI(
             )
             Text(
                 text = "Product Details",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.align(Alignment.Center)
             )
             Icon(

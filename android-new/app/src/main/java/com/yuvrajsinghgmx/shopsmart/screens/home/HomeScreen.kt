@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ProductCard
@@ -48,6 +49,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.components.ShopCard
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     sharedViewModel: SharedShopViewModel,
+   sharedProductViewModel: SharedProductViewModel,
     navController: NavController
 ) {
     val state = viewModel.state.value
@@ -139,7 +141,12 @@ fun HomeScreen(
                     contentPadding = PaddingValues(horizontal = 4.dp)
                 ) {
                     items(state.products) { product ->
-                        ProductCard(product = product)
+                        ProductCard(
+                            product = product,
+                            onClick = {
+                               sharedProductViewModel.selectedProduct(product)
+                                navController.navigate("productScreen")
+                            })
                     }
                 }
             }
