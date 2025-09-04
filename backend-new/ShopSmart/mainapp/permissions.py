@@ -6,6 +6,15 @@ from .choices import Role
 User = get_user_model()
 
 
+class IsOwner(BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit or delete it.
+    Assumes the model instance has a 'user' attribute.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+
 class IsOwnerOfShop(BasePermission):
     """
     Permission to check if user is the owner of the shop

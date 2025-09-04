@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models as gis_models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.conf import settings
 from .choices import ShopTypes, ProductTypes,Role
 
 
@@ -151,6 +152,7 @@ class ShopReview(models.Model):
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    helpful_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="helpful_shop_reviews", blank=True)
 
     class Meta:
         unique_together = ('shop', 'user')
@@ -166,6 +168,7 @@ class ProductReview(models.Model):
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    helpful_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="helpful_product_reviews", blank=True)
 
     class Meta:
         unique_together = ('product', 'user')

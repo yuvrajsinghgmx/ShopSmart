@@ -209,7 +209,7 @@ class ShopDetailView(generics.RetrieveAPIView):
     queryset = Shop.objects.filter(is_approved=True)
     serializer_class = ShopDetailSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
+    lookup_field = 'pk'
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -219,7 +219,7 @@ class ProductDetailView(generics.RetrieveAPIView):
     queryset = Product.objects.select_related('shop')
     serializer_class = ProductDetailSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
+    lookup_field = 'pk'
 
 
 class ChoicesView(APIView):
@@ -281,6 +281,69 @@ class ProductReviewsListView(generics.ListAPIView):
     def get_queryset(self):
         product_pk = self.kwargs['product_pk']
         return ProductReview.objects.filter(product__pk=product_pk)
+
+
+class ToggleShopReviewHelpfulView(APIView):
+    """Toggle a shop review as helpful/unhelpful"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, shop_pk, review_pk):
+        review = get_object_or_404(ShopReview, pk=review_pk, shop__pk=shop_pk)
+        user = request.user
+
+        if review.user == user:
+            return Response(
+                {"error": "You cannot mark your own review as helpful."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if review.helpful_by.filter(pk=user.pk).exists():
+            review.helpful_by.remove(user)
+            message = "Review un-marked as helpful"
+            is_helpful = False
+        else:
+            review.helpful_by.add(user)
+            message = "Review marked as helpful"
+            is_helpful = True
+
+        return Response({
+            'message': message,
+            'review_id': review.pk,
+            'is_helpful': is_helpful,
+            'helpful_count': review.helpful_by.count()
+        }, status=status.HTTP_200_OK)
+
+
+class ToggleProductReviewHelpfulView(APIView):
+    """Toggle a product review as helpful/unhelpful"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, product_pk, review_pk):
+        review = get_object_or_404(ProductReview, pk=review_pk, product__pk=product_pk)
+        user = request.user
+
+        if review.user == user:
+            return Response(
+                {"error": "You cannot mark your own review as helpful."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if review.helpful_by.filter(pk=user.pk).exists():
+            review.helpful_by.remove(user)
+            message = "Review un-marked as helpful"
+            is_helpful = False
+        else:
+            review.helpful_by.add(user)
+            message = "Review marked as helpful"
+            is_helpful = True
+
+        return Response({
+            'message': message,
+            'review_id': review.pk,
+            'is_helpful': is_helpful,
+            'helpful_count': review.helpful_by.count()
+        }, status=status.HTTP_200_OK)
+    
     
 #region Favorite
 class ToggleFavoriteShopView(APIView):

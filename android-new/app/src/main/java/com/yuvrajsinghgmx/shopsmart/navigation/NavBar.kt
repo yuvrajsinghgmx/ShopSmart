@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -20,10 +21,12 @@ import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
+import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -33,6 +36,7 @@ fun AppNavHost(
     navController: NavHostController,
     padding: PaddingValues
 ) {
+    val sharedProductViewModel: SharedProductViewModel = viewModel()
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
@@ -102,11 +106,12 @@ fun AppNavHost(
     fun NavGraphBuilder.mainGraph(
         navController: NavController,
         sharedAppViewModel: SharedAppViewModel,
-        sharedViewModel: SharedShopViewModel
+        sharedViewModel: SharedShopViewModel,
+        sharedProductViewModel: SharedProductViewModel
     ) {
         navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
             composable(BottomNavItem.Home.route) {
-                HomeScreen(navController = navController, sharedViewModel = sharedViewModel)
+                HomeScreen(navController = navController, sharedViewModel = sharedViewModel, sharedProductViewModel = sharedProductViewModel)
             }
             composable(BottomNavItem.Search.route) {
                 SearchScreen(onShopClick = { shop ->
@@ -127,6 +132,9 @@ fun AppNavHost(
             composable("shopDetails") {
                 ShopDetail(sharedViewModel = sharedViewModel)
             }
+            composable("productScreen"){
+                ProductDetails(sharedProductViewModel,navController)
+            }
         }
     }
     NavHost(
@@ -135,6 +143,6 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         authGraph(navController, sharedAppViewModel)
-        mainGraph(navController, sharedAppViewModel, sharedViewModel)
+        mainGraph(navController, sharedAppViewModel, sharedViewModel,sharedProductViewModel)
     }
 }

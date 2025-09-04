@@ -10,7 +10,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-)t81nk()_*lbwil6o$#l&fu=-y1a4tacf6uud3jv+97kuc*uce")
-DEBUG = False
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
 
 AUTH_USER_MODEL = "mainapp.User"
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -122,6 +123,8 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (for user profile images)
 MEDIA_URL = '/media/'
