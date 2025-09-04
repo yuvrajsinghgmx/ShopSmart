@@ -1,4 +1,4 @@
-package com.yuvrajsinghgmx.shopsmart.screens
+package com.yuvrajsinghgmx.shopsmart.screens.shops
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -39,6 +40,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.CameraPosition
@@ -66,10 +70,17 @@ import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
+import okhttp3.MultipartBody
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddShopScreen(navController: NavController) {
+fun AddShopScreen(
+    viewModel: ShopViewModel = hiltViewModel(),
+    navController: NavController,
+    onShopAdded: () -> Unit) {
     var shopName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var shopDescription by remember { mutableStateOf("") }
@@ -82,6 +93,8 @@ fun AddShopScreen(navController: NavController) {
     var isPickingLocation by remember { mutableStateOf(false) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
+    val context = LocalContext.current
+
     val isFormValid = shopName.isNotBlank() &&
             shopCategory != "Select category" &&
             phoneNumber.length == 10 &&
@@ -93,13 +106,38 @@ fun AddShopScreen(navController: NavController) {
 
     val categories = listOf(
         "Select category",
-        "Restaurant",
-        "Grocery Store",
-        "Electronics",
-        "Clothing",
-        "Pharmacy",
-        "Others"
+        "grocery",
+        "clothing",
+        "electronics",
     )
+
+    val shopResponse by viewModel.shopResponse.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(shopResponse) {
+        shopResponse?.let {
+            onShopAdded()
+        }
+    }
+
+// Optional: show loader while API is running
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp), // or appropriate height
+        contentAlignment = Alignment.Center
+    ) {
+        if (loading) {
+            CircularProgressIndicator()
+        }
+    }
+
+
+// Optional: show error if API fails
+    error?.let {
+        Text(text = "Error: $it", color = Color.Red)
+    }
 
     Column(
         modifier = Modifier
@@ -459,11 +497,32 @@ fun AddShopScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            val imageParts = imageUri?.let {
+                listOf(uriToMultipart(context, it, "image_uploads"))
+            } ?: emptyList()
+
+            val documentParts = emptyList<MultipartBody.Part>()
+
             // Save Shop Button
             Button(
-                onClick = { navController.navigate("main_graph"){
-                    popUpTo("login_route") { inclusive = true }
-                } },
+                onClick = {
+
+                    val shopTypeRequestBody = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull())
+
+                    //viewModel.saveShop(request)
+                    viewModel.saveShop(
+                        name = shopName.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        category = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        address = shopAddress.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        description = shopDescription.toRequestBody("text/plain".toMediaTypeOrNull()),
+                        latitude = selectedLocation?.latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        longitude = selectedLocation?.longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
+                        shopType = shopTypeRequestBody,
+                        imageUploads = imageParts,
+                        documentUploads = documentParts
+                    )
+
+                          },
                 enabled = isFormValid,
                 modifier = Modifier
                     .fillMaxWidth()

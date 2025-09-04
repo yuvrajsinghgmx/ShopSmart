@@ -2,6 +2,9 @@ package com.yuvrajsinghgmx.shopsmart.utils
 
 import android.content.Context
 import android.net.Uri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -16,4 +19,12 @@ fun uriToFile(context: Context, uri: Uri): File {
         }
     }
     return file
+}
+
+fun uriToMultipart(context: Context, uri: Uri, name: String): MultipartBody.Part {
+    val inputStream = context.contentResolver.openInputStream(uri)!!
+    val bytes = inputStream.readBytes()
+    val requestBody = bytes.toRequestBody("image/*".
+    toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData(name, "file.jpg", requestBody)
 }

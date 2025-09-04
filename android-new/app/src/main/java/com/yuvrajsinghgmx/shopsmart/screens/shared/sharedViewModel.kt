@@ -11,6 +11,7 @@ import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
+import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -136,6 +137,9 @@ class SharedAppViewModel @Inject constructor(
     }
     private val _isOnboarding = MutableStateFlow(false)
     val isOnboarding: StateFlow<Boolean> = _isOnboarding
+
+    private val _onboardingResult = MutableStateFlow<String?>(null)
+    val onboardingResult: StateFlow<String?> = _onboardingResult
     fun completeOnboarding(
         role: String,
         fullName: String,
@@ -162,6 +166,7 @@ class SharedAppViewModel @Inject constructor(
                 Log.d("AuthDebug", "Onboarding response: $response")
                 if (response.onboardingCompleted){
                     _authState.value = AuthState.onboardingSuccess
+                    _onboardingResult.value = role
                 }
             } catch (e: Exception) {
                 Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
