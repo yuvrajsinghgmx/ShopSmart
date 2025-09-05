@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
@@ -60,7 +62,8 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 fun ShopDetail(
     viewModel: HomeViewModel = hiltViewModel(),
     sharedViewModel: SharedShopViewModel,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    navController: NavController
 ) {
     val selectedShop = sharedViewModel.selectedShop.collectAsState().value
     val state = viewModel.state.value
@@ -149,7 +152,8 @@ fun ShopDetail(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0xFF888888))
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                        .clickable{ navController.navigate("reviewScreen/shop/${selectedShop.shopId}") },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     repeat(4) {

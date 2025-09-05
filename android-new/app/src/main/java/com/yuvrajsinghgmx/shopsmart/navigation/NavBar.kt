@@ -4,12 +4,8 @@ import UserProfileScreen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -17,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
@@ -27,6 +24,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
+import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -130,10 +128,20 @@ fun AppNavHost(
                 )
             }
             composable("shopDetails") {
-                ShopDetail(sharedViewModel = sharedViewModel)
+                ShopDetail(sharedViewModel = sharedViewModel, navController = navController)
             }
             composable("productScreen"){
                 ProductDetails(sharedProductViewModel,navController)
+            }
+            composable("reviewScreen/{type}/{id}"){backStackEntry ->
+                val type = backStackEntry.arguments?.getString("type")
+                val id = backStackEntry.arguments?.getString("id")?:""
+                val target = when(type){
+                    "product" -> ReviewTarget.Product(id)
+                    "shop" -> ReviewTarget.Shop(id)
+                    else -> throw IllegalArgumentException("Unknown Review type")
+                }
+                ReviewScreen(target = target, navController = navController)
             }
         }
     }

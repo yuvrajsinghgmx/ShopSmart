@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.ProductImageFromUrl
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
@@ -56,7 +57,8 @@ fun ProductDetailsUI(
     onShareClick: () -> Unit,
     onCallClick: () -> Unit,
     onSaveClick: () -> Unit,
-    isProductSaved: Boolean
+    isProductSaved: Boolean,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -154,7 +156,11 @@ fun ProductDetailsUI(
                 ) {
                     Text(product.shopName, style = MaterialTheme.typography.titleSmall)
 
-                    StarRating(rating = product.review.toFloat(), 5)
+                    StarRating(
+                        rating = product.review.toFloat(),
+                        maxStars = 5,
+                        onClick = { navController.navigate("reviewScreen/product/${product.productId}") }
+                        )
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically

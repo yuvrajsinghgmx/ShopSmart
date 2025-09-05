@@ -195,7 +195,7 @@ fun RatingSummaryView(summary: RatingSummary) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "${summary.average}",
+                    text =String.format("%.1f",summary.average),
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 StarRating(summary.average.toFloat(), 5, 18.dp)
@@ -354,7 +354,7 @@ fun ReviewItem(review: Review) {
                 verticalArrangement =
                     Arrangement.spacedBy(4.dp),
             ) {
-                Text(text = review.userName)
+                Text(text = review.username)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     StarRating(review.rating.toFloat(), 5, 12.dp)
                     Text(

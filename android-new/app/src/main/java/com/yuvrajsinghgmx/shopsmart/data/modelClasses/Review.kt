@@ -2,7 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 data class Review(
     val id: Int,
-    val userName: String,
+    val username: String,
     val userImage: String?,
     val rating: Int,
     val comment: String,

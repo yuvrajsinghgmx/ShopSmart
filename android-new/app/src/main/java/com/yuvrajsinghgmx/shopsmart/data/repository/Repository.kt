@@ -170,6 +170,7 @@ class Repository @Inject constructor() {
     fun getNearbyShops(): List<Shop> {
         return listOf(
             Shop(
+                shopId = "1",
                 shopName = "Urban Leather Co.",
                 shopNumber = "101",
                 category = "Bags",
@@ -179,6 +180,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2099
             ),
             Shop(
+                shopId = "2",
                 shopName = "Leather Workshop",
                 shopNumber = "102",
                 category = "Bags",
@@ -188,6 +190,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2108
             ),
             Shop(
+                shopId = "3",
                 shopName = "Artisan Leather",
                 shopNumber = "103",
                 category = "Accessories",
@@ -197,6 +200,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2111
             ),
             Shop(
+                shopId = "4",
                 shopName = "ElectroMart",
                 shopNumber = "104",
                 category = "Electronics",
@@ -206,6 +210,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2075
             ),
             Shop(
+                shopId = "5",
                 shopName = "Fresh Market",
                 shopNumber = "105",
                 category = "Groceries",
@@ -215,6 +220,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2103
             ),
             Shop(
+                shopId = "6",
                 shopName = "Sports Unlimited",
                 shopNumber = "106",
                 category = "Sportswear",
@@ -224,6 +230,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2082
             ),
             Shop(
+                shopId = "7",
                 shopName = "Book Haven",
                 shopNumber = "107",
                 category = "Books",
@@ -233,6 +240,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2120
             ),
             Shop(
+                shopId = "8",
                 shopName = "Pharma Store",
                 shopNumber = "108",
                 category = "Pharmacy",
@@ -242,6 +250,7 @@ class Repository @Inject constructor() {
                 longitude = 77.2120
             ),
             Shop(
+                shopId = "9",
                 shopName = "Gift Paradise",
                 shopNumber = "109",
                 category = "Gifts",
@@ -364,6 +373,7 @@ class Repository @Inject constructor() {
                     shopNumber = "107",
                     distance = "2.1 km")),
             savedShops = listOf(Shop(
+                shopId = "1",
                 shopName = "Artisan Leather",
                 shopNumber = "103",
                 category = "Accessories",
@@ -372,6 +382,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6150,
                 longitude = 77.2111
             ),Shop(
+                shopId = "2",
                 shopName = "Leather Workshop",
                 shopNumber = "102",
                 category = "Bags",
@@ -380,6 +391,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6147,
                 longitude = 77.2108
             ),Shop(
+                shopId = "3",
                 shopName = "Urban Leather Co.",
                 shopNumber = "101",
                 category = "Bags",
@@ -388,6 +400,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6143,
                 longitude = 77.2099
             ),Shop(
+                shopId = "4",
                 shopName = "Artisan Leather",
                 shopNumber = "103",
                 category = "Accessories",
@@ -396,6 +409,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6150,
                 longitude = 77.2111
             ),Shop(
+                shopId = "5",
                 shopName = "Leather Workshop",
                 shopNumber = "102",
                 category = "Bags",
@@ -404,6 +418,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6147,
                 longitude = 77.2108
             ),Shop(
+                shopId = "6",
                 shopName = "Urban Leather Co.",
                 shopNumber = "101",
                 category = "Bags",
@@ -412,6 +427,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6143,
                 longitude = 77.2099
             ),Shop(
+                shopId = "7",
                 shopName = "Artisan Leather",
                 shopNumber = "103",
                 category = "Accessories",
@@ -420,6 +436,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6150,
                 longitude = 77.2111
             ),Shop(
+                shopId = "8",
                 shopName = "Leather Workshop",
                 shopNumber = "102",
                 category = "Bags",
@@ -428,6 +445,7 @@ class Repository @Inject constructor() {
                 latitude = 28.6147,
                 longitude = 77.2108
             ),Shop(
+                shopId = "9",
                 shopName = "Urban Leather Co.",
                 shopNumber = "101",
                 category = "Bags",
