@@ -24,7 +24,7 @@ data class ReviewResponse(
 fun ReviewResponse.toReview(): Review {
     return Review(
         id = id,
-        userName = username,
+        username = username,
         userImage = userImage,
         rating = rating,
         comment = comment,

@@ -12,12 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
-
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 
 
@@ -63,7 +60,8 @@ fun ProductDetails(
             onShareClick = { viewModel.onShareClick(selectedProduct) },
             onCallClick = { viewModel.onCallClick(selectedProduct.shopNumber) },
             onSaveClick = { viewModel.onSaveClick(selectedProduct) },
-            isProductSaved = isSaved
+            isProductSaved = isSaved,
+            navController = navController
         )
     }else{
         Box(modifier = Modifier.fillMaxSize(),

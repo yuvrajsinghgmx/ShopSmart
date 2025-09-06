@@ -1,8 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 data class Shop(
-    val shopNumber: String,
+    val shopId: String,
     val shopName: String,
+    val shopNumber: String,
     val distance: String,
     val imageUrl: List<String>,
     val category: String,
