@@ -177,7 +177,10 @@ fun FullScreenMapPickerDialog(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = NavySecondary),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary, // Navy Blue
+                    contentColor = MaterialTheme.colorScheme.onSecondary // text color
+                ),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(

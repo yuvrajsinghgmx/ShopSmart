@@ -7,8 +7,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,7 +28,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -36,8 +37,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -59,21 +61,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.ButtonLoader
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
-import com.yuvrajsinghgmx.shopsmart.ui.theme.BackgroundDark
-import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
-import com.yuvrajsinghgmx.shopsmart.ui.theme.Purple40
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
-import okhttp3.MultipartBody
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,467 +78,357 @@ fun AddShopScreen(
     viewModel: ShopViewModel = hiltViewModel(),
     navController: NavController,
     onShopAdded: () -> Unit) {
-    var shopName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var shopDescription by remember { mutableStateOf("") }
-    var shopCategory by remember { mutableStateOf("Select category") }
-    var shopAddress by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-    var isError by remember { mutableStateOf(false) }
-
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var isPickingLocation by remember { mutableStateOf(false) }
-    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
-
-    val context = LocalContext.current
-
-    val isFormValid = shopName.isNotBlank() &&
-            shopCategory != "Select category" &&
-            phoneNumber.length == 10 &&
-            shopAddress.isNotBlank()
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri = uri
-    }
-
-    val categories = listOf(
-        "Select category",
-        "grocery",
-        "clothing",
-        "electronics",
-    )
 
     val shopResponse by viewModel.shopResponse.collectAsState()
-    val loading by viewModel.loading.collectAsState()
+    val isLoading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(shopResponse) {
-        shopResponse?.let {
-            onShopAdded()
-        }
+        if (shopResponse != null) onShopAdded()
     }
 
-// Optional: show loader while API is running
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp), // or appropriate height
-        contentAlignment = Alignment.Center
-    ) {
-        if (loading) {
-            CircularProgressIndicator()
-        }
-    }
-
-
-// Optional: show error if API fails
-    error?.let {
-        Text(text = "Error: $it", color = Color.Red)
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Add Shop",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = BackgroundDark,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack()  }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBackIosNew,
-                        contentDescription = "Back",
-                        tint = Color.Black
-                    )
-                }
-            },
-            actions = {
-                // Empty IconButton to balance the navigation icon
-                IconButton(
-                    onClick = { },
-                    enabled = false
-                ) {
-                    // Invisible spacer
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
-        )
-
-
-        // Scrollable Content
+    // Scaffold for TopBar and Snackbar
+    Scaffold(
+        topBar = { AddShopTopBar(navController) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
+        containerColor = MaterialTheme.colorScheme.surface //1
+    ) { paddingValues ->
         Column(
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Shop Photo Section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .border(
-                            width = 2.dp,
-                            color = Color(0xFFE5E5E5),
-                            shape = CircleShape
-                        )
-                        .background(Color(0xFFF8F8F8))
-                        .clickable { launcher.launch("image/*")  }
-                ) {
-                    if (imageUri != null) {
-                        Image(
-                            painter = rememberAsyncImagePainter(imageUri),
-                            contentDescription = "Profile Photo",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.CameraAlt,
-                            contentDescription = "Add Photo",
-                            tint = NavySecondary, //Color(0xFF4CAF50),
-                            modifier = Modifier.size(30.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Add Shop Photo",
-                    fontSize = 14.sp,
-                    color = Color(0xFF666666)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // Shop Name Field
-            Text(
-                text = "Shop Name",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = BackgroundDark,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            OutlinedTextField(
-                value = shopName,
-                onValueChange = { shopName = it },
-                placeholder = {
-                    Text(
-                        text = "Enter your Shop name",
-                        color = Color(0xFFBBBBBB)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF4CAF50),
-                    unfocusedBorderColor = Color(0xFFE5E5E5)
-                ),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true
+            ShopPhotoPicker(
+                imageUri = viewModel.state.value.imageUri,
+                onImagePicked = { uri -> viewModel.onImagePicked(uri) }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Shop Category Field
-            Text(
-                text = "Shop Category",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = BackgroundDark,
-                modifier = Modifier.padding(bottom = 8.dp)
+            ShopTextField(
+                label = "Shop Name",
+                value = viewModel.state.value.name,
+                onValueChange = { viewModel.onNameChanged(it) },
+                placeholder = "Enter your Shop name"
             )
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = shopCategory,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Dropdown arrow",
-                            tint = Purple40
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF4CAF50),
-                        unfocusedBorderColor = Color(0xFFE5E5E5),
-                        focusedContainerColor = Color(0xFFF5F5F5),
-                        unfocusedContainerColor = Color(0xFFF5F5F5)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(text = category) },
-                            onClick = {
-                                shopCategory = category
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Phone Number Field
-            Text(
-                text = "Phone Number",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = BackgroundDark,
-                modifier = Modifier.padding(bottom = 8.dp)
+            ShopDropdown(
+                label = "Shop Category",
+                options = listOf("Select category", "grocery", "clothing", "electronics"),
+                selected = viewModel.state.value.category,
+                onSelected = { viewModel.onCategorySelected(it) }
             )
-
-            OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { input ->
-                    // Allow only digits and limit length to 10
-                    val filtered = input.filter { it.isDigit() }.take(10)
-
-                    phoneNumber = filtered
-                    isError = filtered.length != 10 && filtered.isNotEmpty()
-                },
-                placeholder = {
-                    Text(
-                        text = "Enter 10-digit number",
-                        color = Color(0xFFBBBBBB)
-                    )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = if (isError) Color.Red else Color(0xFF4CAF50),
-                    unfocusedBorderColor = if (isError) Color.Red else Color(0xFFE5E5E5)
-                ),
-                isError = isError,
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            if (isError) {
-                Text(
-                    text = "Phone number must be exactly 10 digits",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Shop Address Section
-            Text(
-                text = "Shop Address",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = BackgroundDark,
-                modifier = Modifier.padding(bottom = 8.dp)
+            ShopTextField(
+                label = "Phone Number",
+                value = viewModel.state.value.phoneNumber,
+                onValueChange = { viewModel.onPhoneChanged(it) },
+                placeholder = "Enter 10-digit number",
+                keyboardType = KeyboardType.Phone,
+                isError = viewModel.state.value.isPhoneError,
+                errorMessage = "Phone number must be exactly 10 digits"
             )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(if (isPickingLocation) 400.dp else 120.dp) // expand height when picking
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF0F0F0))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFE5E5E5),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-
-                selectedLocation?.let { location ->
-                    val markerState = remember(location) { MarkerState(position = location) }
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = rememberCameraPositionState {
-                            position = CameraPosition.fromLatLngZoom(location, 12f)
-                        },
-                        uiSettings = MapUiSettings(
-                            scrollGesturesEnabled = false,
-                            zoomControlsEnabled = false,
-                            tiltGesturesEnabled = false
-                        )
-                    ) {
-                        Marker(state = markerState, title = "Selected Location")
-                    }
-                } ?: Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "No location",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(30.dp)
-                )
-
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Pick Location Button
-            Button(
-                onClick = { isPickingLocation = true
-                          },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = NavySecondary
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "Pick Location on Map",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-
-            if (isPickingLocation) {
-                FullScreenMapPickerDialog(
-                    initialLocation = selectedLocation,
-                    onLocationConfirmed = { location, address ->
-                        selectedLocation = location
-                        shopAddress = address
-                        isPickingLocation = false
-                    },
-                    onDismiss = { isPickingLocation = false }
-                )
-            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-
-
-            // Shop Description Field
-            Text(
-                text = "Shop Description",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = BackgroundDark,
-                modifier = Modifier.padding(bottom = 8.dp)
+            ShopLocationPicker(
+                selectedLocation = viewModel.state.value.location,
+                isPicking = viewModel.state.value.isPickingLocation,
+                onPickLocation = { location, address -> viewModel.onLocationPicked(location, address) },
+                onStartPicking = { viewModel.startLocationPicking() }
             )
 
-            OutlinedTextField(
-                value = shopDescription,
-                onValueChange = { input ->
-                    val words = input.trim().split("\\s+".toRegex()).filter { it.isNotEmpty() }
-                    if (words.size <= 1000) {
-                        shopDescription = input
-                        isError = false
-                    } else {
-                        isError = true
-                    }
-                },
-                placeholder = {
-                    Text(
-                        text = "Tell customers about your shop...",
-                        color = Color(0xFFBBBBBB)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = if (isError) Color.Red else Color(0xFF4CAF50),
-                    unfocusedBorderColor = if (isError) Color.Red else Color(0xFFE5E5E5)
-                ),
-                shape = RoundedCornerShape(8.dp),
-                isError = isError
-            )
+            Spacer(modifier = Modifier.height(20.dp))
 
-            if (isError) {
-                Text(
-                    text = "Maximum limit of 1000 words reached",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            ShopDescriptionField(
+                value = viewModel.state.value.description,
+                onValueChange = { viewModel.onDescriptionChanged(it) },
+                maxChars = 1000,
+                isError = viewModel.state.value.isDescriptionError
+            )
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            val imageParts = imageUri?.let {
-                listOf(uriToMultipart(context, it, "image_uploads"))
-            } ?: emptyList()
-
-            val documentParts = emptyList<MultipartBody.Part>()
-
-            // Save Shop Button
-            Button(
-                onClick = {
-
-                    val shopTypeRequestBody = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull())
-
-                    //viewModel.saveShop(request)
-                    viewModel.saveShop(
-                        name = shopName.toRequestBody("text/plain".toMediaTypeOrNull()),
-                        category = shopCategory.toRequestBody("text/plain".toMediaTypeOrNull()),
-                        address = shopAddress.toRequestBody("text/plain".toMediaTypeOrNull()),
-                        description = shopDescription.toRequestBody("text/plain".toMediaTypeOrNull()),
-                        latitude = selectedLocation?.latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                        longitude = selectedLocation?.longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                        shopType = shopTypeRequestBody,
-                        imageUploads = imageParts,
-                        documentUploads = documentParts
-                    )
-
-                          },
-                enabled = isFormValid,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "Save Shop",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            SaveShopButton(
+                isEnabled = viewModel.isFormValid(),
+                isLoading = isLoading,
+                onClick = { viewModel.saveShop(context) }
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
         }
+
+        // Show error via Snackbar
+        LaunchedEffect(error) {
+            error?.let { snackbarHostState.showSnackbar(it) }
+        }
+
+}
+
+
+    }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddShopTopBar(navController: NavController) {
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onBackground,
+            navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+            actionIconContentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        title = { Text("Add Shop", fontWeight = FontWeight.Medium) },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back")
+            }
+        },
+        actions = {
+            Spacer(modifier = Modifier.size(48.dp))
+        }
+    )
+}
+
+@Composable
+fun ShopPhotoPicker(imageUri: Uri?, onImagePicked: (Uri) -> Unit) {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { onImagePicked(it) }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .border(
+                        2.dp,
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                        CircleShape
+                    )
+                    .background(MaterialTheme.colorScheme.background)
+                    .clickable { launcher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                if (imageUri != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(imageUri),
+                        contentDescription = "Shop Photo",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.CameraAlt,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                "Add Shop Photo",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+    }
+}
+
+@Composable
+fun ShopTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isError: Boolean = false,
+    errorMessage: String? = null
+) {
+    Text(label, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(bottom = 8.dp))
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(placeholder,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        ) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        isError = isError,
+        shape = MaterialTheme.shapes.small,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            cursorColor = MaterialTheme.colorScheme.primary
+        )
+    )
+    if (isError && errorMessage != null) {
+        Text(errorMessage, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShopDropdown(
+    label: String,
+    options: List<String>,
+    selected: String,
+    onSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Text(label, fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = Modifier.padding(bottom = 8.dp))
+
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+        OutlinedTextField(
+            value = selected,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground ) },
+            modifier = Modifier.fillMaxWidth().menuAnchor(),
+            shape = MaterialTheme.shapes.small, //9
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                focusedContainerColor = MaterialTheme.colorScheme.background,
+                unfocusedContainerColor = MaterialTheme.colorScheme.background
+            )
+        )
+
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, modifier = Modifier.background(MaterialTheme.colorScheme.background) ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option , color = MaterialTheme.colorScheme.onBackground ) },
+                    onClick = { onSelected(option); expanded = false }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ShopLocationPicker(
+    selectedLocation: LatLng?,
+    isPicking: Boolean,
+    onPickLocation: (LatLng, String) -> Unit,
+    onStartPicking: () -> Unit
+) {
+    Text(
+        text = "Shop Address",
+        fontWeight = FontWeight.Medium,
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(selectedLocation ?: LatLng(0.0, 0.0), 12f)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(if (isPicking) 400.dp else 120.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.background)
+            .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f), MaterialTheme.shapes.medium),
+
+        contentAlignment = Alignment.Center
+    ) {
+        selectedLocation?.let {
+            val markerState = remember(it) { MarkerState(position = it) }
+            LaunchedEffect(it) { cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 12f)) }
+            GoogleMap(cameraPositionState = cameraPositionState) { Marker(markerState) }
+        } ?: Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+    Button(
+        onClick = onStartPicking,
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        )
+        ) {
+        Text("Pick Location on Map"
+        )
+    }
+
+    if (isPicking) {
+        FullScreenMapPickerDialog(
+            initialLocation = selectedLocation,
+            onLocationConfirmed = onPickLocation,
+            onDismiss = {}
+        )
+    }
+}
+
+@Composable
+fun ShopDescriptionField(value: String, onValueChange: (String) -> Unit, maxChars: Int, isError: Boolean) {
+    Text("Shop Description", fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(bottom = 8.dp)) //color:13
+    OutlinedTextField(
+        value = value,
+        onValueChange = { if (it.length <= maxChars) onValueChange(it) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        isError = isError,
+        shape = MaterialTheme.shapes.small,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            errorPlaceholderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        ),
+        placeholder = { Text("Tell customers about your shop") },
+
+    supportingText = {
+        Text(
+            "${value.length}/$maxChars",
+            style = MaterialTheme.typography.bodySmall,
+            color = if (value.length > maxChars) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        )
+    })
+}
+
+@Composable
+fun SaveShopButton(isEnabled: Boolean, isLoading: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = isEnabled && !isLoading,
+        modifier = Modifier.fillMaxWidth().height(50.dp),
+        shape = MaterialTheme.shapes.small,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        if (isLoading) {
+            ButtonLoader()
+            return@Button
+        }
+        else Text("Save Shop", color = MaterialTheme.colorScheme.onPrimary)
     }
 }
