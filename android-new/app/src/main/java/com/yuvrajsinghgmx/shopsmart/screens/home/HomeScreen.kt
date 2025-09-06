@@ -64,21 +64,20 @@ fun HomeScreen(
 
     val shopState = shopviewModel.state.value
 
-// Log shops whenever state changes
     LaunchedEffect(shopState.shops) {
         shopState.shops.forEach { shop ->
             Log.d("ShopHomeScreen", "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}")
         }
     }
 
-    // Optional: Show loading or error
-    if (shopState.isLoading) {
+    if (shopState.isLoadingShops) {
         CircularProgressIndicator()
     }
 
-    shopState.error?.let { error ->
+    shopState.errorShops?.let { error ->
         Log.e("ShopHomeScreen", "Error fetching shops: $error")
     }
+
 
 
     LazyColumn(
