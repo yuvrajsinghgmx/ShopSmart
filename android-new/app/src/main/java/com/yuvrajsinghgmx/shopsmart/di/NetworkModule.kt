@@ -2,7 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.yuvrajsinghgmx.shopsmart.api.ReviewApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
