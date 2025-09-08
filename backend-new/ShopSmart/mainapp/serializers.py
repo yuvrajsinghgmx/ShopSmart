@@ -1,3 +1,4 @@
+from typing import Optional, List, Dict
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point
@@ -8,6 +9,102 @@ from .firebase_utils import FirebaseStorageManager
 User = get_user_model()
 
 
+class ChoicesSerializer(serializers.Serializer):
+    """Describes the output of the ChoicesView."""
+    shop_types = serializers.ListField(child=serializers.CharField())
+    product_types = serializers.ListField(child=serializers.CharField())
+
+
+class ToggleFavoriteResponseSerializer(serializers.Serializer):
+    """Describes the output of toggle favorite views."""
+    message = serializers.CharField()
+    is_favorite = serializers.BooleanField()
+    shop_id = serializers.UUIDField(required=False)
+    product_id = serializers.UUIDField(required=False)
+
+
+class ToggleHelpfulResponseSerializer(serializers.Serializer):
+    """Describes the output of toggle helpful views."""
+    message = serializers.CharField()
+    review_id = serializers.IntegerField()
+    is_helpful = serializers.BooleanField()
+    helpful_count = serializers.IntegerField()
+
+
+class ApiRootResponseSerializer(serializers.Serializer):
+    """Describes the output of the main API Root."""
+    message = serializers.CharField()
+    version = serializers.CharField()
+    endpoints = serializers.DictField(child=serializers.CharField())
+    documentation = serializers.DictField(child=serializers.CharField())
+
+
+class LoadHomeResponseSerializer(serializers.Serializer):
+    """Describes the complex output of the LoadHomeView."""
+    message = serializers.CharField()
+    user_location = serializers.DictField(child=serializers.FloatField())
+    shops = serializers.ListField(child=serializers.DictField()) # Note: For full detail, you'd nest ShopSerializer here
+    total_shops = serializers.IntegerField()
+
+class FirebaseAuthRequestSerializer(serializers.Serializer):
+    """Describes the required input for Firebase authentication."""
+    id_token = serializers.CharField()
+
+
+class AuthFavoriteShopSerializer(serializers.Serializer):
+    """Simplified shop details for the login response."""
+    id = serializers.IntegerField()
+    shop_id = serializers.UUIDField()
+    name = serializers.CharField()
+    images = serializers.ListField(child=serializers.URLField())
+    address = serializers.CharField()
+    category = serializers.CharField()
+    description = serializers.CharField()
+    is_approved = serializers.BooleanField()
+
+
+class AuthFavoriteProductSerializer(serializers.Serializer):
+    """Simplified product details for the login response."""
+    id = serializers.IntegerField()
+    product_id = serializers.UUIDField()
+    name = serializers.CharField()
+    images = serializers.ListField(child=serializers.URLField())
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    category = serializers.CharField()
+    description = serializers.CharField()
+    stock_quantity = serializers.IntegerField()
+
+
+class AuthUserSerializer(serializers.Serializer):
+    """Describes the 'user' object in the successful login response."""
+    id = serializers.IntegerField()
+    phone_number = serializers.CharField()
+    name = serializers.CharField()
+    role = serializers.CharField()
+    profile_pic = serializers.URLField(allow_null=True)
+    is_new_user = serializers.BooleanField()
+    favorite_shops = AuthFavoriteShopSerializer(many=True)
+    favorite_products = AuthFavoriteProductSerializer(many=True)
+
+
+class FirebaseAuthResponseSerializer(serializers.Serializer):
+    """Describes the entire successful login response."""
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+    user = AuthUserSerializer()
+
+
+
+class LogoutRequestSerializer(serializers.Serializer):
+    """Describes the required input for logging out."""
+    refresh = serializers.CharField()
+
+
+class LogoutResponseSerializer(serializers.Serializer):
+    """Describes the successful logout message."""
+    message = serializers.CharField()
+
+    
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -34,39 +131,24 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        # Ensure role cannot be changed after onboarding is complete.
         if self.instance and self.instance.onboarding_completed:
             if 'role' in data and self.instance.role != data['role']:
                 raise serializers.ValidationError({"role": "Role cannot be changed after onboarding is complete."})
         return data
 
     def update(self, instance, validated_data):
-        # Pop the image file from validated_data so super().update doesn't see it.
         image_file = validated_data.pop('profile_image_upload', None)
         instance = super().update(instance, validated_data)
 
         if image_file:
             firebase_manager = FirebaseStorageManager()
-            
-            # Delete old image from Firebase if it exists
             if instance.profile_image:
                 firebase_manager.delete_image(instance.profile_image)
-            
-            # Upload the new image and get its public URL.
-            image_url = firebase_manager.upload_image(
-                image_file=image_file, 
-                folder='profiles'
-            )
-            
-            # If the upload was successful, update the profile_image field on the instance.
+            image_url = firebase_manager.upload_image(image_file=image_file, folder='profiles')
             if image_url:
                 instance.profile_image = image_url
-                # **THIS IS THE CRITICAL FIX:**
-                # We must explicitly save the instance again to persist the profile_image change.
-                # We use `update_fields` for efficiency, so it only hits the database for this one column.
                 instance.save(update_fields=['profile_image'])
         
-        # The user's onboarding is now considered complete after any update.
         if not instance.onboarding_completed:
             instance.onboarding_completed = True
             instance.save(update_fields=['onboarding_completed'])
@@ -81,110 +163,79 @@ class ShopSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     
-    # Handle multiple images
     image_uploads = serializers.ListField(
-        child=serializers.ImageField(), 
-        write_only=True, 
-        required=False,
-        max_length=settings.SHOP_IMAGE_LIMIT
+        child=serializers.ImageField(), write_only=True, required=False, max_length=settings.SHOP_IMAGE_LIMIT
     )
-    
-    # Handle document images for shop verification
     document_uploads = serializers.ListField(
-        child=serializers.ImageField(), 
-        write_only=True, 
-        required=False,
-        max_length=settings.DOCUMENT_IMAGE_LIMIT
+        child=serializers.ImageField(), write_only=True, required=False, max_length=settings.DOCUMENT_IMAGE_LIMIT
     )
-    
-    # Location fields
     latitude = serializers.FloatField(write_only=True)
     longitude = serializers.FloatField(write_only=True)
 
     class Meta:
         model = Shop
         fields = [
-            'id', 'shop_id', 'name', 'images', 'address', 'category', 
-            'description', 'is_approved', 'owner_name', 'distance', "shop_type", 'position',
-            'is_favorite', 'reviews_count', 'average_rating', 'created_at',
-            # Write-only fields
-            'image_uploads', 'document_uploads', 'latitude', 'longitude'
+            'id', 'shop_id', 'name', 'images', 'address', 'category', 'description', 'is_approved', 
+            'owner_name', 'distance', "shop_type", 'position', 'is_favorite', 'reviews_count', 
+            'average_rating', 'created_at', 'image_uploads', 'document_uploads', 'latitude', 'longitude'
         ]
         read_only_fields = ['id', 'shop_id', 'is_approved', 'created_at']
 
-    def get_distance(self, obj):
-        """Calculate distance from user's location"""
+    def get_distance(self, obj) -> Optional[float]:
         if hasattr(obj, 'distance') and obj.distance is not None:
             return round(obj.distance.km, 2)
-
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             user = request.user
             if user.latitude and user.longitude and obj.location:
                 user_point = Point(user.longitude, user.latitude, srid=4326)
-                # Distance in kilometers
-                distance = obj.location.distance(user_point) * 111  # Rough conversion
+                distance = obj.location.distance(user_point) * 111
                 return round(distance, 2)
         return None
 
-    def get_is_favorite(self, obj):
-        """Check if shop is favorited by current user"""
+    def get_is_favorite(self, obj) -> bool:
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             return FavoriteShop.objects.filter(user=request.user, shop=obj).exists()
         return False
 
-    def get_reviews_count(self, obj):
+    def get_reviews_count(self, obj) -> int:
         return obj.reviews.count()
 
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float:
         reviews = obj.reviews.all()
         if reviews:
             total_rating = sum(review.rating for review in reviews)
             return round(total_rating / len(reviews), 1)
-        return 0
+        return 0.0
 
     def create(self, validated_data):
-        # Handle image uploads
         image_uploads = validated_data.pop('image_uploads', [])
         document_uploads = validated_data.pop('document_uploads', [])
         latitude = validated_data.pop('latitude')
         longitude = validated_data.pop('longitude')
-        
-        # Create location point
         validated_data['location'] = Point(longitude, latitude, srid=4326)
-        
         shop = super().create(validated_data)
-        
-        # Upload images to Firebase
         firebase_manager = FirebaseStorageManager()
-        
         if image_uploads:
-            shop.images = firebase_manager.upload_multiple_images(
-                image_uploads, 'shops', settings.SHOP_IMAGE_LIMIT
-            )
-        
+            shop.images = firebase_manager.upload_multiple_images(image_uploads, 'shops', settings.SHOP_IMAGE_LIMIT)
         if document_uploads:
-            shop.document_images = firebase_manager.upload_multiple_images(
-                document_uploads, 'documents', settings.DOCUMENT_IMAGE_LIMIT
-            )
-        
+            shop.document_images = firebase_manager.upload_multiple_images(document_uploads, 'documents', settings.DOCUMENT_IMAGE_LIMIT)
         shop.save()
         return shop
 
 
 class ShopDetailSerializer(ShopSerializer):
-    """Extended serializer for shop detail view"""
     products_count = serializers.SerializerMethodField()
     recent_reviews = serializers.SerializerMethodField()
     
     class Meta(ShopSerializer.Meta):
         fields = ShopSerializer.Meta.fields + ['products_count', 'recent_reviews']
     
-    def get_products_count(self, obj):
+    def get_products_count(self, obj) -> int:
         return obj.products.count()
     
-    def get_recent_reviews(self, obj):
+    def get_recent_reviews(self, obj) -> List:
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
         return ShopReviewSerializer(recent_reviews, many=True, context=self.context).data
 
@@ -196,88 +247,64 @@ class ProductSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     
-    # Handle multiple images
     image_uploads = serializers.ListField(
-        child=serializers.ImageField(), 
-        write_only=True, 
-        required=False,
-        max_length=settings.PRODUCT_IMAGE_LIMIT
+        child=serializers.ImageField(), write_only=True, required=False, max_length=settings.PRODUCT_IMAGE_LIMIT
     )
 
     class Meta:
         model = Product
         fields = [
-            'id', 'product_id', 'name', 'price', 'description', 'category', "product_type",
-            'stock_quantity', 'images', 'position', 'shop_name', 'shop_id', 'is_favorite',
-            'reviews_count', 'average_rating', 'created_at',
-            # Write-only fields
-            'image_uploads'
+            'id', 'product_id', 'name', 'price', 'description', 'category', "product_type", 'stock_quantity', 
+            'images', 'position', 'shop_name', 'shop_id', 'is_favorite', 'reviews_count', 'average_rating', 
+            'created_at', 'image_uploads'
         ]
         read_only_fields = ['id', 'product_id', 'created_at']
 
-    def get_is_favorite(self, obj):
-        """Check if product is favorited by current user"""
+    def get_is_favorite(self, obj) -> bool:
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             return FavoriteProduct.objects.filter(user=request.user, product=obj).exists()
         return False
 
-    def get_reviews_count(self, obj):
+    def get_reviews_count(self, obj) -> int:
         return obj.reviews.count()
 
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float:
         reviews = obj.reviews.all()
         if reviews:
             total_rating = sum(review.rating for review in reviews)
             return round(total_rating / len(reviews), 1)
-        return 0
+        return 0.0
 
     def create(self, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
-        
         product = super().create(validated_data)
-        
-        # Upload images to Firebase
         if image_uploads:
             firebase_manager = FirebaseStorageManager()
-            product.images = firebase_manager.upload_multiple_images(
-                image_uploads, 'products', settings.PRODUCT_IMAGE_LIMIT
-            )
+            product.images = firebase_manager.upload_multiple_images(image_uploads, 'products', settings.PRODUCT_IMAGE_LIMIT)
             product.save()
-        
         return product
 
     def update(self, instance, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
-        
         product = super().update(instance, validated_data)
-        
-        # Handle image updates
         if image_uploads:
             firebase_manager = FirebaseStorageManager()
-            
-            # Delete old images
             if product.images:
                 firebase_manager.delete_multiple_images(product.images)
-            
-            # Upload new images
-            product.images = firebase_manager.upload_multiple_images(
-                image_uploads, 'products', settings.PRODUCT_IMAGE_LIMIT
-            )
+            product.images = firebase_manager.upload_multiple_images(image_uploads, 'products', settings.PRODUCT_IMAGE_LIMIT)
             product.save()
-        
         return product
 
 
 class ProductDetailSerializer(ProductSerializer):
-    """Extended serializer for product detail view"""
     shop_details = serializers.SerializerMethodField()
     recent_reviews = serializers.SerializerMethodField()
     
     class Meta(ProductSerializer.Meta):
         fields = ProductSerializer.Meta.fields + ['shop_details', 'recent_reviews']
     
-    def get_shop_details(self, obj):
+    def get_shop_details(self, obj) -> Dict:
         return {
             'id': obj.shop.id,
             'shop_id': obj.shop.shop_id,
@@ -286,7 +313,7 @@ class ProductDetailSerializer(ProductSerializer):
             'category': obj.shop.category
         }
     
-    def get_recent_reviews(self, obj):
+    def get_recent_reviews(self, obj) -> List:
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
         return ProductReviewSerializer(recent_reviews, many=True, context=self.context).data
 
@@ -301,10 +328,10 @@ class ShopReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
         read_only_fields = ['id', 'created_at']
 
-    def get_helpful_count(self, obj):
+    def get_helpful_count(self, obj) -> int:
         return obj.helpful_by.count()
 
-    def get_is_helpful(self, obj):
+    def get_is_helpful(self, obj) -> bool:
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             return obj.helpful_by.filter(id=request.user.id).exists()
@@ -326,10 +353,10 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
         read_only_fields = ['id', 'created_at']
 
-    def get_helpful_count(self, obj):
+    def get_helpful_count(self, obj) -> int:
         return obj.helpful_by.count()
 
-    def get_is_helpful(self, obj):
+    def get_is_helpful(self, obj) -> bool:
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             return obj.helpful_by.filter(id=request.user.id).exists()
@@ -342,7 +369,6 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class FavoriteShopSerializer(serializers.ModelSerializer):
-    """Serializer for favorite shops"""
     shop_name = serializers.CharField(source='shop.name', read_only=True)
     shop_images = serializers.JSONField(source='shop.images', read_only=True)
     shop_category = serializers.CharField(source='shop.category', read_only=True)
@@ -352,21 +378,17 @@ class FavoriteShopSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = FavoriteShop
-        fields = [
-            'id', 'shop_id', 'shop_name', 'shop_images', 'shop_category', 
-            'shop_address', 'average_rating', 'added_at'
-        ]
+        fields = ['id', 'shop_id', 'shop_name', 'shop_images', 'shop_category', 'shop_address', 'average_rating', 'added_at']
     
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float:
         reviews = obj.shop.reviews.all()
         if reviews:
             total_rating = sum(review.rating for review in reviews)
             return round(total_rating / len(reviews), 1)
-        return 0
+        return 0.0
 
 
 class FavoriteProductSerializer(serializers.ModelSerializer):
-    """Serializer for favorite products"""
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
     product_images = serializers.JSONField(source='product.images', read_only=True)
@@ -379,21 +401,19 @@ class FavoriteProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteProduct
         fields = [
-            'id', 'product_id', 'product_name', 'product_price', 'product_images',
-            'product_category', 'shop_name', 'shop_id', 'average_rating', 'added_at'
+            'id', 'product_id', 'product_name', 'product_price', 'product_images', 'product_category', 
+            'shop_name', 'shop_id', 'average_rating', 'added_at'
         ]
     
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj) -> float:
         reviews = obj.product.reviews.all()
         if reviews:
             total_rating = sum(review.rating for review in reviews)
             return round(total_rating / len(reviews), 1)
-        return 0
+        return 0.0
 
 
-# Admin Serializers
 class AdminShopListSerializer(serializers.ModelSerializer):
-    """Serializer for admin shop list with basic info"""
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
     owner_phone = serializers.CharField(source='owner.phone_number', read_only=True)
     products_count = serializers.SerializerMethodField()
@@ -405,12 +425,11 @@ class AdminShopListSerializer(serializers.ModelSerializer):
             'owner_name', 'owner_phone', 'products_count', 'created_at'
         ]
     
-    def get_products_count(self, obj):
+    def get_products_count(self, obj) -> int:
         return obj.products.count()
 
 
 class AdminShopApprovalSerializer(serializers.ModelSerializer):
-    """Serializer for shop approval/rejection"""
     approval_action = serializers.ChoiceField(choices=['approve', 'reject'], write_only=True)
     rejection_reason = serializers.CharField(required=False, allow_blank=True)
     

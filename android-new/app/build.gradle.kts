@@ -13,17 +13,21 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.yuvrajsinghgmx.shopsmart"
+        applicationId = "com.yuvrajsinghgmx"
         minSdk = 30
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 7
+        versionName = "1.1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".shopsmart"
+        }
         release {
+            applicationIdSuffix = ".shopsmartgmx"
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
