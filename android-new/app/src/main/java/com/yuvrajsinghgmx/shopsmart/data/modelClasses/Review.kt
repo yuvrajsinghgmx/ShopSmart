@@ -8,6 +8,7 @@ data class Review(
     val comment: String,
     val createdAt: String,
     val helpfulCount: Int,
+    val isHelpful: Boolean,
     val timeAgo: String = ""
 )
 

@@ -1,7 +1,8 @@
-package com.yuvrajsinghgmx.shopsmart.api
+package com.yuvrajsinghgmx.shopsmart.data.interfaces
 
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewRequest
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ToggleReviewResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -26,8 +27,20 @@ interface ReviewApi {
         @Path("shop_id") shopId : String
     ): List<ReviewResponse>
 
-    @GET("/api/products/{product_id}/get/reviews/")
+    @GET("api/products/{product_id}/get/reviews/")
     suspend fun getProductReviews(
         @Path("product_id") productId: String
     ): List<ReviewResponse>
+
+    @POST("api/products/{product_id}/reviews/{product_review_id}/toggle-helpful/")
+    suspend fun toggleProductReviewHelpful(
+        @Path("product_id") productId: String,
+        @Path("product_review_id") reviewId: Int
+    ): ToggleReviewResponse
+
+    @POST("api/shops/{shop_id}/reviews/{shop_review_id}/toggle-helpful/")
+    suspend fun toggleShopReviewHelpful(
+        @Path("shop_id") shopId: String,
+        @Path("shop_review_id") reviewId: Int
+    ): ToggleReviewResponse
 }
