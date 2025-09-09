@@ -144,7 +144,7 @@ REST_FRAMEWORK = {
 }
 SPECTACULAR_SETTINGS = {
     'TITLE': 'ShopSmart API',
-    'DESCRIPTION': 'Official API documentation for the DailyLoop application.',
+    'DESCRIPTION': 'Official API documentation for the ShopSmart application.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }

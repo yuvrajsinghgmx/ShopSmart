@@ -125,71 +125,7 @@ fun UserProfileScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-                        .padding(18.dp)
-                ) {
-                    Text(
-                        "Account Type",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = ShopSmartTypography.headlineLarge,
-                        fontSize = 18.sp
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    if (user.userType == "Customer")
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Customer",
-                                fontSize = 16.sp,
-                                style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType == "Customer")
-                                    MaterialTheme.colorScheme.onPrimary
-                                else
-                                    MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    if (user.userType == "Shopowner")
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.surfaceVariant,
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Shop Owner",
-                                fontSize = 16.sp,
-                                style = ShopSmartTypography.bodyMedium,
-                                color = if (user.userType == "Shopowner")
-                                    MaterialTheme.colorScheme.onPrimary
-                                else
-                                    MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
-                }
+
 
                 Spacer(Modifier.height(16.dp))
 
@@ -213,6 +149,9 @@ fun UserProfileScreen(
                     MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings", onClick = {})
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Help Center", onClick = {})
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    MenuItem(icon = Icons.Outlined.Add, text = "Add Shop (temp)", onClick = {navController.navigate("addshop")})
+
 
                 }
             }
