@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.shops
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -77,7 +78,9 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
             isPickingLocation = false
         )
     }
-
+    fun cancelLocationPicking() {
+        _state.value = state.value.copy(isPickingLocation = false)
+    }
     fun isFormValid(): Boolean {
         val s = state.value
         return s.name.isNotBlank() &&
@@ -113,6 +116,7 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
 
                 result.onSuccess {
                     _shopResponse.value = it
+                    Toast.makeText(context, "Shop added successfully", Toast.LENGTH_SHORT).show()
                     resetForm()
                 }.onFailure {
                     _error.value = it.message
