@@ -1,7 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import androidx.lifecycle.ViewModel
-import com.yuvrajsinghgmx.shopsmart.modelclass.Shop
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

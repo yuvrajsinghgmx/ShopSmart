@@ -21,3 +21,5 @@ val SurfaceDark = Color(0xFF1E1E1E)
 
 val LightGreyy = Color(0xFFF5F5F5)
 val YellowStarColor = Color(0xFFFFC107)
+
+val LikeColor = Color(0xFFFF4081)
