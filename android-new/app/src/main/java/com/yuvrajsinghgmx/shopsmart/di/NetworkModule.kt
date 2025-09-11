@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-private const val BASE_URL = "https://shopsmart-mt0p.onrender.com/"
+private const val BASE_URL = "https://shopsmart.slotinsolutions.com/"
 
 @Module
 @InstallIn(SingletonComponent::class)
