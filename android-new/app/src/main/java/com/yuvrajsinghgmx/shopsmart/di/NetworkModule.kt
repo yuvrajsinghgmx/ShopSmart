@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.FavoritesApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -78,5 +79,10 @@ object NetworkModule {
     @Singleton
     fun provideShopApi(retrofit: Retrofit): ShopApi =
         retrofit.create(ShopApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFavoritesApi(retrofit: Retrofit): FavoritesApi =
+        retrofit.create(FavoritesApi::class.java)
 }
 

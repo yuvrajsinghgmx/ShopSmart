@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedShopResponse
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable

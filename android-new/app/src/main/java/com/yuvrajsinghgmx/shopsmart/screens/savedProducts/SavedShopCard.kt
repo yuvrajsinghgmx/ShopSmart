@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.savedProducts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,13 +29,15 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedShopResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
+import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LikeColor
 import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 
 @Composable
 fun SavedShopCard(
-    shop: Shop,
+    shop: SavedShopResponse,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -49,7 +52,7 @@ fun SavedShopCard(
         Box{
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(shop.imageUrl.firstOrNull()?: R.drawable.error)
+                    .data(shop.shopImages.firstOrNull()?: R.drawable.error)
                     .crossfade(true)
                     .build(),
                 contentDescription = shop.shopName,
@@ -82,16 +85,19 @@ fun SavedShopCard(
             )
             Spacer(modifier = modifier.height(1.dp))
             Text(
-                text = shop.category,
+                text = shop.shopCategory,
                 color = NavySecondary,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = modifier.height(1.dp))
-            Text(
-                text = shop.distance,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+                StarRating(shop.averageRating, 5, 15.dp)
+//            Text(
+//                text = shop.distance,
+//                color = MaterialTheme.colorScheme.onSurface,
+//                style = MaterialTheme.typography.bodySmall,
+//            )
+            }
         }
     }
 }
