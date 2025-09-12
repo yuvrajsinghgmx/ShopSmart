@@ -1,4 +1,3 @@
-import React from 'react';
 import Header from '../components/Header';
 import { useShops } from '../hooks/useShops';
 import { Search, LoaderCircle, AlertTriangle } from 'lucide-react';
@@ -7,14 +6,11 @@ const ManageShops = () => {
   const { loading, error, shops, setSearchTerm, handleAction } = useShops();
 
   const getStatusClass = (status) => {
-    switch (status) {
-      case 'Approved':
-        return 'text-approved font-semibold';
-      case 'Pending':
-        return 'text-pending font-semibold';
-      default:
-        return 'text-gray-400';
-    }
+    const classes = {
+      Approved: 'text-approved font-semibold',
+      Pending: 'text-pending font-semibold',
+    };
+    return classes[status] || 'text-gray-400';
   };
 
   const renderTableBody = () => {
@@ -62,19 +58,19 @@ const ManageShops = () => {
         <td className="p-3 text-center">
           <button
             onClick={() => handleAction(shop.pk, 'approve')}
-            className="bg-approved text-white px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
+            className="bg-approved text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
           >
             Approve
           </button>
           <button
             onClick={() => handleAction(shop.pk, 'reject')}
-            className="bg-pending text-white px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
+            className="bg-pending text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
           >
             Reject
           </button>
           <button
             onClick={() => handleAction(shop.pk, 'delete')}
-            className="bg-danger text-white px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
+            className="bg-danger text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
           >
             Delete
           </button>

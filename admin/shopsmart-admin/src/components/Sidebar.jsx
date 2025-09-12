@@ -11,11 +11,12 @@ const navItems = [
 
 const NavLink = ({ name, icon, isActive, onClick }) => (
   <a
+    href="#"
     onClick={(e) => {
       e.preventDefault();
       onClick(name);
     }}
-    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-grab ${
+    className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-pointer ${
       isActive
         ? 'font-semibold bg-blue-300'
         : 'hover:bg-blue-200'
@@ -25,17 +26,21 @@ const NavLink = ({ name, icon, isActive, onClick }) => (
   </a>
 );
 
-const Sidebar = ({ activePage, setActivePage }) => {
-  return (
-    <aside className="w-60 bg-sidebar-dark h-screen p-4 flex flex-col">
-      <div className="text-2xl font-bold mb-8">ShopSmart</div>
-      <nav className="flex flex-col gap-2">
-        {navItems.map((item) => (
-          < NavLink name={item.name} icon={item.icon} isActive={activePage === item.name} onClick={setActivePage} />
-        ))}
-      </nav>
-    </aside>
-  );
-};
+const Sidebar = ({ activePage, setActivePage }) => (
+  <aside className="w-60 bg-sidebar-dark h-screen p-4 flex flex-col">
+    <div className="text-2xl font-bold mb-8">ShopSmart</div>
+    <nav className="flex flex-col gap-2">
+      {navItems.map((item) => (
+        <NavLink 
+          key={item.name} 
+          name={item.name} 
+          icon={item.icon} 
+          isActive={activePage === item.name} 
+          onClick={setActivePage} 
+        />
+      ))}
+    </nav>
+  </aside>
+);
 
 export default Sidebar;

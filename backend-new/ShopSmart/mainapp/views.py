@@ -512,7 +512,7 @@ class DeleteProductView(generics.DestroyAPIView):
 # Admin Views
 class AdminShopsListView(generics.ListAPIView):
     """
-    Admin view to list all approved shops with their products
+    Admin view to list all shops
     """
     serializer_class = AdminShopListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -569,7 +569,15 @@ class ApproveShopView(generics.UpdateAPIView):
             }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+class AdminDeleteShopView(generics.DestroyAPIView):
+    """
+    Admin view to delete a shop.
+    """
+    queryset = Shop.objects.all()
+    serializer_class = ShopSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
 
 def health_check(request):
     return JsonResponse({'ok': True})
