@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -142,7 +143,11 @@ fun ReviewScreen(
                                 elevation = CardDefaults.cardElevation(4.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                            ) { ReviewItem(review) }
+                            ) {
+                                ReviewItem(
+                                    review = review,
+                                    onToggle = { viewModel.toggleHelpful(target, review.id) })
+                            }
                         }
                     }
                 }
@@ -195,7 +200,7 @@ fun RatingSummaryView(summary: RatingSummary) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text =String.format("%.1f",summary.average),
+                    text = String.format("%.1f", summary.average),
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 StarRating(summary.average.toFloat(), 5, 18.dp)
@@ -329,7 +334,10 @@ fun ReviewTab(viewModel: ReviewViewModel) {
 }
 
 @Composable
-fun ReviewItem(review: Review) {
+fun ReviewItem(
+    review: Review,
+    onToggle: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(10.dp)
@@ -338,9 +346,11 @@ fun ReviewItem(review: Review) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = ImageRequest.Builder(
-                    LocalContext.current
-                ).data(review.userImage).crossfade(true).build(),
+                model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(review.userImage)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "profile picture",
                 modifier = Modifier
                     .size(40.dp)
@@ -351,12 +361,17 @@ fun ReviewItem(review: Review) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column(
-                verticalArrangement =
-                    Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(text = review.username)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    StarRating(review.rating.toFloat(), 5, 12.dp)
+                Text(
+                    text = review.username
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    StarRating(
+                        review.rating.toFloat(), 5, 12.dp
+                    )
                     Text(
                         text =
                             review.timeAgo,
@@ -376,11 +391,18 @@ fun ReviewItem(review: Review) {
             horizontalArrangement =
                 Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Outlined.ThumbUp,
-                contentDescription = "helpful",
-                tint = Color.Gray
-            )
+            IconButton(
+                onClick = { onToggle() },
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = if (review.isHelpful)
+                        Icons.Filled.ThumbUp
+                    else Icons.Outlined.ThumbUp,
+                    contentDescription = "helpful",
+                    tint = Color.Gray
+                )
+            }
             Text(
                 text =
                     "Helpful (${review.helpfulCount})",

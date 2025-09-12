@@ -2,7 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.yuvrajsinghgmx.shopsmart.api.ReviewApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-private const val BASE_URL = "https://shopsmart-mt0p.onrender.com/"
+private const val BASE_URL = "https://shopsmart.slotinsolutions.com/"
 
 @Module
 @InstallIn(SingletonComponent::class)
