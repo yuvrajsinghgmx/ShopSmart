@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .firebaseauth_views import FirebaseAuthView, LogoutView
+from .admin_auth_views import AdminLoginView
 from .views import (
     # Core views
     LoadHomeView, ShopDetailView, ProductDetailView,
@@ -68,6 +69,7 @@ urlpatterns = [
     path('shop-owner/products/<int:pk>/delete/', DeleteProductView.as_view(), name='delete-product'),
     
     # Admin endpoints
+    path('admin/login/', AdminLoginView.as_view(), name='admin-login'),
     path('admin/shops/', AdminShopsListView.as_view(), name='admin-shops-list'),
     path('admin/shops/pending/', AdminPendingShopsView.as_view(), name='admin-pending-shops'),
     path('admin/shops/<int:pk>/approve/', ApproveShopView.as_view(), name='approve-shop'),

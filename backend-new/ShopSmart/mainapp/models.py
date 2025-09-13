@@ -10,8 +10,7 @@ from .choices import ShopTypes, ProductTypes,Role
 
 
 class User(AbstractUser):
-
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     full_name = models.CharField(max_length=150, blank=True)

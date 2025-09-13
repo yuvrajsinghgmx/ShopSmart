@@ -7,10 +7,9 @@ from django.contrib.gis.measure import Distance
 from django.contrib.gis.db.models.functions import Distance as GisDbDistance
 from django.utils import timezone
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 
 from .choices import ShopTypes, ProductTypes
 from .permissions import (
