@@ -13,7 +13,10 @@
 - <a href="#overview"> Overview </a>
 - <a href="#project-insights"> Project Insights </a>
 - <a href="#key-features">Key Features</a>
-- <a href="#technologies-used"> Technologies Used </a>
+- <a href="#tech-stack"> Tech Stack </a>
+- <a href="#getting-started"> Getting Started </a>
+- <a href="#screenshots"> Screenshots </a>
+- <a href="#contribute"> Contribute </a>
 - <a href="#acknowledgments">Acknowledgments</a>
 - <a href="#contact">Contact</a>
 - <a href="#how-to-contribute">How to Contribute</a>
@@ -26,6 +29,7 @@
 - <a href="#stargazers">Stargazers</a>
 - <a href="#forkers">Forkers</a>
 - <a href="#project-admin">Project Admin</a>
+- <a href="#mentors">Mentors</a>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
@@ -124,8 +128,7 @@
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
-<h2 id="example-usage">🚀 Example Usage</h2>
-## 🛠️ Tech Stack
+<h2 id="tech-stack">🛠️ Tech Stack</h2>
 
 - **Frontend**: 
   - Jetpack Compose
@@ -144,8 +147,7 @@
   - Clean Architecture principles
   - Repository pattern
 
-<h2 id="example-usage">🚀 Example Usage</h2>
-## 🚀 Getting Started
+<h2 id="getting-started"> 🚀 Getting Started </h2>
 
 ### Prerequisites
 - Android Studio Arctic Fox or later
@@ -187,13 +189,12 @@ MAPS_API_KEY=your_key_here
   </tr>
 </table>
 
-<h2 id="example-usage">🚀 Example Usage</h2>
-## 🤝 Contributing
+<h2 id="contribute">🤝 Contribute </h2>
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch [`git checkout -b feature/AmazingFeature`]
+3. Commit changes [`git commit -m 'Add AmazingFeature'`]
+4. Push to branch [`git push origin feature/AmazingFeature`]
 5. Open a Pull Request
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
@@ -370,7 +371,7 @@ This project is licensed under the MIT License - see the [`License`](https://git
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
-<h2 align="center">👨‍🏫 Mentors –  ShopSmart (GSSoC'25)</h2>
+<h2 align="center" id="mentors">👨‍🏫 Mentors –  ShopSmart (GSSoC'25)</h2>
 
 | Role          | Name               | GitHub Profile                                      | LinkedIn Profile                                                        |
 | ------------- | ------------------ | --------------------------------------------------- | ----------------------------------------------------------------------- |
