@@ -13,10 +13,10 @@ from .views import (
     
     # Shop Owner views
     RegisterShopView, AddProductView, EditShopView, 
-    EditProductView, DeleteProductView,
+    EditProductView, DeleteProductView,ShopOwnerShopDetails,
     
     # Admin views
-    AdminShopsListView, AdminPendingShopsView, ApproveShopView,
+    AdminShopsListView, AdminPendingShopsView, ApproveShopView, AdminDeleteShopView,
     
     ProductListCreateView, ShopListCreateView, 
     OnboardingView, ApiRootView,
@@ -66,11 +66,13 @@ urlpatterns = [
     path('shop-owner/shops/<int:pk>/edit/', EditShopView.as_view(), name='edit-shop'),
     path('shop-owner/products/<int:pk>/edit/', EditProductView.as_view(), name='edit-product'),
     path('shop-owner/products/<int:pk>/delete/', DeleteProductView.as_view(), name='delete-product'),
+    path('shop-owner/entities/',ShopOwnerShopDetails.as_view(),name ='shop-details'),
     
     # Admin endpoints
     path('admin/shops/', AdminShopsListView.as_view(), name='admin-shops-list'),
     path('admin/shops/pending/', AdminPendingShopsView.as_view(), name='admin-pending-shops'),
     path('admin/shops/<int:pk>/approve/', ApproveShopView.as_view(), name='approve-shop'),
+    path('admin/shops/<int:pk>/delete/', AdminDeleteShopView.as_view(), name='admin-delete-shop'),
 
     path('health/', health_check, name='health-check'),
     

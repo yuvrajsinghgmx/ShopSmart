@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'corsheaders',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -84,6 +86,7 @@ if ENVIRONMENT == "development":
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 else:
     db_config = dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -91,6 +94,7 @@ else:
     DATABASES = {
         'default': db_config
     }
+    STATIC_ROOT = "/var/www/shopsmart/static/"
 
 system = platform.system()
 
@@ -124,7 +128,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (for user profile images)
@@ -166,3 +170,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
