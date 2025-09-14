@@ -86,8 +86,7 @@ if ENVIRONMENT == "development":
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }
-    STATIC_ROOT = "/var/www/shopsmart/static/"
-
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 else:
     db_config = dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -95,7 +94,7 @@ else:
     DATABASES = {
         'default': db_config
     }
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    STATIC_ROOT = "/var/www/shopsmart/static/"
 
 system = platform.system()
 
