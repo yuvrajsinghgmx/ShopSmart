@@ -86,6 +86,8 @@ if ENVIRONMENT == "development":
             'PORT': os.getenv('DB_PORT', '5432'),
         }
     }
+    STATIC_ROOT = "/var/www/shopsmart/static/"
+
 
 else:
     db_config = dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -93,6 +95,7 @@ else:
     DATABASES = {
         'default': db_config
     }
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 system = platform.system()
 
@@ -126,7 +129,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (for user profile images)
