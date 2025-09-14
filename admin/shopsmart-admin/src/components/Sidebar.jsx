@@ -18,8 +18,8 @@ const NavLink = ({ name, icon, isActive, onClick }) => (
     }}
     className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-pointer ${
       isActive
-        ? 'font-semibold bg-accent'
-        : 'hover:bg-gray-700'
+        ? 'font-semibold bg-blue-300'
+        : 'hover:bg-blue-200'
     }`}
   >
     {icon}<span>{name}</span>
@@ -29,7 +29,7 @@ const NavLink = ({ name, icon, isActive, onClick }) => (
 const Sidebar = ({ activePage, setActivePage, onLogout }) => (
   <aside className="w-60 bg-sidebar-dark h-screen p-4 flex flex-col">
     <div>
-      <div className="text-2xl font-bold mb-8 text-text-light">ShopSmart Admin</div>
+      <div className="text-2xl font-bold mb-8">ShopSmart Admin</div>
       <nav className="flex flex-col gap-2">
         {navItems.map((item) => (
           <NavLink 
@@ -46,7 +46,7 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => (
       <a
         href="#"
         onClick={(e) => { e.preventDefault(); onLogout(); }}
-        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-pointer text-text-light hover:bg-gray-700"
+        className="flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-pointer hover:bg-gray-700"
       >
         <LogOut size={20} /><span>Logout</span>
       </a>

@@ -41,7 +41,7 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background-dark text-text-light">
+    <div className="flex min-h-screen">
       <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} />
       <main className="flex-1 p-6 lg:p-8">
         {renderPage()}

@@ -22,13 +22,13 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background-dark">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card-dark rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-text-light">ShopSmart Admin</h1>
-        <h2 className="text-xl text-center text-gray-400">Sign in to your account</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-6 bg-gray-100 border-2  rounded-lg shadow-2xl">
+        <h1 className="text-3xl font-bold text-stone-800 text-center">ShopSmart Admin</h1>
+        <h2 className="text-xl text-center text-stone-800">Sign in to your account</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            <label htmlFor="email" className="text-stone-800 block text-sm font-medium">
               Email
             </label>
             <input
@@ -37,11 +37,11 @@ const Login = ({ onLoginSuccess }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+            <label htmlFor="password" className="text-stone-800 block text-sm font-medium">
               Password
             </label>
             <input
@@ -50,10 +50,10 @@ const Login = ({ onLoginSuccess }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2"
             />
           </div>
-          {error && <p className="text-sm text-center text-danger">{error}</p>}
+          {error && <p className="text-sm text-center text-red-500 font-semibold">{error}</p>}
           <div>
             <button
               type="submit"
