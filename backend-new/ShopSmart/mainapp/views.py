@@ -24,7 +24,7 @@ from .serializers import (
     FavoriteShopSerializer, FavoriteProductSerializer,
     AdminShopListSerializer, AdminShopApprovalSerializer,
     ChoicesSerializer, ToggleFavoriteResponseSerializer, ToggleHelpfulResponseSerializer,
-    ApiRootResponseSerializer, LoadHomeResponseSerializer
+    ApiRootResponseSerializer, LoadHomeResponseSerializer,ShopWithProductsSerializer
 )
 from .models import Product, Shop, ShopReview, ProductReview, FavoriteShop, FavoriteProduct
 
@@ -367,7 +367,7 @@ class EditProductView(generics.UpdateAPIView):
 
 class DeleteProductView(generics.DestroyAPIView):
     """Delete a product"""
-    serializer_class = ProductSerializer # CRITICAL FIX: Added required serializer_class
+    serializer_class = ProductSerializer 
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
 
@@ -380,6 +380,16 @@ class DeleteProductView(generics.DestroyAPIView):
             firebase_manager = FirebaseStorageManager()
             firebase_manager.delete_multiple_images(instance.images)
         super().perform_destroy(instance)
+
+class ShopOwnerShopDetails(generics.ListAPIView):
+    """
+    API for shopowner to see the details of all his shops and their products.
+    """
+    serializer_class = ShopWithProductsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Shop.objects.filter(owner=self.request.user)
 
 
 class AdminShopsListView(generics.ListAPIView):
