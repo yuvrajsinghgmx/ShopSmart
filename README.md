@@ -352,17 +352,6 @@ This project is licensed under the MIT License - see the [`License`](https://git
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
-<h2 align="center" id="mentors">👨‍🏫 Mentors –  ShopSmart (GSSoC'25)</h2>
-
-| Role          | Name               | GitHub Profile                                      | LinkedIn Profile                                                        |
-| ------------- | ------------------ | --------------------------------------------------- | ----------------------------------------------------------------------- |
-| Mentor 1 | Mansi ruhil | [mansiruhil](https://github.com/mansiruhil) | [mansi-ruhil](https://www.linkedin.com/in/mansi-ruhil-7a00a0228/) |
-| Mentor 2 | RISHIKA RAJ | [rishika2108](https://github.com/rishika2108) | [rishika-raj](https://www.linkedin.com/in/rishika-raj-0237a0205/) |
-| Mentor 3 | Harsh singh | [singhharsh](https://github.com/singhharsh1708) | [harsh-s](https://www.linkedin.com/in/harsh-s-08691222a/) |
-| Mentor 4 | anushkha yadav | [AnushkhaYadav](https://github.com/AnushkhaYadav)  | [anushkha-yadav](https://www.linkedin.com/in/anushkha-yadav-a1410b289/) |
-| Mentor 5 | Arshiya Shaikh | [arshiyaaa7](https://github.com/arshiyaaa7) | [arshiya-shaikh](https://www.linkedin.com/in/arshiya-shaikh-b39705259/) |
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
 <h1 align="center"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Glowing%20Star.png" alt="Glowing Star" width="25" height="25" /> Give us a Star and let's make magic! <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Glowing%20Star.png" alt="Glowing Star" width="25" height="25" /></h1>
 
