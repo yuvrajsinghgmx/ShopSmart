@@ -412,6 +412,15 @@ class FavoriteProductSerializer(serializers.ModelSerializer):
             return round(total_rating / len(reviews), 1)
         return 0.0
 
+class ShopWithProductsSerializer(ShopDetailSerializer):
+    products = serializers.SerializerMethodField()
+
+    class Meta(ShopDetailSerializer.Meta):
+        fields = ShopDetailSerializer.Meta.fields + ['products']
+
+    def get_products(self, obj):
+        products = obj.products.all()
+        return ProductSerializer(products, many=True, context=self.context).data
 
 class AdminShopListSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
