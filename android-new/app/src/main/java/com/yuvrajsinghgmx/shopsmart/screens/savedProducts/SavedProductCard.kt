@@ -30,6 +30,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LikeColor
@@ -37,7 +38,7 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 
 @Composable
 fun SavedProductCard(
-    product: Product,
+    product: SavedProductResponse,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -52,10 +53,10 @@ fun SavedProductCard(
         Box{
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(product.imageUrl.firstOrNull()?: R.drawable.error)
+                    .data(product.productImage.firstOrNull()?: R.drawable.error)
                     .crossfade(true)
                     .build(),
-                contentDescription = product.name,
+                contentDescription = product.productName,
                 placeholder = painterResource(R.drawable.error),
                 error = painterResource(R.drawable.error),
                 modifier = Modifier
@@ -79,13 +80,13 @@ fun SavedProductCard(
         }
         Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
             Text(
-                text = product.name,
+                text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
             )
             Spacer(modifier = modifier.height(1.dp))
             Text(
-                text = product.price,
+                text = product.productPrice.toString(),
                 color = GreenPrimary,
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -96,14 +97,14 @@ fun SavedProductCard(
                 style = MaterialTheme.typography.bodySmall
             )
             Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
-                StarRating(product.review.toFloat(), 5,15.dp)
+                StarRating(product.averageRating, 5,15.dp)
 
                 Spacer(modifier = Modifier.width(20.dp))
-                Text(
-                    text = product.distance,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+//                Text(
+//                    text = product.,
+//                    style = MaterialTheme.typography.labelSmall,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
             }
         }
     }
