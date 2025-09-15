@@ -18,13 +18,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
@@ -68,6 +75,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.ButtonLoader
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.FilePickerColumn
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.FilePickerRow
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,8 +112,8 @@ fun AddShopScreen(
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
                 ShopPhotoPicker(
-                    imageUri = stateValue.imageUri,
-                    onImagePicked = { uri -> viewModel.onImagePicked(uri) }
+                    imageUri = stateValue.profileImageUri,
+                    onImagePicked = { uri -> viewModel.onProfileImagePicked(uri) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 ShopTextField(
@@ -145,6 +154,21 @@ fun AddShopScreen(
                     onValueChange = { viewModel.onDescriptionChanged(it) },
                     maxChars = 1000,
                     isError = stateValue.isDescriptionError
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                // Multiple Images
+                ShopImagesPicker(
+                    imageUris = stateValue.imageUris,
+                    onImagePicked = { uri -> viewModel.onImagePicked(uri) },
+                    onRemoveImage = { uri -> viewModel.removeImage(uri) }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+                // Multiple Documents
+                ShopDocumentsPicker(
+                    documentUris = stateValue.documentUris,
+                    onDocumentPicked = { uri -> viewModel.onDocumentPicked(uri) },
+                    onRemoveDocument = { uri -> viewModel.removeDocument(uri) }
                 )
                 Spacer(modifier = Modifier.height(40.dp))
                 SaveShopButton(
@@ -381,6 +405,85 @@ fun ShopDescriptionField(value: String, onValueChange: (String) -> Unit, maxChar
         }
     )
 }
+
+@Composable
+fun ShopImagesPicker(imageUris: List<Uri>, onImagePicked: (Uri) -> Unit, onRemoveImage: (Uri) -> Unit) {
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { onImagePicked(it) }
+    }
+
+    Column {
+        Text("Shop Images", fontWeight = FontWeight.Medium)
+        FilePickerRow(
+            items = imageUris,
+            isImage = true,
+            onAdd = { launcher.launch("image/*") },
+            onRemove = onRemoveImage
+        )
+/*        LazyRow {
+            items(imageUris) { uri ->
+                Box {
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = null,
+                        modifier = Modifier.size(80.dp).padding(4.dp).clip(RoundedCornerShape(8.dp))
+                    )
+                    IconButton(onClick = { onRemoveImage(uri) }, modifier = Modifier.align(Alignment.TopEnd)) {
+                        Icon(Icons.Default.Close, contentDescription = "Remove")
+                    }
+                }
+            }
+            item {
+                IconButton(onClick = {
+                    // trigger image picker
+                    // (use ActivityResultLauncher in your screen)
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Image")
+                }
+            }
+        }*/
+    }
+}
+
+@Composable
+fun ShopDocumentsPicker(documentUris: List<Uri>, onDocumentPicked: (Uri) -> Unit, onRemoveDocument: (Uri) -> Unit) {
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { onDocumentPicked(it) }
+    }
+
+    Column {
+        Text("Shop Documents", fontWeight = FontWeight.Medium)
+        FilePickerColumn(
+            items = documentUris,
+            isImage = false,
+            onAdd = { launcher.launch("*/*") },
+            onRemove = onRemoveDocument
+        )
+/*        LazyColumn {
+            items(documentUris) { uri ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.
+                    Description, contentDescription = null)
+                    Text(uri.lastPathSegment ?: "Document")
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = { onRemoveDocument(uri) }) {
+                        Icon(Icons.Default.Close, contentDescription = "Remove")
+                    }
+                }
+            }
+            item {
+                Button(onClick = {
+                    // trigger document picker
+                }) {
+                    Text("Add Document")
+                }
+            }
+        }*/
+    }
+}
+
 
 @Composable
 fun SaveShopButton(isEnabled: Boolean, isLoading: Boolean, onClick: () -> Unit) {

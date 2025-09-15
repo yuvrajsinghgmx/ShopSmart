@@ -16,14 +16,15 @@ class ShopRepository @Inject constructor(private val api: ShopApi) {
         latitude: RequestBody,
         longitude: RequestBody,
         shopType: RequestBody,
-        imageUploads: List<MultipartBody.Part>,
-        documentUploads: List<MultipartBody.Part>
+        position: RequestBody,
+        images: List<MultipartBody.Part>,
+        documents: List<MultipartBody.Part>
     ): Result<AddShopResponse> {
         return try {
             val response = api.addShop(
                 name, category, address, description,
-                latitude, longitude,shopType,
-                imageUploads, documentUploads
+                latitude, longitude,shopType,position,
+                images, documents
             )
 
             if (response.isSuccessful) {

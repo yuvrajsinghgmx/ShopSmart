@@ -21,8 +21,9 @@ interface ShopApi {
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
         @Part("shop_type") shopType: RequestBody,
-        @Part imageuploads: List<MultipartBody.Part>,
-        @Part documentuploads: List<MultipartBody.Part>
+        @Part("position") position: RequestBody,
+        @Part images: List<MultipartBody.Part>,
+        @Part documents: List<MultipartBody.Part>
     ): Response<AddShopResponse>
 
     @GET("api/shops/")

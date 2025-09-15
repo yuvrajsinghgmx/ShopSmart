@@ -63,8 +63,24 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
         )
     }
 
-    fun onImagePicked(uri: Uri?) {
-        _state.value = state.value.copy(imageUri = uri)
+    fun onProfileImagePicked(uri: Uri?) {
+        _state.value = state.value.copy(profileImageUri = uri)
+    }
+
+    fun onImagePicked(uri: Uri) {
+        _state.value = state.value.copy(imageUris = _state.value.imageUris + uri)
+    }
+
+    fun onDocumentPicked(uri: Uri) {
+        _state.value = _state.value.copy(documentUris = _state.value.documentUris + uri)
+    }
+
+    fun removeImage(uri: Uri) {
+        _state.value = _state.value.copy(imageUris = _state.value.imageUris - uri)
+    }
+
+    fun removeDocument(uri: Uri) {
+        _state.value = _state.value.copy(documentUris = _state.value.documentUris - uri)
     }
 
     fun startLocationPicking() {
@@ -99,8 +115,21 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
 
                 val categoryBody = s.category.toRequestBody("text/plain".toMediaTypeOrNull())
 
-                val imageParts = s.imageUri?.let { listOf(uriToMultipart(context, it, "image_uploads")) } ?: emptyList()
-                val documentParts = emptyList<MultipartBody.Part>()
+//                val imageParts = s.imageUri?.let { listOf(uriToMultipart(context, it, "image_uploads")) } ?: emptyList()
+//                val documentParts = emptyList<MultipartBody.Part>()
+
+                val profileImagePart = s.profileImageUri?.let {
+                    uriToMultipart(context, it, "images") // field name must match API
+                }
+
+
+                val imageParts = s.imageUris.mapIndexed { index, uri ->
+                    uriToMultipart(context, uri, "image_uploads[$index]")
+                }
+
+                val documentParts = s.documentUris.mapIndexed { index, uri ->
+                    uriToMultipart(context, uri, "document_uploads[$index]")
+                }
 
                 val result = repository.addShop(
                     name = s.name.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -110,8 +139,9 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
                     latitude = s.location?.latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     longitude = s.location?.longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
                     shopType = categoryBody,
-                    imageUploads = imageParts,
-                    documentUploads = documentParts
+                    position = "3".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    images = listOfNotNull(profileImagePart) + imageParts,
+                    documents = documentParts
                 )
 
                 result.onSuccess {
