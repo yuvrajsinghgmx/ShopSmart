@@ -429,6 +429,19 @@ class AdminShopListSerializer(serializers.ModelSerializer):
         return obj.products.count()
 
 
+class AdminProductListSerializer(serializers.ModelSerializer):
+    """Serializer for admin product list with basic info"""
+    shop_name = serializers.CharField(source='shop.name', read_only=True)
+    shop_id = serializers.CharField(source='shop.shop_id', read_only=True)
+    
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'product_id', 'name', 'price', 'category', 
+            'stock_quantity', 'shop_name', 'shop_id', 'created_at'
+        ]
+
+
 class AdminShopApprovalSerializer(serializers.ModelSerializer):
     approval_action = serializers.ChoiceField(choices=['approve', 'reject'], write_only=True)
     rejection_reason = serializers.CharField(required=False, allow_blank=True)
