@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
 import com.google.android.gms.maps.model.LatLng
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopRequest
 import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -107,7 +108,7 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
                 !s.isDescriptionError
     }
 
-    fun saveShop(context: Context) {
+/*    fun saveShop(context: Context) {
         val s = state.value
         viewModelScope.launch {
             try {
@@ -158,7 +159,50 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
                 _loading.value = false
             }
         }
+    }*/
+
+    fun saveShop(context: Context) {
+        val s = state.value
+        viewModelScope.launch {
+            try {
+                _loading.value = true
+
+                // Convert picked URIs -> String file paths (or upload them first, then use URLs if backend requires URLs)
+                val imageStrings = s.imageUris.map { it.toString() }
+                val documentStrings = s.documentUris.map { it.toString() }
+
+                val shopRequest = ShopRequest(
+                    name = s.name,
+                    images = s.profileImageUri?.toString() ?: "", // single string
+                    address = s.shopAddress,
+                    category = s.category,
+                    description = s.description,
+                    shop_type = s.category, // adjust if shopType differs
+                    position = 3, // or dynamic
+                    image_uploads = imageStrings,
+                    document_uploads = documentStrings,
+                    latitude = s.location?.latitude ?: 0.0,
+                    longitude = s.location?.longitude ?: 0.0
+                )
+
+                val result = repository.addShop(shopRequest)
+
+                result.onSuccess {
+                    _shopResponse.value = it
+                    Toast.makeText(context, "Shop added successfully", Toast.LENGTH_SHORT).show()
+                    resetForm()
+                }.onFailure {
+                    _error.value = it.message
+                }
+
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _loading.value = false
+            }
+        }
     }
+
 
     private fun resetForm() {
         _state.value = ShopFormState()

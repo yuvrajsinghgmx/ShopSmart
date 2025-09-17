@@ -105,32 +105,31 @@ fun AddShopScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             AppTopBar("Add Shop",onBack = { navController.popBackStack() })
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
-                ShopPhotoPicker(
+                item { ShopPhotoPicker(
                     imageUri = stateValue.profileImageUri,
                     onImagePicked = { uri -> viewModel.onProfileImagePicked(uri) }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ShopTextField(
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item {     ShopTextField(
                     label = "Shop Name",
                     value = stateValue.name,
                     onValueChange = { viewModel.onNameChanged(it) },
                     placeholder = "Enter your Shop name"
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ShopDropdown(
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { ShopDropdown(
                     label = "Shop Category",
                     options = listOf("grocery", "clothing", "electronics"),
                     selected = stateValue.category,
                     onSelected = { viewModel.onCategorySelected(it) }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ShopTextField(
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { ShopTextField(
                     label = "Phone Number",
                     value = stateValue.phoneNumber,
                     onValueChange = { viewModel.onPhoneChanged(it) },
@@ -138,45 +137,46 @@ fun AddShopScreen(
                     keyboardType = KeyboardType.Phone,
                     isError = stateValue.isPhoneError,
                     errorMessage = "Phone number must be exactly 10 digits"
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ShopLocationPicker(
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { ShopLocationPicker(
                     selectedLocation = stateValue.location,
                     isPicking = stateValue.isPickingLocation,
                     onPickLocation = { location, address ->
                         viewModel.onLocationPicked(location, address)
                     },
                     onStartPicking = { viewModel.startLocationPicking()},
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-                ShopDescriptionField(
+                    viewModel = viewModel
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { ShopDescriptionField(
                     value = stateValue.description,
                     onValueChange = { viewModel.onDescriptionChanged(it) },
                     maxChars = 1000,
                     isError = stateValue.isDescriptionError
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+
                 // Multiple Images
-                ShopImagesPicker(
+                item { ShopImagesPicker(
                     imageUris = stateValue.imageUris,
                     onImagePicked = { uri -> viewModel.onImagePicked(uri) },
                     onRemoveImage = { uri -> viewModel.removeImage(uri) }
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-                // Multiple Documents
-                ShopDocumentsPicker(
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
+                item { ShopDocumentsPicker(
                     documentUris = stateValue.documentUris,
                     onDocumentPicked = { uri -> viewModel.onDocumentPicked(uri) },
                     onRemoveDocument = { uri -> viewModel.removeDocument(uri) }
-                )
-                Spacer(modifier = Modifier.height(40.dp))
-                SaveShopButton(
+                ) }
+                // Multiple Documents
+                item { Spacer(modifier = Modifier.height(10.dp)) }
+                item { SaveShopButton(
                     isEnabled = viewModel.isFormValid(),
                     isLoading = isLoading,
                     onClick = { viewModel.saveShop(context) }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                ) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
         }
         SnackbarHost(
@@ -328,7 +328,7 @@ fun ShopLocationPicker(
     isPicking: Boolean,
     onPickLocation: (LatLng, String) -> Unit,
     onStartPicking: () -> Unit,
-    viewModel : ShopViewModel = hiltViewModel()
+    viewModel : ShopViewModel
 ) {
     var address by remember { mutableStateOf<String?>(null) }
     Text("Shop Address", fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(bottom = 8.dp))
@@ -415,34 +415,13 @@ fun ShopImagesPicker(imageUris: List<Uri>, onImagePicked: (Uri) -> Unit, onRemov
 
     Column {
         Text("Shop Images", fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(10.dp))
         FilePickerRow(
-            items = imageUris,
+            uris = imageUris,
             isImage = true,
             onAdd = { launcher.launch("image/*") },
             onRemove = onRemoveImage
         )
-/*        LazyRow {
-            items(imageUris) { uri ->
-                Box {
-                    Image(
-                        painter = rememberAsyncImagePainter(uri),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp).padding(4.dp).clip(RoundedCornerShape(8.dp))
-                    )
-                    IconButton(onClick = { onRemoveImage(uri) }, modifier = Modifier.align(Alignment.TopEnd)) {
-                        Icon(Icons.Default.Close, contentDescription = "Remove")
-                    }
-                }
-            }
-            item {
-                IconButton(onClick = {
-                    // trigger image picker
-                    // (use ActivityResultLauncher in your screen)
-                }) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Image")
-                }
-            }
-        }*/
     }
 }
 
@@ -455,32 +434,13 @@ fun ShopDocumentsPicker(documentUris: List<Uri>, onDocumentPicked: (Uri) -> Unit
 
     Column {
         Text("Shop Documents", fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(10.dp))
         FilePickerColumn(
-            items = documentUris,
+            uris = documentUris,
             isImage = false,
             onAdd = { launcher.launch("*/*") },
             onRemove = onRemoveDocument
         )
-/*        LazyColumn {
-            items(documentUris) { uri ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.
-                    Description, contentDescription = null)
-                    Text(uri.lastPathSegment ?: "Document")
-                    Spacer(Modifier.weight(1f))
-                    IconButton(onClick = { onRemoveDocument(uri) }) {
-                        Icon(Icons.Default.Close, contentDescription = "Remove")
-                    }
-                }
-            }
-            item {
-                Button(onClick = {
-                    // trigger document picker
-                }) {
-                    Text("Add Document")
-                }
-            }
-        }*/
     }
 }
 
