@@ -446,3 +446,24 @@ class AdminShopApprovalSerializer(serializers.ModelSerializer):
         model = Shop
         fields = ['id', 'shop_id', 'is_approved', 'approval_action', 'rejection_reason']
         read_only_fields = ['id', 'shop_id', 'is_approved']
+
+
+class AdminLoginSerializer(serializers.Serializer):
+    """Describes the input for admin email/password login."""
+    email = serializers.EmailField()
+    password = serializers.CharField(trim_whitespace=False)
+
+
+class AdminUserSerializer(serializers.Serializer):
+    """Describes the 'user' object in the successful admin login response."""
+    id = serializers.IntegerField()
+    email = serializers.EmailField()
+    name = serializers.CharField()
+    role = serializers.CharField()
+
+
+class AdminAuthResponseSerializer(serializers.Serializer):
+    """Describes the entire successful admin login response."""
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+    user = AdminUserSerializer()

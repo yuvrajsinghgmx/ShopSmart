@@ -7,12 +7,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.conf import settings
 from .choices import ShopTypes, ProductTypes,Role
+from .managers import CustomUserManager
 
 
 class User(AbstractUser):
-
-    email = models.EmailField(blank=True, null=True)
-    phone_number = models.CharField(max_length=15, unique=True)
+    email = models.EmailField(_('email address'), unique=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     full_name = models.CharField(max_length=150, blank=True)
     profile_image = models.URLField(max_length=1024, null=True, blank=True)
@@ -37,11 +37,13 @@ class User(AbstractUser):
         verbose_name=_('user permissions'),
     )
 
-    USERNAME_FIELD = 'phone_number'
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return self.email or self.username
 
 
 class Shop(models.Model):

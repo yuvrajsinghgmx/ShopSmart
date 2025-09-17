@@ -35,14 +35,25 @@ class FirebaseAuthView(APIView):
             decoded_token = firebase_auth.verify_id_token(id_token)
             phone = decoded_token.get("phone_number")
             uid = decoded_token.get("uid")
+            firebase_email = decoded_token.get("email")
 
-            if not phone:
-                return Response({"error": "Phone number not found in token"}, status=status.HTTP_400_BAD_REQUEST)
+            if not phone or not uid:
+                return Response({"error": "Token is missing phone number or UID"}, status=status.HTTP_400_BAD_REQUEST)
 
-            user, created = User.objects.get_or_create(username=uid, defaults={"phone_number": phone})
+            # Generate a unique placeholder email if not provided by Firebase
+            user_email = firebase_email or f"{uid}@shopsmart.firebase"
 
-            if not created and user.phone_number != phone:
-                user.phone_number = phone
+            user, created = User.objects.get_or_create(
+                username=uid, 
+                defaults={"phone_number": phone, "email": user_email}
+            )
+
+            if not created:
+                # Update phone and email if they have changed or were placeholders
+                if user.phone_number != phone:
+                    user.phone_number = phone
+                if user.email != user_email:
+                    user.email = user_email
                 user.save()
 
             refresh = RefreshToken.for_user(user)
