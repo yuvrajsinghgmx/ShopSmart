@@ -11,7 +11,7 @@ from .managers import CustomUserManager
 
 
 class User(AbstractUser):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True,null=True,blank=True)
     phone_number = models.CharField(max_length=15, unique=True, blank=True)
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
     full_name = models.CharField(max_length=150, blank=True)
