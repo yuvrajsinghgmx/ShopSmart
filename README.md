@@ -19,8 +19,6 @@
 - <a href="#contribute"> Contribute </a>
 - <a href="#acknowledgments">Acknowledgments</a>
 - <a href="#contact">Contact</a>
-- <a href="#how-to-contribute">How to Contribute</a>
-- <a href="#contributing">Contributing</a>
 - <a href="#code-of-conduct">Code of Conduct</a>
 - <a href="#contribution-guidelines">Contribution Guidelines</a>
 - <a href="#suggestions-feedback"> Suggestions & Feedback</a>
