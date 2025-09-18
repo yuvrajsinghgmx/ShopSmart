@@ -1,3 +1,4 @@
+package com.yuvrajsinghgmx.shopsmart.screens.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -33,22 +34,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
+import coil.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 
 @Composable
-fun UserProfileScreen(
-    user: User,
+fun CustomerProfileScreen(
     viewModel: SharedAppViewModel,
     navController: NavController
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.getLogInData()
+    }
+    val user = viewModel.userState.collectAsState().value
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -74,27 +82,42 @@ fun UserProfileScreen(
                             .clip(CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = "User Avatar",
-                            modifier = Modifier.size(80.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        if (user?.profilePic.isNullOrEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Default Avatar",
+                                modifier = Modifier.size(110.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            AsyncImage(
+                                model = user.profilePic,
+                                contentDescription = "Profile Image",
+                                modifier = Modifier
+                                    .size(110.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    user?.userName?.let {
+                        Text(
+                            text = it,
+                            style = ShopSmartTypography.headlineLarge,
+                            fontSize = 32.sp,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = user.userName,
-                        style = ShopSmartTypography.headlineLarge,
-                        fontSize = 32.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = user.userPhoneNumber.toString(),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = ShopSmartTypography.bodyMedium,
-                        fontSize = 18.sp
-                    )
+                    user?.userPhoneNumber?.let {
+                        Text(
+                            text = it,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = ShopSmartTypography.bodyMedium,
+                            fontSize = 18.sp
+                        )
+                    }
                     Spacer(Modifier.height(16.dp))
                     Button(
                         onClick = { /* reroute to edit profile screen */ },
@@ -137,7 +160,7 @@ fun UserProfileScreen(
                         .padding(16.dp)
                 ) {
                     MenuItem(icon = Icons.Outlined.LocationOn, text = "Delivery Radius", trailingText = "10 km", onClick = {})
-                    if (user.userType == "Shopowner") {
+                    if (user?.userType == "Shopowner") {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         MenuItem(icon = Icons.Outlined.Add, text = "Add New Product", onClick = {})
                     }

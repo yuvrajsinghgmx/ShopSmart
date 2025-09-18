@@ -1,10 +1,11 @@
 package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 data class User(
-    val userId: String,
+    val userId: Int,
     val userName: String,
-    val userPhoneNumber: Int,
-    val userType: String,
-    val savedProducts: List<Product>,
-    val savedShops: List<Shop>
+    val userPhoneNumber: String?,
+    val userType: String?,
+    val savedProducts: List<Product> = emptyList(),
+    val savedShops: List<Shop> = emptyList(),
+    val profilePic: String?
 )

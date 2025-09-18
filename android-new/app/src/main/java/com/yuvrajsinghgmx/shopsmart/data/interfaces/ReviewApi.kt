@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface ReviewApi {
 
-    @POST("api/shops/{shop_id}/reviews/")
+    @POST("shops/{shop_id}/reviews/")
     suspend fun postShopReview(
         @Path("shop_id") shopId: String,
         @Body request: ReviewRequest
