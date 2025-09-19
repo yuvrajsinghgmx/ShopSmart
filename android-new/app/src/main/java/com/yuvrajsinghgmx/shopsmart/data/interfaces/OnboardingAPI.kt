@@ -9,7 +9,7 @@ import retrofit2.http.Part
 
 interface OnboardingAPI {
     @Multipart
-    @PUT("api/onboarding/")
+    @PUT("onboarding/")
     suspend fun onboardUser(
         @Part("role") role: RequestBody,
         @Part("full_name") fullName: RequestBody,
@@ -22,5 +22,3 @@ interface OnboardingAPI {
         @Part profile_image_upload: MultipartBody.Part?
     ): OnboardingResponse
 }
-
-

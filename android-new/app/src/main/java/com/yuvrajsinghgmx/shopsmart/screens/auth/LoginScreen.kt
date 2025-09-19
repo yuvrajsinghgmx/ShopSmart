@@ -105,7 +105,8 @@ fun LoginScreen(
                     name = state.djangoAuthResponse.user.name ?: "",
                     phone = state.djangoAuthResponse.user.phoneNumber ?: "",
                     profilePic = state.djangoAuthResponse.user.profilePic,
-                    isNewUser = state.djangoAuthResponse.user.isNewUser
+                    isNewUser = state.djangoAuthResponse.user.isNewUser,
+                    role = state.djangoAuthResponse.user.role
                 )
                 onLogInSuccess(state.djangoAuthResponse.user.isNewUser)
             }

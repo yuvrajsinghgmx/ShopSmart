@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -86,17 +87,14 @@ fun OnBoardingScreen(
     var emailError by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        if (authState is AuthState.onboardingSuccess) {
-            //onboardingComplete()
-            when (selectedRole) {
-                UserRole.CUSTOMER -> {
-                    onboardingComplete(UserRole.CUSTOMER)
-                }
-                UserRole.SHOP_OWNER -> {
-                    onboardingComplete(UserRole.SHOP_OWNER)
-                }
-                else -> { /* No role selected, do nothing */ }
+        when (val state=authState) {
+            is AuthState.onboardingSuccess -> {
+                onboardingComplete(state.role)
             }
+            is AuthState.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+            }
+            else -> Unit
         }
     }
 
@@ -274,8 +272,7 @@ fun OnBoardingScreen(
 
                 nameError = fullName.isBlank()
                 roleError = selectedRole == null
-                emailError =
-                    email.isNotBlank() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                emailError = email.isNotBlank() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
                 try {
                     if (!nameError && !roleError && !emailError && selectedRole != null) {

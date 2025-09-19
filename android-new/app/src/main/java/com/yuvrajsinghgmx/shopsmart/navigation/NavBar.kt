@@ -1,6 +1,5 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
-import UserProfileScreen
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
+import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
@@ -122,7 +122,6 @@ fun AppNavHost(
             }
             composable(BottomNavItem.Profile.route) {
                 UserProfileScreen(
-                    user = sharedAppViewModel.getUserData(),
                     viewModel = sharedAppViewModel,
                     navController = navController
                 )
