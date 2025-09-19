@@ -21,7 +21,7 @@ from .serializers import (
     UserProfileSerializer, ShopSerializer, ShopDetailSerializer, 
     UserOnboardingSerializer, ShopReviewSerializer, ProductReviewSerializer,
     FavoriteShopSerializer, FavoriteProductSerializer,
-    AdminShopListSerializer, AdminShopApprovalSerializer,
+    AdminShopListSerializer, AdminShopApprovalSerializer, AdminProductListSerializer,
     ChoicesSerializer, ToggleFavoriteResponseSerializer, ToggleHelpfulResponseSerializer,
     ApiRootResponseSerializer, LoadHomeResponseSerializer,ShopWithProductsSerializer
 )
@@ -402,6 +402,17 @@ class AdminShopsListView(generics.ListAPIView):
         return Shop.objects.select_related('owner')
 
 
+class AdminProductsListView(generics.ListAPIView):
+    """
+    Admin view to list all products from all shops.
+    """
+    serializer_class = AdminProductListSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    
+    def get_queryset(self):
+        return Product.objects.select_related('shop').order_by('-created_at')
+
+
 class AdminPendingShopsView(generics.ListAPIView):
     serializer_class = ShopDetailSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -438,12 +449,22 @@ class ApproveShopView(generics.UpdateAPIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class AdminDeleteShopView(generics.DestroyAPIView):
     """
     Admin view to delete a shop.
     """
     queryset = Shop.objects.all()
     serializer_class = ShopSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+
+class AdminDeleteProductView(generics.DestroyAPIView):
+    """
+    Admin view to delete a product.
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
 
 
