@@ -72,3 +72,11 @@ export const deleteShop = (id) => {
     method: 'DELETE',
   });
 };
+
+export const getProducts = () => apiRequest('admin/products/', { method: 'GET' });
+
+export const deleteProduct = (id) => {
+  return apiRequest(`admin/products/${id}/delete/`, {
+    method: 'DELETE',
+  });
+};
