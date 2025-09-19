@@ -41,3 +41,19 @@ data class SavedShopResponse(
     @SerializedName("added_at")
     val addedAt: String
 )
+
+data class ToggleFavoriteProductResponse(
+    val message: String,
+    @SerializedName("is_favorite")
+    val isFavorite: Boolean,
+    @SerializedName("product_id")
+    val productId: String
+)
+
+data class ToggleFavoriteShopResponse(
+    val message: String,
+    @SerializedName("is_favorite")
+    val isFavorite: Boolean,
+    @SerializedName("shop_id")
+    val shopId: String
+)
