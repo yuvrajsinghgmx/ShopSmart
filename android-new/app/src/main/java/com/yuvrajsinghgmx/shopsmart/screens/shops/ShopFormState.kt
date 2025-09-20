@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.shops
 import android.net.Uri
 import com.google.android.gms.maps.model.LatLng
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
+import okhttp3.MultipartBody
 
 data class ShopFormState(
     val name: String = "",
@@ -20,4 +21,9 @@ data class ShopFormState(
     val shops: List<ShopItem> = emptyList(),
     val isLoadingShops: Boolean = false,
     val errorShops: String? = null
+)
+
+data class MultipartWithName(
+    val part: MultipartBody.Part,
+    val fileName: String
 )

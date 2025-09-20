@@ -11,25 +11,11 @@ data class Shop(
     val longitude: Double
 )
 
-data class ShopRequest(
-    val name: String,
-    val images: String,
-    val address: String,
-    val category: String,
-    val description: String,
-    val shop_type: String,
-    val position: Int,
-    val image_uploads: List<String>,
-    val document_uploads: List<String>,
-    val latitude: Double,
-    val longitude: Double
-)
-
 data class AddShopResponse(
     val id: Int,
     val shop_id: String,
     val name: String,
-    val images: String,
+    val images: List<String>,
     val address: String,
     val category: String,
     val description: String,

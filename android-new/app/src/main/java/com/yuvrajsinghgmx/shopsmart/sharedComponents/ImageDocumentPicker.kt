@@ -180,25 +180,6 @@ fun FilePickerRow(
     }
 }
 
-//@Composable
-//fun FilePickerColumn(
-//    uris: List<Uri>,
-//    isImage: Boolean = false,
-//    onAdd: () -> Unit,
-//    onRemove: (Uri) -> Unit
-//) {
-//    LazyColumn {
-//        items(uris) { uri ->
-//            FileItem(uri = uri, isImage = isImage, onRemove = onRemove, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
-//        }
-//        item {
-//            Button(onClick = onAdd, modifier = Modifier.fillMaxWidth()) {
-//                Text("Add Document")
-//            }
-//        }
-//    }
-//}
-
 @Composable
 fun FilePickerColumn(
     uris: List<Uri>,
