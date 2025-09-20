@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 
 
@@ -22,9 +22,9 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 fun ProductDetails(
     sharedViewModel: SharedProductViewModel,
     navController: NavController,
-    viewModel: ProductDetailsViewModel = viewModel()
+    viewModel: ProductDetailsViewModel = hiltViewModel()
 ) {
-    val isSaved by viewModel.isProductSaved
+    val isSaved by viewModel.isProductSaved.collectAsState()
     val context = LocalContext.current
 
     val selectedProduct = sharedViewModel.selectedProduct.collectAsState().value
@@ -34,7 +34,10 @@ fun ProductDetails(
             when (event) {
                 is UiEvent.ShareProduct -> {
                     val intent = Intent(Intent.ACTION_SEND).apply {
-                        putExtra(Intent.EXTRA_TEXT, "Check out this product: ${event.product.name}\n\n${event.product.description}")
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Check out this product: ${event.product.name}\n\n${event.product.description}"
+                        )
                         type = "text/plain"
                     }
                     context.startActivity(Intent.createChooser(intent, "Share via"))
@@ -53,19 +56,24 @@ fun ProductDetails(
             }
         }
     }
-    if(selectedProduct != null) {
+    if (selectedProduct != null) {
+        LaunchedEffect(selectedProduct) {
+            viewModel.setInitialFavoriteState(selectedProduct.isFavorite);
+        }
         ProductDetailsUI(
             product = selectedProduct,
             onBack = { navController.popBackStack() },
             onShareClick = { viewModel.onShareClick(selectedProduct) },
             onCallClick = { viewModel.onCallClick(selectedProduct.shopNumber) },
-            onSaveClick = { viewModel.onSaveClick(selectedProduct) },
+            onSaveClick = { viewModel.onSaveClick(selectedProduct.productId) },
             isProductSaved = isSaved,
             navController = navController
         )
-    }else{
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center){
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             Text(text = "Product not found")
         }
     }

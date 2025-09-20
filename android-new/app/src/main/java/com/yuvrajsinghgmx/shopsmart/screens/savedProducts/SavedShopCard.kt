@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun SavedShopCard(
         Box{
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(shop.shopImages.firstOrNull()?: R.drawable.error)
+                    .data(shop.shopImages?.firstOrNull()?: R.drawable.error)
                     .crossfade(true)
                     .build(),
                 contentDescription = shop.shopName,
@@ -60,7 +61,12 @@ fun SavedShopCard(
                 error = painterResource(R.drawable.error),
                 modifier = Modifier
                     .height(120.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                contentScale = if(shop.shopImages.isEmpty()){
+                    ContentScale.Fit
+                }else{
+                    ContentScale.Crop
+                }
             )
             IconButton(
                 onClick = { /* needs to be implemented */ },
