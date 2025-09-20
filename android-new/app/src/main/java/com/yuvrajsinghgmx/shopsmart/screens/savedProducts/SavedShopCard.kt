@@ -53,7 +53,7 @@ fun SavedShopCard(
         Box{
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(shop.shopImages.firstOrNull()?: R.drawable.error)
+                    .data(shop.shopImages?.firstOrNull()?: R.drawable.error)
                     .crossfade(true)
                     .build(),
                 contentDescription = shop.shopName,

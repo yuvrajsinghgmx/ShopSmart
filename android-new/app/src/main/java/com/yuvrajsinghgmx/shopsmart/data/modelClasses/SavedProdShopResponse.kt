@@ -11,7 +11,7 @@ data class SavedProductResponse(
     @SerializedName("product_price")
     val productPrice: Double,
     @SerializedName("product_image")
-    val productImage: List<String>,
+    val productImage: List<String?>,
     @SerializedName("product_category")
     val productCategory: String,
     @SerializedName("shop_name")
@@ -31,7 +31,7 @@ data class SavedShopResponse(
     @SerializedName("shop_name")
     val shopName: String,
     @SerializedName("shop_images")
-    val shopImages: List<String>,
+    val shopImages: List<String?>,
     @SerializedName("shop_category")
     val shopCategory: String,
     @SerializedName("shop_address")
