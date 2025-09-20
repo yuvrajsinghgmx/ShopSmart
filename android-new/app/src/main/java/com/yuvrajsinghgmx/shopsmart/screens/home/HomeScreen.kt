@@ -66,138 +66,161 @@ fun HomeScreen(
 
     LaunchedEffect(shopState.shops) {
         shopState.shops.forEach { shop ->
-            Log.d("ShopHomeScreen", "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}")
+            Log.d(
+                "ShopHomeScreen",
+                "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}"
+            )
         }
     }
 
-    if (shopState.isLoadingShops) {
-        CircularProgressIndicator()
-    }
-
-    shopState.errorShops?.let { error ->
-        Log.e("ShopHomeScreen", "Error fetching shops: $error")
-    }
-
-
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(vertical = 20.dp)
-    ) {
-        // Header
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+    when {
+        shopState.isLoadingShops && shopState.shops.isEmpty() -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Column {
-                    Text(
-                        text = "Hi, User",
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    Text(
-                        text = "Showing shops within 10 km",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                CircularProgressIndicator()
+            }
+        }
+
+        shopState.errorShops != null -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Error: ${shopState.errorShops}",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
+        else -> {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 20.dp)
+            ) {
+                // Header
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Hi, User",
+                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = "Showing shops within 10 km",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            )
+                        }
+                        AsyncImage(
+                            model = "https://i.pravatar.cc/150?img=3",
+                            contentDescription = "Profile",
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .clickable { },
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+
+                // Search Bar
+                item {
+                    OutlinedTextField(
+                        value = state.searchQuery ?: "",
+                        onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                        trailingIcon = {
+                            Icon(
+                                Icons.Default.FilterList,
+                                contentDescription = "Filter"
+                            )
+                        },
+                        placeholder = { Text("Search shops or products...") },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedBorderColor = MaterialTheme.colorScheme.outline,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
                     )
                 }
-                AsyncImage(
-                    model = "https://i.pravatar.cc/150?img=3",
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .clickable { },
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
 
-        // Search Bar
-        item {
-            OutlinedTextField(
-                value = state.searchQuery ?: "",
-                onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                trailingIcon = { Icon(Icons.Default.FilterList, contentDescription = "Filter") },
-                placeholder = { Text("Search shops or products...") },
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    focusedBorderColor = MaterialTheme.colorScheme.outline,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                )
-            )
-        }
+                // Categories
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(categories) { category ->
+                            CategoryChip(
+                                label = category,
+                                isSelected = selectedCategory == category,
+                                onClick = { selectedCategory = category }
+                            )
+                        }
+                    }
+                }
 
-        // Categories
-        item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(categories) { category ->
-                    CategoryChip(
-                        label = category,
-                        isSelected = selectedCategory == category,
-                        onClick = { selectedCategory = category }
+                // Trending Products
+                item {
+                    Column {
+                        Text(
+                            text = "Trending Products",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            items(state.products) { product ->
+                                ProductCard(
+                                    product = product,
+                                    onClick = {
+                                        sharedProductViewModel.selectedProduct(product)
+                                        navController.navigate("productScreen")
+                                    })
+                            }
+                        }
+                    }
+                }
+
+                // Nearby Shops
+                item {
+                    Text(
+                        text = "Nearby Shops",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+                items(state.nearbyShops) { shop ->
+                    ShopCard(
+                        shop = shop,
+                        onClick = {
+                            sharedViewModel.setSelectedShop(shop)
+                            navController.navigate("shopDetails")
+                        }
+                    )
+                }
+                item {
+                    Text(
+                        text = "Explore More Products",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 }
             }
-        }
-
-        // Trending Products
-        item {
-            Column {
-                Text(
-                    text = "Trending Products",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(Modifier.height(8.dp))
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
-                ) {
-                    items(state.products) { product ->
-                        ProductCard(
-                            product = product,
-                            onClick = {
-                               sharedProductViewModel.selectedProduct(product)
-                                navController.navigate("productScreen")
-                            })
-                    }
-                }
-            }
-        }
-
-        // Nearby Shops
-        item {
-            Text(
-                text = "Nearby Shops",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
-        }
-        items(state.nearbyShops) { shop ->
-            ShopCard(
-                shop = shop,
-                onClick = {
-                    sharedViewModel.setSelectedShop(shop)
-                    navController.navigate("shopDetails")
-                }
-            )
-        }
-        item {
-            Text(
-                text = "Explore More Products",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-            )
         }
     }
 }
@@ -226,3 +249,4 @@ fun CategoryChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
         }
     }
 }
+
