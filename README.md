@@ -19,8 +19,6 @@
 - <a href="#contribute"> Contribute </a>
 - <a href="#acknowledgments">Acknowledgments</a>
 - <a href="#contact">Contact</a>
-- <a href="#how-to-contribute">How to Contribute</a>
-- <a href="#contributing">Contributing</a>
 - <a href="#code-of-conduct">Code of Conduct</a>
 - <a href="#contribution-guidelines">Contribution Guidelines</a>
 - <a href="#suggestions-feedback"> Suggestions & Feedback</a>
@@ -172,11 +170,22 @@ MAPS_API_KEY=your_key_here
 
 <h2 id="contribute">🤝 Contribute </h2>
 
-1. Fork the repository
-2. Create your feature branch [`git checkout -b feature/AmazingFeature`]
-3. Commit changes [`git commit -m 'Add AmazingFeature'`]
-4. Push to branch [`git push origin feature/AmazingFeature`]
-5. Open a Pull Request
+We welcome contributions from developers of all skill levels — whether it’s fixing bugs, adding features, improving documentation, or enhancing UI/UX. 💚  
+
+### Ways to Contribute
+- 🐛 **Bug fixes** – Identify and resolve issues  
+- ✨ **New features** – Suggest and implement functionality  
+- 📚 **Documentation** – Improve guides and instructions  
+- 🎨 **UI/UX improvements** – Make the platform more user-friendly  
+- 🔧 **Performance** – Optimize speed and efficiency  
+- 📱 **Mobile responsiveness** – Enhance the mobile experience  
+- 🔒 **Security** – Strengthen data protection  
+
+### Getting Started
+1. **Fork** the repository  
+2. **Create a feature branch**  
+   ```bash
+   git checkout -b feature/YourFeature
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
@@ -221,45 +230,6 @@ Your insights are invaluable to us. Reach out to us team for any inquiries, feed
 - Project Link: [https://github.com/yuvrajsinghgmx/ShopSmart](https://github.com/yuvrajsinghgmx/ShopSmart)
 
 *Feel free to reach out with any questions or feedback!*
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
-
-<h2 id="how-to-contribute">🤝How to Contribute</h2>
-
-We love contributions from the community! Whether it's a bug report, a new feature, or a documentation improvement, we appreciate your help.
-
-***How to Contribute***
-
-1.  **Fork the repository** and create a new branch for your changes.
-2.  **Make your changes** and ensure everything is working as expected.
-3.  **Submit a pull request** with a clear description of your changes.
-
-***Found a Bug?***
-
--   Check the [issue tracker](https://github.com/yuvrajsinghgmx/ShopSmart/issues) to see if the bug has already been reported.
--   If not, open a new issue and provide as much detail as possible.
-
-***Have a Feature Idea?***
-
--   We'd love to hear it! Open an issue to discuss your idea.
-
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
-
-<h2 id="contributing">🤝 Contributing</h2>
-
-We welcome contributions from developers of all skill levels! Here are some ways you can contribute:
-
-### Ways to Contribute
-
-- 🐛 Bug fixes - Help us identify and fix bugs
-- ✨ New features - Suggest and implement new functionality
-- 📚 Documentation - Improve our docs and guides
-- 🎨 UI/UX improvements - Make the platform more user-friendly
-- 🔧 Performance optimizations - Help make ShopSmart faster and more efficient
-- 📱 Mobile responsiveness - Improve the mobile experience
-- 🔒 Security enhancements - Help keep user data safe
-
-*Thank you to everyone who has made ShopSmart better! 💚*
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 

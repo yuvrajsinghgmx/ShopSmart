@@ -19,7 +19,9 @@ class Repository @Inject constructor() {
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
                 shopName = "Urban Leather Co.",
                 shopNumber = "101",
-                distance = "2.1 km"
+                distance = "2.1 km",
+                shopId = "1",
+                isFavorite = true
             ),
             Product(
                 productId = "2",
@@ -29,6 +31,8 @@ class Repository @Inject constructor() {
                 review = "4.6",
                 description = "Spacious, stylish backpack in genuine leather.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
+                shopId = "2",
+                isFavorite = true,
                 shopName = "Leather Workshop",
                 shopNumber = "102",
                 distance = "3.4 km"
@@ -41,6 +45,8 @@ class Repository @Inject constructor() {
                 review = "4.7",
                 description = "Durable and classic handcrafted wallet.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
+                shopId = "3",
+                isFavorite = false,
                 shopName = "Artisan Leather",
                 shopNumber = "103",
                 distance = "4.2 km"
@@ -53,6 +59,8 @@ class Repository @Inject constructor() {
                 review = "4.5",
                 description = "Noise-cancelling wireless earbuds with long battery life.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1580910051076-7b8375b3b14e?auto=format&fit=crop&w=400&q=80"),
+                shopId = "4",
+                isFavorite = false,
                 shopName = "ElectroMart",
                 shopNumber = "104",
                 distance = "1.7 km"
@@ -65,6 +73,8 @@ class Repository @Inject constructor() {
                 review = "4.9",
                 description = "Crisp, juicy apples directly from organic farms.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80"),
+                shopId = "5",
+                isFavorite = false,
                 shopName = "Fresh Market",
                 shopNumber = "105",
                 distance = "2.4 km"
@@ -77,6 +87,8 @@ class Repository @Inject constructor() {
                 review = "4.6",
                 description = "Healthy, delicious, and freshly baked bread.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1519864600265-abb248e49891?auto=format&fit=crop&w=400&q=80"),
+                shopId = "6",
+                isFavorite = false,
                 shopName = "Fresh Market",
                 shopNumber = "105",
                 distance = "2.4 km"
@@ -89,6 +101,8 @@ class Repository @Inject constructor() {
                 review = "4.3",
                 description = "Comfortable, lightweight shoes perfect for runners.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1526178613658-3c7e4b3d9997?auto=format&fit=crop&w=400&q=80"),
+                shopId = "107",
+                isFavorite = true,
                 shopName = "Sports Unlimited",
                 shopNumber = "106",
                 distance = "2.0 km"
@@ -101,6 +115,8 @@ class Repository @Inject constructor() {
                 review = "4.8",
                 description = "Durable outdoor basketball, official size.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=400&q=80"),
+                shopId = "108",
+                isFavorite = false,
                 shopName = "Sports Unlimited",
                 shopNumber = "106",
                 distance = "2.0 km"
@@ -113,6 +129,8 @@ class Repository @Inject constructor() {
                 review = "4.9",
                 description = "A must-read book for the year!",
                 imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+                shopId = "109",
+                isFavorite = false,
                 shopName = "Book Haven",
                 shopNumber = "107",
                 distance = "2.1 km"
@@ -125,6 +143,8 @@ class Repository @Inject constructor() {
                 review = "4.7",
                 description = "Delightful stories for growing minds.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1455885662065-29d2d09995c4?auto=format&fit=crop&w=400&q=80"),
+                shopId = "111",
+                isFavorite = true,
                 shopName = "Book Haven",
                 shopNumber = "107",
                 distance = "2.1 km"
@@ -137,6 +157,8 @@ class Repository @Inject constructor() {
                 review = "4.6",
                 description = "Soothes and relieves aches and pains.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1500937408085-8b75b7b6e0d2?auto=format&fit=crop&w=400&q=80"),
+                shopId = "112",
+                isFavorite = false,
                 shopName = "Pharma Store",
                 shopNumber = "108",
                 distance = "0.5 km"
@@ -149,6 +171,9 @@ class Repository @Inject constructor() {
                 review = "4.9",
                 description = "Perfect personalized gift basket for every occasion.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512428559087-c1e9b0a180ba?auto=format&fit=crop&w=400&q=80"),
+
+                shopId = "113",
+                isFavorite = false,
                 shopName = "Gift Paradise",
                 shopNumber = "109",
                 distance = "1.0 km"
@@ -161,12 +186,15 @@ class Repository @Inject constructor() {
                 review = "4.9",
                 description = "Crisp, juicy apples directly from organic farms.",
                 imageUrl = listOf("https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80"),
+                shopId = "114",
+                isFavorite = false,
                 shopName = "Fresh Market",
                 shopNumber = "105",
                 distance = "2.4 km"
             ),
         )
     }
+
     fun getNearbyShops(): List<Shop> {
         return listOf(
             Shop(
@@ -177,7 +205,8 @@ class Repository @Inject constructor() {
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6143,
-                longitude = 77.2099
+                longitude = 77.2099,
+                isFavorite = true
             ),
             Shop(
                 shopId = "2",
@@ -187,7 +216,8 @@ class Repository @Inject constructor() {
                 distance = "3.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6147,
-                longitude = 77.2108
+                longitude = 77.2108,
+                isFavorite = true
             ),
             Shop(
                 shopId = "3",
@@ -197,7 +227,8 @@ class Repository @Inject constructor() {
                 distance = "4.2 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6150,
-                longitude = 77.2111
+                longitude = 77.2111,
+                isFavorite = true
             ),
             Shop(
                 shopId = "4",
@@ -207,7 +238,8 @@ class Repository @Inject constructor() {
                 distance = "1.7 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1580910051076-7b8375b3b14e?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6153,
-                longitude = 77.2075
+                longitude = 77.2075,
+                isFavorite = true
             ),
             Shop(
                 shopId = "5",
@@ -217,7 +249,8 @@ class Repository @Inject constructor() {
                 distance = "2.4 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6125,
-                longitude = 77.2103
+                longitude = 77.2103,
+                isFavorite = true
             ),
             Shop(
                 shopId = "6",
@@ -227,7 +260,8 @@ class Repository @Inject constructor() {
                 distance = "2.0 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6131,
-                longitude = 77.2082
+                longitude = 77.2082,
+                isFavorite = false
             ),
             Shop(
                 shopId = "7",
@@ -237,7 +271,8 @@ class Repository @Inject constructor() {
                 distance = "2.1 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6135,
-                longitude = 77.2120
+                longitude = 77.2120,
+                isFavorite = true
             ),
             Shop(
                 shopId = "8",
@@ -247,7 +282,8 @@ class Repository @Inject constructor() {
                 distance = "0.5 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1500937408085-8b75b7b6e0d2?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6130,
-                longitude = 77.2120
+                longitude = 77.2120,
+                isFavorite = true
             ),
             Shop(
                 shopId = "9",
@@ -257,204 +293,244 @@ class Repository @Inject constructor() {
                 distance = "1.0 km",
                 imageUrl = listOf("https://images.unsplash.com/photo-1512428559087-c1e9b0a180ba?auto=format&fit=crop&w=400&q=80"),
                 latitude = 28.6154,
-                longitude = 77.2096
+                longitude = 77.2096,
+                isFavorite = true
             )
         )
     }
 
-    fun getUserData(): User {
-        return User(
-            userId = UUID.randomUUID().toString(),
-            userName = "John Doe",
-            userPhoneNumber = 123456789,
-            userType = "Customer",
-            savedProducts = listOf(
-                Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"
-                ),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"
-                ),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km"),Product(
-                    productId = "9",
-                    name = "Bestselling Novel",
-                    price = "$14.99",
-                    category = "Books",
-                    review = "4.9",
-                    description = "A must-read book for the year!",
-                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
-                    shopName = "Book Haven",
-                    shopNumber = "107",
-                    distance = "2.1 km")),
-            savedShops = listOf(Shop(
-                shopId = "1",
-                shopName = "Artisan Leather",
-                shopNumber = "103",
-                category = "Accessories",
-                distance = "4.2 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6150,
-                longitude = 77.2111
-            ),Shop(
-                shopId = "2",
-                shopName = "Leather Workshop",
-                shopNumber = "102",
-                category = "Bags",
-                distance = "3.4 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6147,
-                longitude = 77.2108
-            ),Shop(
-                shopId = "3",
-                shopName = "Urban Leather Co.",
-                shopNumber = "101",
-                category = "Bags",
-                distance = "2.1 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6143,
-                longitude = 77.2099
-            ),Shop(
-                shopId = "4",
-                shopName = "Artisan Leather",
-                shopNumber = "103",
-                category = "Accessories",
-                distance = "4.2 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6150,
-                longitude = 77.2111
-            ),Shop(
-                shopId = "5",
-                shopName = "Leather Workshop",
-                shopNumber = "102",
-                category = "Bags",
-                distance = "3.4 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6147,
-                longitude = 77.2108
-            ),Shop(
-                shopId = "6",
-                shopName = "Urban Leather Co.",
-                shopNumber = "101",
-                category = "Bags",
-                distance = "2.1 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6143,
-                longitude = 77.2099
-            ),Shop(
-                shopId = "7",
-                shopName = "Artisan Leather",
-                shopNumber = "103",
-                category = "Accessories",
-                distance = "4.2 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6150,
-                longitude = 77.2111
-            ),Shop(
-                shopId = "8",
-                shopName = "Leather Workshop",
-                shopNumber = "102",
-                category = "Bags",
-                distance = "3.4 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6147,
-                longitude = 77.2108
-            ),Shop(
-                shopId = "9",
-                shopName = "Urban Leather Co.",
-                shopNumber = "101",
-                category = "Bags",
-                distance = "2.1 km",
-                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
-                latitude = 28.6143,
-                longitude = 77.2099
-            ))
-        )
-    }
+//    fun getUserData(): User {
+//        return User(
+//            userId = UUID.randomUUID().toString(),
+//            userName = "John Doe",
+//            userPhoneNumber = 123456789,
+//            userType = "Customer",
+//            savedProducts = listOf(
+//                Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                ),Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                )
+//                ,Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                )
+//                ,Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                ),Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                )
+//                ,Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                ),Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                ),Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109"
+//                ),Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109")
+//                ,Product(
+//                    productId = "9",
+//                    name = "Bestselling Novel",
+//                    price = "$14.99",
+//                    category = "Books",
+//                    review = "4.9",
+//                    description = "A must-read book for the year!",
+//                    imageUrl = listOf("https://images.unsplash.com/photo-1463320898484-cdee8141c787?auto=format&fit=crop&w=400&q=80"),
+//                    shopName = "Book Haven",
+//                    shopNumber = "107",
+//                    distance = "2.1 km",
+//                    isFavorite = true,
+//                    shopId = "109")),
+//            savedShops = listOf(Shop(
+//                shopId = "1",
+//                shopName = "Artisan Leather",
+//                shopNumber = "103",
+//                category = "Accessories",
+//                distance = "4.2 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6150,
+//                longitude = 77.2111,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "2",
+//                shopName = "Leather Workshop",
+//                shopNumber = "102",
+//                category = "Bags",
+//                distance = "3.4 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6147,
+//                longitude = 77.2108,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "3",
+//                shopName = "Urban Leather Co.",
+//                shopNumber = "101",
+//                category = "Bags",
+//                distance = "2.1 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6143,
+//                longitude = 77.2099,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "4",
+//                shopName = "Artisan Leather",
+//                shopNumber = "103",
+//                category = "Accessories",
+//                distance = "4.2 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6150,
+//                longitude = 77.2111,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "5",
+//                shopName = "Leather Workshop",
+//                shopNumber = "102",
+//                category = "Bags",
+//                distance = "3.4 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6147,
+//                longitude = 77.2108,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "6",
+//                shopName = "Urban Leather Co.",
+//                shopNumber = "101",
+//                category = "Bags",
+//                distance = "2.1 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6143,
+//                longitude = 77.2099,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "7",
+//                shopName = "Artisan Leather",
+//                shopNumber = "103",
+//                category = "Accessories",
+//                distance = "4.2 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6150,
+//                longitude = 77.2111,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "8",
+//                shopName = "Leather Workshop",
+//                shopNumber = "102",
+//                category = "Bags",
+//                distance = "3.4 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6147,
+//                longitude = 77.2108,
+//                isFavorite = true
+//            ),Shop(
+//                shopId = "9",
+//                shopName = "Urban Leather Co.",
+//                shopNumber = "101",
+//                category = "Bags",
+//                distance = "2.1 km",
+//                imageUrl = listOf("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"),
+//                latitude = 28.6143,
+//                longitude = 77.2099,
+//                isFavorite = true
+//            ))
+//        )
+//    }
 
 }

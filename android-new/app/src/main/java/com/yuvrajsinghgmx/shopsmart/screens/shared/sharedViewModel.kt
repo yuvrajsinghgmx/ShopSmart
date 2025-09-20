@@ -9,7 +9,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
 import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
-import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
+import com.yuvrajsinghgmx.shopsmart.data.repository.UserRepository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -27,30 +27,19 @@ class SharedAppViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val onboardingRepository: OnboardingRepository,
     val authPrefs: AuthPrefs,
-    private val repository: Repository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
-//    init {
-//        pingServer()
-//    }
-//
-//    private fun pingServer() {
-//        viewModelScope.launch {
-//            try {
-//                val response = authRepository.pingServer()
-//                Log.d("AuthDebug", "Server response: $response")
-//            }catch (e: Exception){
-//                Log.e("AuthDebug", "Error pinging server: ${e.message}")
-//            }
-//        }
-//    }
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    private val _userState = MutableStateFlow<User?>(null)
+    val userState: StateFlow<User?> = _userState
     val authState: StateFlow<AuthState> = _authState
     private val firebaseAuth = FirebaseAuth.getInstance()
     private var currentVerificationId: String? = null
     private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
-
+    private val _isOnboarding = MutableStateFlow(false)
+    val isOnboarding: StateFlow<Boolean> = _isOnboarding
+    
     fun sendInitialOtp(phoneNumber: String, activity: Activity) {
         viewModelScope.launch {
             authRepository.sendOtp(phoneNumber, activity, null).collect { state ->
@@ -126,8 +115,8 @@ class SharedAppViewModel @Inject constructor(
         _authState.value = AuthState.Idle
     }
 
-    fun getUserData(): User {
-        return repository.getUserData()
+    fun getLogInData() {
+        _userState.value=userRepository.getLoggedInUser()
     }
 
     fun logout() {
@@ -135,11 +124,7 @@ class SharedAppViewModel @Inject constructor(
         authPrefs.clearAuthData()
         _authState.value = AuthState.Idle
     }
-    private val _isOnboarding = MutableStateFlow(false)
-    val isOnboarding: StateFlow<Boolean> = _isOnboarding
 
-    private val _onboardingResult = MutableStateFlow<String?>(null)
-    val onboardingResult: StateFlow<String?> = _onboardingResult
     fun completeOnboarding(
         role: String,
         fullName: String,
@@ -148,7 +133,7 @@ class SharedAppViewModel @Inject constructor(
         longitude: Double,
         radius: Int,
         imageFile: File?,
-        email: String
+        email: String? = null
     ) {
         viewModelScope.launch {
             try {
@@ -165,8 +150,9 @@ class SharedAppViewModel @Inject constructor(
                 )
                 Log.d("AuthDebug", "Onboarding response: $response")
                 if (response.onboardingCompleted){
-                    _authState.value = AuthState.onboardingSuccess
-                    _onboardingResult.value = role
+                    val roleEnum = UserRole.valueOf(role.uppercase())
+                    _authState.value = AuthState.onboardingSuccess(roleEnum)
+                    _userState.value = userRepository.getLoggedInUser()
                 }
             } catch (e: Exception) {
                 Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
@@ -177,4 +163,10 @@ class SharedAppViewModel @Inject constructor(
         }
     }
 
+    fun loadUser() {
+        viewModelScope.launch {
+            val user = authRepository.getUser()
+            _userState.value = user
+        }
+    }
 }

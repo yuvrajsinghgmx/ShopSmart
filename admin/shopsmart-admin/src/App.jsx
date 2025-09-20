@@ -2,10 +2,28 @@ import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import ManageShops from './pages/ManageShops';
+import ManageProducts from './pages/ManageProducts';
 import ComingSoon from './pages/ComingSoon';
+import Login from './pages/Login';
+import { logout } from './services/api';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('admin_token'));
   const [activePage, setActivePage] = useState('Dashboard');
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    setActivePage('Dashboard');
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   const renderPage = () => {
     switch (activePage) {
@@ -14,6 +32,7 @@ function App() {
       case 'Manage Shops':
         return <ManageShops />;
       case 'Manage Products':
+        return <ManageProducts />;
       case 'Users':
       case 'Reports':
       case 'Settings':
@@ -25,7 +44,7 @@ function App() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      <Sidebar activePage={activePage} setActivePage={setActivePage} onLogout={handleLogout} />
       <main className="flex-1 p-6 lg:p-8">
         {renderPage()}
       </main>

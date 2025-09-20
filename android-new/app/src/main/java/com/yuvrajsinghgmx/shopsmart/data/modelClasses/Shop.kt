@@ -8,7 +8,8 @@ data class Shop(
     val imageUrl: List<String>,
     val category: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val isFavorite: Boolean
 )
 
 data class AddShopResponse(

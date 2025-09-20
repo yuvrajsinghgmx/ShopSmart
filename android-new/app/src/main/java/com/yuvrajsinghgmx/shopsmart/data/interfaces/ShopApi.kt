@@ -12,7 +12,7 @@ import retrofit2.http.Part
 
 interface ShopApi {
     @Multipart
-    @POST("api/shops/")
+    @POST("shops/")
     suspend fun addShop(
         @Part("name") name: RequestBody,
         @Part("address") address: RequestBody,
@@ -27,7 +27,6 @@ interface ShopApi {
         @Part documentUploads: List<MultipartBody.Part>    // Multiple documents
     ): Response<AddShopResponse>
 
-
-    @GET("api/shops/")
+    @GET("shops/")
     suspend fun getShops(): Response<List<ShopItem>>
 }

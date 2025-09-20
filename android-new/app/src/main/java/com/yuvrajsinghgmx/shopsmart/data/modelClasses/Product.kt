@@ -9,6 +9,8 @@ data class Product(
     val description: String,
     val imageUrl: List<String>,
     val shopName: String,
+    val shopId: String,
     val shopNumber: String,
-    val distance: String
+    val distance: String,
+    val isFavorite: Boolean
 )

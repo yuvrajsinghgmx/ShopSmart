@@ -1,13 +1,21 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const TOKEN = import.meta.env.VITE_ADMIN_AUTH_TOKEN;
 
-const apiRequest = async (endpoint, options = {}) => {
+const apiRequest = async (endpoint, options = {}, needsAuth = true) => {
   const { body, ...customOptions } = options;
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${TOKEN}`,
     ...customOptions.headers,
   };
+
+  if (needsAuth) {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      // This will effectively log the user out if a token is missing for a protected route.
+      window.location.href = '/'; 
+      throw new Error('No authentication token found. Please log in.');
+    }
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   const config = {
     ...customOptions,
@@ -34,17 +42,41 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
+export const login = async (email, password) => {
+  const data = await apiRequest('admin/login/', {
+    method: 'POST',
+    body: { email, password },
+  }, false); // Login doesn't need auth
+  
+  if (data && data.access) {
+    localStorage.setItem('admin_token', data.access);
+  }
+  return data;
+};
+
+export const logout = () => {
+  localStorage.removeItem('admin_token');
+};
+
 export const getShops = () => apiRequest('admin/shops/', { method: 'GET' });
 
 export const updateShopStatus = (id, action) => {
   return apiRequest(`admin/shops/${id}/approve/`, {
     method: 'PUT',
-    body: { approval_action: action }, // 'approve' or 'reject'
+    body: { approval_action: action },
   });
 };
 
 export const deleteShop = (id) => {
   return apiRequest(`admin/shops/${id}/delete/`, {
+    method: 'DELETE',
+  });
+};
+
+export const getProducts = () => apiRequest('admin/products/', { method: 'GET' });
+
+export const deleteProduct = (id) => {
+  return apiRequest(`admin/products/${id}/delete/`, {
     method: 'DELETE',
   });
 };
