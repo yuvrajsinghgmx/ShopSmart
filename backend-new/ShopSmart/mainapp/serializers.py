@@ -162,6 +162,7 @@ class ShopSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField()
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
+    sponsored = serializers.SerializerMethodField()
     
     image_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.SHOP_IMAGE_LIMIT
@@ -177,7 +178,7 @@ class ShopSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'shop_id', 'name', 'images', 'address', 'category', 'description', 'is_approved', 
             'owner_name', 'distance', "shop_type", 'position', 'is_favorite', 'reviews_count', 
-            'average_rating', 'created_at', 'image_uploads', 'document_uploads', 'latitude', 'longitude'
+            'average_rating', 'created_at', 'image_uploads', 'document_uploads', 'latitude', 'longitude','sponsored'
         ]
         read_only_fields = ['id', 'shop_id', 'is_approved', 'created_at']
 
@@ -208,6 +209,9 @@ class ShopSerializer(serializers.ModelSerializer):
             total_rating = sum(review.rating for review in reviews)
             return round(total_rating / len(reviews), 1)
         return 0.0
+
+    def get_sponsored(self, obj):
+        return obj.position in [2, 3]
 
     def create(self, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
@@ -247,7 +251,7 @@ class ProductSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     
-    image_uploads = serializers.ListField(
+    image_uploads = serializers.ListField(  
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.PRODUCT_IMAGE_LIMIT
     )
 
@@ -421,6 +425,18 @@ class ShopWithProductsSerializer(ShopDetailSerializer):
     def get_products(self, obj):
         products = obj.products.all()
         return ProductSerializer(products, many=True, context=self.context).data
+
+class CategorizedDataSerializer(serializers.Serializer):
+    type = serializers.CharField()
+    items = serializers.ListField(child=serializers.DictField()) 
+
+class LoadHomeResponseSerializer(serializers.Serializer):
+    message = serializers.CharField()
+    user_location = serializers.DictField(child=serializers.FloatField())
+    trending_products = ProductSerializer(many=True)
+    categorized_products = CategorizedDataSerializer(many=True)
+    nearby_shops = CategorizedDataSerializer(many=True)
+
 
 class AdminShopListSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
