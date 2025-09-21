@@ -15,14 +15,16 @@ interface ShopApi {
     @POST("shops/")
     suspend fun addShop(
         @Part("name") name: RequestBody,
-        @Part("category") category: RequestBody,
         @Part("address") address: RequestBody,
+        @Part("category") category: RequestBody,
         @Part("description") description: RequestBody,
+        @Part("shop_type") shopType: RequestBody,
+        @Part("position") position: RequestBody,
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
-        @Part("shop_type") shopType: RequestBody,
-        @Part imageuploads: List<MultipartBody.Part>,
-        @Part documentuploads: List<MultipartBody.Part>
+        @Part("images") images: RequestBody,
+        @Part imageUploads: List<MultipartBody.Part>,      // Multiple images
+        @Part documentUploads: List<MultipartBody.Part>    // Multiple documents
     ): Response<AddShopResponse>
 
     @GET("shops/")

@@ -24,7 +24,7 @@ data class AddShopResponse(
     val owner_name: String,
     val distance: Double?,
     val shop_type: String,
-    val position: Any?,
+    val position: Int,
     val is_favorite: Boolean,
     val reviews_count: Int,
     val average_rating: Double,
@@ -33,13 +33,21 @@ data class AddShopResponse(
 
 
 data class ShopItem(
+    val id: Int,
     val shop_id: String,
     val name: String,
-    val category: String,
+    val images: String,
     val address: String,
+    val category: String,
+    val description: String,
     val is_approved: Boolean,
     val owner_name: String,
     val distance: Double,
-    val is_favorite: Boolean
+    val shop_type: String,
+    val position: Int,
+    val is_favorite: Boolean,
+    val reviews_count: Int,
+    val average_rating: Double,
+    val created_at: String
 )
 

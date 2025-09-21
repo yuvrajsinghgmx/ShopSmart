@@ -14,11 +14,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
 import com.google.android.gms.maps.model.LatLng
+import com.yuvrajsinghgmx.shopsmart.utils.toRequestBodyJson
+import com.yuvrajsinghgmx.shopsmart.utils.toRequestBodyText
 import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,8 +62,24 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
         )
     }
 
-    fun onImagePicked(uri: Uri?) {
-        _state.value = state.value.copy(imageUri = uri)
+    fun onProfileImagePicked(uri: Uri?) {
+        _state.value = state.value.copy(profileImageUri = uri)
+    }
+
+    fun onImagePicked(uri: Uri) {
+        _state.value = state.value.copy(imageUris = _state.value.imageUris + uri)
+    }
+
+    fun onDocumentPicked(uri: Uri) {
+        _state.value = _state.value.copy(documentUris = _state.value.documentUris + uri)
+    }
+
+    fun removeImage(uri: Uri) {
+        _state.value = _state.value.copy(imageUris = _state.value.imageUris - uri)
+    }
+
+    fun removeDocument(uri: Uri) {
+        _state.value = _state.value.copy(documentUris = _state.value.documentUris - uri)
     }
 
     fun startLocationPicking() {
@@ -97,29 +112,74 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
             try {
                 _loading.value = true
 
-                val categoryBody = s.category.toRequestBody("text/plain".toMediaTypeOrNull())
+                // Profile image
+                val profileImage = s.profileImageUri?.let {
+                    uriToMultipart(context, it, "image_uploads[]")
+                }
 
-                val imageParts = s.imageUri?.let { listOf(uriToMultipart(context, it, "image_uploads")) } ?: emptyList()
-                val documentParts = emptyList<MultipartBody.Part>()
+                // Multiple extra images
+                val extraImages = s.imageUris.mapNotNull { uri ->
+                    uriToMultipart(context, uri, "image_uploads[]")
+                }
 
-                val result = repository.addShop(
-                    name = s.name.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    category = categoryBody,
-                    address = s.shopAddress.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    description = s.description.toRequestBody("text/plain".toMediaTypeOrNull()),
-                    latitude = s.location?.latitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    longitude = s.location?.longitude.toString().toRequestBody("text/plain".toMediaTypeOrNull()),
-                    shopType = categoryBody,
-                    imageUploads = imageParts,
-                    documentUploads = documentParts
+                // Multiple documents
+                val documents = s.documentUris.mapNotNull { uri ->
+                    uriToMultipart(context, uri, "document_uploads[]")
+                }
+
+                // Separate lists for logging and request
+                val profilePart = profileImage?.part
+                val profileName = profileImage?.fileName
+
+                val extraImageParts = extraImages.map { it.part }
+                val extraImageNames = extraImages.map { it.fileName }
+
+                val documentParts = documents.map { it.part }
+                val documentNames = documents.map { it.fileName }
+
+                val allImageParts = listOfNotNull(profilePart) + extraImageParts
+
+                // Convert images list to JSON string (using only file names)
+                val imagesJsonString = (listOfNotNull(profileName) + extraImageNames)
+                    .joinToString(separator = ",", prefix = "[", postfix = "]") { "\"$it\"" }
+
+                val imagesJson = imagesJsonString.toRequestBodyJson()
+
+                // Convert text fields
+                val name = s.name.toRequestBodyText()
+                val address = s.shopAddress.toRequestBodyText()
+                val category = s.category.toRequestBodyText()
+                val description = s.description.toRequestBodyText()
+                val shopType = s.category.toRequestBodyText()
+                val position = "3".toRequestBodyText()
+                val latitude = (s.location?.latitude ?: 0.0).toString().toRequestBodyText()
+                val longitude = (s.location?.longitude ?: 0.0).toString().toRequestBodyText()
+
+                // API call
+                val addshoprequest = repository.addShop(
+                    name, address, category, description, shopType, position,
+                    latitude, longitude, imagesJson, allImageParts, documentParts
                 )
 
-                result.onSuccess {
-                    _shopResponse.value = it
-                    Toast.makeText(context, "Shop added successfully", Toast.LENGTH_SHORT).show()
-                    resetForm()
-                }.onFailure {
-                    _error.value = it.message
+                if (addshoprequest.isSuccessful) {
+                    addshoprequest.body()?.let { body ->
+                        _shopResponse.value = body
+                        Toast.makeText(context, "Shop added successfully", Toast.LENGTH_SHORT).show()
+                        resetForm()
+
+                        Log.d("UploadCheck", "Profile Image: $profileName")
+                        Log.d("UploadCheck", "Extra Images: $extraImageNames")
+                        Log.d("UploadCheck", "Documents: $documentNames")
+                        Log.d("UploadCheck", "allImageParts: $allImageParts")
+                        Log.d("UploadCheck", "documentParts: $documentParts")
+                        Log.d("UploadCheck", "Images JSON sent: ${imagesJson}")
+                        Log.d("UploadCheck", "Response images field: ${body.images}")
+                    } ?: run {
+                        _error.value = "Empty response body"
+                    }
+                } else {
+                    val errBody = addshoprequest.errorBody()?.string()
+                    _error.value = "Error ${addshoprequest.code()}: $errBody"
                 }
 
             } catch (e: Exception) {
