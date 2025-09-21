@@ -35,10 +35,6 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
     private val _state = mutableStateOf(ShopFormState())
     val state: State<ShopFormState> = _state
 
-    init {
-        fetchShops()
-    }
-
     fun onNameChanged(name: String) {
         _state.value = state.value.copy(name = name)
     }
@@ -194,30 +190,30 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
         _state.value = ShopFormState()
     }
 
-    fun fetchShops() {
-        viewModelScope.launch {
-            try {
-                _state.value = state.value.copy(isLoadingShops = true)
-                val result = repository.getShops()
-                result.onSuccess { shops ->
-                    _state.value = state.value.copy(shops = shops, isLoadingShops = false)
-                    shops.forEach { shop ->
-                        Log.d("ShopViewModel", "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}")
-                    }
-                }.onFailure { error ->
-                    _state.value = state.value.copy(errorShops = error.message, isLoadingShops = false)
-                }
-            }catch (e: Exception) {
-                _state.value = state.value.copy(
-                    errorShops = e.message ?: "Unexpected error",
-                    isLoadingShops = false
-                )
-                Log.e("ShopViewModel", "Exception in fetchShops", e)
-            }finally {
-                _state.value = state.value.copy(isLoadingShops = false)
-            }
-
-        }
-    }
+//    fun fetchShops() {
+//        viewModelScope.launch {
+//            try {
+//                _state.value = state.value.copy(isLoadingShops = true)
+//                val result = repository.getShops()
+//                result.onSuccess { shops ->
+//                    _state.value = state.value.copy(shops = shops, isLoadingShops = false)
+//                    shops.forEach { shop ->
+//                        Log.d("ShopViewModel", "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}")
+//                    }
+//                }.onFailure { error ->
+//                    _state.value = state.value.copy(errorShops = error.message, isLoadingShops = false)
+//                }
+//            }catch (e: Exception) {
+//                _state.value = state.value.copy(
+//                    errorShops = e.message ?: "Unexpected error",
+//                    isLoadingShops = false
+//                )
+//                Log.e("ShopViewModel", "Exception in fetchShops", e)
+//            }finally {
+//                _state.value = state.value.copy(isLoadingShops = false)
+//            }
+//
+//        }
+//    }
 
 }

@@ -29,18 +29,17 @@ class ShopRepository @Inject constructor(private val api: ShopApi) {
         )
     }
 
-
-    suspend fun getShops(): Result<List<ShopItem>> {
-        return try {
-            val response = api.getShops()
-            if (response.isSuccessful) {
-                Result.success(response.body() ?: emptyList())
-            } else {
-                Result.failure(Exception(response.message()))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+//    suspend fun getShops(): Result<List<ShopItem>> {
+//        return try {
+//            val response = api.getShops()
+//            if (response.isSuccessful) {
+//                Result.success(response.body() ?: emptyList())
+//            } else {
+//                Result.failure(Exception(response.message()))
+//            }
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
+//    }
 }
 

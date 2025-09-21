@@ -26,7 +26,4 @@ interface ShopApi {
         @Part imageUploads: List<MultipartBody.Part>,      // Multiple images
         @Part documentUploads: List<MultipartBody.Part>    // Multiple documents
     ): Response<AddShopResponse>
-
-    @GET("shops/")
-    suspend fun getShops(): Response<List<ShopItem>>
 }
