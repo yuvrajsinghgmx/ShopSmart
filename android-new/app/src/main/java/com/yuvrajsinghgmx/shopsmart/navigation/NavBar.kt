@@ -127,7 +127,7 @@ fun AppNavHost(
                 )
             }
             composable("shopDetails") {
-                ShopDetail(sharedViewModel = sharedViewModel, navController = navController)
+                ShopDetail(sharedViewModel = sharedViewModel, navController = navController, onBackClick = { navController.popBackStack() })
             }
             composable("productScreen"){
                 ProductDetails(sharedProductViewModel,navController)
