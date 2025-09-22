@@ -20,12 +20,11 @@ fun ShopOwnerProfileScreen(
         onClick = {
             FirebaseAuth.getInstance().signOut()
             navController.navigate("login_route") {
-                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                popUpTo("main_graph") { inclusive = true }
+                launchSingleTop = true
             }
         }
     ) {
-        Text(
-            text = "Logout"
-        )
+        Text("Logout")
     }
 }

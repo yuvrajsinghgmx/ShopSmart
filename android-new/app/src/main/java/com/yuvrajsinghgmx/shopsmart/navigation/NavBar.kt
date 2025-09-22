@@ -37,8 +37,6 @@ fun AppNavHost(
     navController: NavHostController,
     padding: PaddingValues
 ) {
-    AppBackHandler(navController)
-
     val sharedProductViewModel: SharedProductViewModel = viewModel()
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
@@ -50,105 +48,6 @@ fun AppNavHost(
         "main_graph"
     }
 
-    fun NavGraphBuilder.authGraph(
-        navController: NavHostController,
-        sharedAppViewModel: SharedAppViewModel
-    ) {
-        composable("login_route") {
-            LoginScreen(
-                onLogInSuccess = { isNewUser ->
-                    if (isNewUser) {
-                        navController.navigate("onboarding") {
-                            popUpTo("login_route") { inclusive = true }
-                        }
-                    } else {
-                        navController.navigate("main_graph") {
-                            popUpTo("login_route") { inclusive = true }
-                        }
-                    }
-                },
-                modifier = Modifier,
-                viewModel = sharedAppViewModel,
-                authPrefs = sharedAppViewModel.authPrefs,
-            )
-        }
-
-        composable("onboarding") {
-
-            OnBoardingScreen(
-                onboardingViewmodel = sharedAppViewModel,
-                onboardingComplete = { role ->
-                    when (role) {
-                        UserRole.CUSTOMER -> {
-                            navController.navigate("main_graph") {
-                                popUpTo("login_route") { inclusive = true }
-                            }
-                        }
-                        UserRole.SHOP_OWNER -> {
-                            navController.navigate("addshop") {
-                                popUpTo("onboarding") { inclusive = true }
-                            }
-                        }
-                    }
-                }
-
-            )
-        }
-
-        composable("addshop") {
-            AddShopScreen (
-                navController = navController,
-                onShopAdded = {
-                    navController.navigate("main_graph") {
-                        popUpTo("login_route") { inclusive = true }
-                    }
-                }
-            )
-        }
-    }
-    fun NavGraphBuilder.mainGraph(
-        navController: NavController,
-        sharedAppViewModel: SharedAppViewModel,
-        sharedViewModel: SharedShopViewModel,
-        sharedProductViewModel: SharedProductViewModel
-    ) {
-        navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
-            composable(BottomNavItem.Home.route) {
-                HomeScreen(navController = navController, sharedViewModel = sharedViewModel, sharedProductViewModel = sharedProductViewModel)
-            }
-            composable(BottomNavItem.Search.route) {
-                SearchScreen(onShopClick = { shop ->
-                    sharedViewModel.setSelectedShop(shop)
-                    navController.navigate("shopDetails")
-                })
-            }
-            composable(BottomNavItem.Saved.route) {
-                SavedProductScreen(onBack = {handleBack(navController)})
-            }
-            composable(BottomNavItem.Profile.route) {
-                UserProfileScreen(
-                    viewModel = sharedAppViewModel,
-                    navController = navController
-                )
-            }
-            composable("shopDetails") {
-                ShopDetail(sharedViewModel = sharedViewModel, navController = navController, onBackClick = { navController.popBackStack() })
-            }
-            composable("productScreen"){
-                ProductDetails(sharedProductViewModel,navController)
-            }
-            composable("reviewScreen/{type}/{id}"){backStackEntry ->
-                val type = backStackEntry.arguments?.getString("type")
-                val id = backStackEntry.arguments?.getString("id")?:""
-                val target = when(type){
-                    "product" -> ReviewTarget.Product(id)
-                    "shop" -> ReviewTarget.Shop(id)
-                    else -> throw IllegalArgumentException("Unknown Review type")
-                }
-                ReviewScreen(target = target, navController = navController)
-            }
-        }
-    }
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -158,24 +57,114 @@ fun AppNavHost(
         mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel)
     }
 }
-@Composable
-fun AppBackHandler(navController: NavHostController) {
-    val context = LocalContext.current
-    BackHandler(enabled = true) {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
 
-        if (!navController.popBackStack()) {
-            if (currentRoute == BottomNavItem.Home.route) {
-                (context as? Activity)?.finish()
-            } else {
-                navController.navigate(BottomNavItem.Home.route) {
-                    launchSingleTop = true
-                    restoreState = true
+fun NavGraphBuilder.authGraph(
+    navController: NavHostController,
+    sharedAppViewModel: SharedAppViewModel
+) {
+    composable("login_route") {
+        LoginScreen(
+            onLogInSuccess = { isNewUser ->
+                if (isNewUser) {
+                    navController.navigate("onboarding") {
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                } else {
+                    navController.navigate("main_graph") {
+                        popUpTo("login_route") { inclusive = true }
+                    }
+                }
+            },
+            modifier = Modifier,
+            viewModel = sharedAppViewModel,
+            authPrefs = sharedAppViewModel.authPrefs,
+        )
+    }
+
+    composable("onboarding") {
+        OnBoardingScreen(
+            onboardingViewmodel = sharedAppViewModel,
+            onboardingComplete = { role ->
+                when (role) {
+                    UserRole.CUSTOMER -> {
+                        navController.navigate("main_graph") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    }
+                    UserRole.SHOP_OWNER -> {
+                        navController.navigate("addshop") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    }
                 }
             }
+        )
+    }
+
+    composable("addshop") {
+        AddShopScreen(
+            navController = navController,
+            onShopAdded = {
+                navController.navigate("main_graph") {
+                    popUpTo("addshop") { inclusive = true }
+                }
+            }
+        )
+    }
+}
+
+fun NavGraphBuilder.mainGraph(
+    navController: NavController,
+    sharedAppViewModel: SharedAppViewModel,
+    sharedViewModel: SharedShopViewModel,
+    sharedProductViewModel: SharedProductViewModel
+) {
+    navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
+        composable(BottomNavItem.Home.route) {
+            HomeScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                sharedProductViewModel = sharedProductViewModel
+            )
+        }
+        composable(BottomNavItem.Search.route) {
+            SearchScreen(onShopClick = { shop ->
+                sharedViewModel.setSelectedShop(shop)
+                navController.navigate("shopDetails")
+            })
+        }
+        composable(BottomNavItem.Saved.route) {
+            SavedProductScreen(onBack = { handleBack(navController) })
+        }
+        composable(BottomNavItem.Profile.route) {
+            UserProfileScreen(
+                viewModel = sharedAppViewModel,
+                navController = navController
+            )
+        }
+        composable("shopDetails") {
+            ShopDetail(
+                sharedViewModel = sharedViewModel,
+                navController = navController,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable("productScreen") {
+            ProductDetails(sharedProductViewModel, navController)
+        }
+        composable("reviewScreen/{type}/{id}") { backStackEntry ->
+            val type = backStackEntry.arguments?.getString("type")
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val target = when (type) {
+                "product" -> ReviewTarget.Product(id)
+                "shop" -> ReviewTarget.Shop(id)
+                else -> throw IllegalArgumentException("Unknown Review type")
+            }
+            ReviewScreen(target = target, navController = navController)
         }
     }
 }
+
 fun handleBack(navController: NavController, fallbackRoute: String = BottomNavItem.Home.route) {
     if (!navController.navigateUp()) {
         navController.navigate(fallbackRoute) {
