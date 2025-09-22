@@ -84,7 +84,7 @@ fun PickerButton(
     }
 }
 
-//Generic FileItem
+@SuppressLint("ModifierParameter")
 @Composable
 fun FileItem(
     uri: Uri,
@@ -118,6 +118,7 @@ fun FileItem(
 }
 
 //Generic PickerRow/PickerColumn
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun FilePickerRow(
     uris: List<Uri>,
