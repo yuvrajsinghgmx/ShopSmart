@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens
 
+import android.content.Intent
+import android.speech.RecognizerIntent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,6 +12,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +31,10 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeEvent
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.MiniProductCard
-import com.yuvrajsinghgmx.shopsmart.sharedComponents.SearchBarComposable
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.NoResultsFound
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.SearchBarWithQuickActions
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.rememberVoiceSearchLauncher
+import java.util.Locale
 
 @Composable
 fun SearchScreen(
@@ -34,6 +43,12 @@ fun SearchScreen(
     onShopClick: (Shop) -> Unit = {}
 ) {
     val state = viewModel.state.value
+    var isSearchActive by remember { mutableStateOf(false) }
+
+    val voiceSearchLauncher = rememberVoiceSearchLauncher { spokenText ->
+        viewModel.onEvent(HomeEvent.Search(spokenText))
+        isSearchActive = true
+    }
 
     // Group results by shop
     val groupedResults: Map<Shop, List<Product>> = state.searchResults
@@ -45,11 +60,34 @@ fun SearchScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        SearchBarComposable(
+/*        SearchBarComposable(
             query = state.searchQuery.orEmpty(),
             onQueryChange = { viewModel.onEvent(HomeEvent.Search(it)) },
             onSearch = {},
             modifier = Modifier.padding(16.dp)
+        )*/
+
+        SearchBarWithQuickActions(
+            searchQuery = state.searchQuery.orEmpty(),
+            onSearchChange = {
+                viewModel.onEvent(HomeEvent.Search(it))
+                isSearchActive = it.isNotBlank()
+            },
+            onSearchSubmit = {
+                isSearchActive = true
+            },
+            onVoiceSearchClick = {
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(
+                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                    )
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now…")
+                }
+                voiceSearchLauncher.launch(intent)
+            },
+            modifier = Modifier.padding(horizontal = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -69,27 +107,30 @@ fun SearchScreen(
                 }
             }
             !state.error.isNullOrBlank() -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(state.error, color = MaterialTheme.colorScheme.error)
-                }
+//                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                    Text(state.error, color = MaterialTheme.colorScheme.error)
+//                }
+                NoResultsFound()
             }
             else -> {
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    groupedResults.forEach { (shop, products) ->
-                        item {
-                            ShopProductRow(
-                                shop = shop,
-                                products = products,
-                                onProductClick = onProductClick,
-                                onShopClick = onShopClick
-                            )
+                    // Normal results
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        groupedResults.forEach { (shop, products) ->
+                            item {
+                                ShopProductRow(
+                                    shop = shop,
+                                    products = products,
+                                    onProductClick = onProductClick,
+                                    onShopClick = onShopClick
+                                )
+                            }
                         }
                     }
-                }
+
             }
         }
     }
