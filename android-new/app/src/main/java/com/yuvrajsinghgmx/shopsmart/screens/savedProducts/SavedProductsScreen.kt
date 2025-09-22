@@ -36,15 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedShopResponse
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable
 fun SavedProductScreen(
     viewModel: SavedViewModel = hiltViewModel(),
-    navController: NavController
+    onBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("Products", "Shops")
@@ -57,7 +54,7 @@ fun SavedProductScreen(
         listState.animateScrollToItem(0)
     }
     Column {
-        TopBar(onBack = {navController.popBackStack()}, onSearch = {})
+        TopBar(onBack = onBack, onSearch = {})
         Tabs(
             tabs = tabs,
             selectedTab = selectedTab,

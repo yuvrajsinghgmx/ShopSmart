@@ -1,9 +1,12 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -13,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
@@ -27,6 +29,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 
 @Composable
@@ -34,6 +37,8 @@ fun AppNavHost(
     navController: NavHostController,
     padding: PaddingValues
 ) {
+    AppBackHandler(navController)
+
     val sharedProductViewModel: SharedProductViewModel = viewModel()
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
@@ -118,7 +123,7 @@ fun AppNavHost(
                 })
             }
             composable(BottomNavItem.Saved.route) {
-                SavedProductScreen(navController = navController)
+                SavedProductScreen(onBack = {handleBack(navController)})
             }
             composable(BottomNavItem.Profile.route) {
                 UserProfileScreen(
@@ -150,6 +155,32 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         authGraph(navController, sharedAppViewModel)
-        mainGraph(navController, sharedAppViewModel, sharedViewModel,sharedProductViewModel)
+        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel)
+    }
+}
+@Composable
+fun AppBackHandler(navController: NavHostController) {
+    val context = LocalContext.current
+    BackHandler(enabled = true) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+        if (!navController.popBackStack()) {
+            if (currentRoute == BottomNavItem.Home.route) {
+                (context as? Activity)?.finish()
+            } else {
+                navController.navigate(BottomNavItem.Home.route) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        }
+    }
+}
+fun handleBack(navController: NavController, fallbackRoute: String = BottomNavItem.Home.route) {
+    if (!navController.navigateUp()) {
+        navController.navigate(fallbackRoute) {
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 }
