@@ -104,13 +104,13 @@ class LogoutResponseSerializer(serializers.Serializer):
     """Describes the successful logout message."""
     message = serializers.CharField()
 
-    
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'phone_number', 'email', 'role', 'full_name', 
-            'profile_image', 'current_address', 'latitude', 'longitude', 
+            'id', 'username', 'phone_number', 'email', 'role', 'full_name',
+            'profile_image', 'current_address', 'latitude', 'longitude',
             'location_radius_km', 'onboarding_completed'
         ]
         read_only_fields = ['id', 'username', 'phone_number', 'role']
@@ -122,7 +122,7 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'role', 'full_name', 'email', 'profile_image', 'current_address', 
+            'role', 'full_name', 'email', 'profile_image', 'current_address',
             'latitude', 'longitude', 'location_radius_km', 'onboarding_completed',
             'profile_image_upload'
         ]
@@ -148,7 +148,7 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
             if image_url:
                 instance.profile_image = image_url
                 instance.save(update_fields=['profile_image'])
-        
+
         if not instance.onboarding_completed:
             instance.onboarding_completed = True
             instance.save(update_fields=['onboarding_completed'])
@@ -163,7 +163,7 @@ class ShopSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     sponsored = serializers.SerializerMethodField()
-    
+
     image_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.SHOP_IMAGE_LIMIT
     )
@@ -176,8 +176,8 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = [
-            'id', 'shop_id', 'name', 'images', 'address', 'category', 'description', 'is_approved', 
-            'owner_name', 'distance', "shop_type", 'position', 'is_favorite', 'reviews_count', 
+            'id', 'shop_id', 'name', 'images', 'address', 'category', 'description', 'is_approved',
+            'owner_name', 'distance', "shop_type", 'position', 'is_favorite', 'reviews_count',
             'average_rating', 'created_at', 'image_uploads', 'document_uploads', 'latitude', 'longitude','sponsored'
         ]
         read_only_fields = ['id', 'shop_id', 'is_approved', 'created_at']
@@ -232,13 +232,13 @@ class ShopSerializer(serializers.ModelSerializer):
 class ShopDetailSerializer(ShopSerializer):
     products_count = serializers.SerializerMethodField()
     recent_reviews = serializers.SerializerMethodField()
-    
+
     class Meta(ShopSerializer.Meta):
         fields = ShopSerializer.Meta.fields + ['products_count', 'recent_reviews']
-    
+
     def get_products_count(self, obj) -> int:
         return obj.products.count()
-    
+
     def get_recent_reviews(self, obj) -> List:
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
         return ShopReviewSerializer(recent_reviews, many=True, context=self.context).data
@@ -250,16 +250,16 @@ class ProductSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField()
     reviews_count = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
-    
-    image_uploads = serializers.ListField(  
+
+    image_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.PRODUCT_IMAGE_LIMIT
     )
 
     class Meta:
         model = Product
         fields = [
-            'id', 'product_id', 'name', 'price', 'description', 'category', "product_type", 'stock_quantity', 
-            'images', 'position', 'shop_name', 'shop_id', 'is_favorite', 'reviews_count', 'average_rating', 
+            'id', 'product_id', 'name', 'price', 'description', 'category', "product_type", 'stock_quantity',
+            'images', 'position', 'shop_name', 'shop_id', 'is_favorite', 'reviews_count', 'average_rating',
             'created_at', 'image_uploads'
         ]
         read_only_fields = ['id', 'product_id', 'created_at']
@@ -304,10 +304,10 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(ProductSerializer):
     shop_details = serializers.SerializerMethodField()
     recent_reviews = serializers.SerializerMethodField()
-    
+
     class Meta(ProductSerializer.Meta):
         fields = ProductSerializer.Meta.fields + ['shop_details', 'recent_reviews']
-    
+
     def get_shop_details(self, obj) -> Dict:
         return {
             'id': obj.shop.id,
@@ -316,17 +316,46 @@ class ProductDetailSerializer(ProductSerializer):
             'address': obj.shop.address,
             'category': obj.shop.category
         }
-    
+
     def get_recent_reviews(self, obj) -> List:
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
         return ProductReviewSerializer(recent_reviews, many=True, context=self.context).data
+
+
+class ProductSearchSerializer(serializers.ModelSerializer):
+    shop_name = serializers.CharField(source='shop.name', read_only=True)
+    distance = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+    reviews_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'description', 'price', 'images',
+            'shop_name', 'distance', 'average_rating', 'reviews_count'
+        ]
+
+    def get_distance(self, obj) -> Optional[float]:
+        if hasattr(obj, 'distance') and obj.distance is not None:
+            return round(obj.distance.km, 2)
+        return None
+
+    def get_average_rating(self, obj) -> float:
+        reviews = obj.reviews.all()
+        if reviews:
+            total_rating = sum(review.rating for review in reviews)
+            return round(total_rating / len(reviews), 1)
+        return 0.0
+
+    def get_reviews_count(self, obj) -> int:
+        return obj.reviews.count()
 
 
 class ShopReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     helpful_count = serializers.SerializerMethodField()
     is_helpful = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = ShopReview
         fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
@@ -351,7 +380,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.full_name', read_only=True)
     helpful_count = serializers.SerializerMethodField()
     is_helpful = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = ProductReview
         fields = ['id', 'rating', 'comment', 'user_name', 'created_at', 'helpful_count', 'is_helpful']
@@ -379,11 +408,11 @@ class FavoriteShopSerializer(serializers.ModelSerializer):
     shop_address = serializers.CharField(source='shop.address', read_only=True)
     shop_id = serializers.CharField(source='shop.shop_id', read_only=True)
     average_rating = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = FavoriteShop
         fields = ['id', 'shop_id', 'shop_name', 'shop_images', 'shop_category', 'shop_address', 'average_rating', 'added_at']
-    
+
     def get_average_rating(self, obj) -> float:
         reviews = obj.shop.reviews.all()
         if reviews:
@@ -401,14 +430,14 @@ class FavoriteProductSerializer(serializers.ModelSerializer):
     shop_name = serializers.CharField(source='product.shop.name', read_only=True)
     shop_id = serializers.CharField(source='product.shop.shop_id', read_only=True)
     average_rating = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = FavoriteProduct
         fields = [
-            'id', 'product_id', 'product_name', 'product_price', 'product_images', 'product_category', 
+            'id', 'product_id', 'product_name', 'product_price', 'product_images', 'product_category',
             'shop_name', 'shop_id', 'average_rating', 'added_at'
         ]
-    
+
     def get_average_rating(self, obj) -> float:
         reviews = obj.product.reviews.all()
         if reviews:
@@ -428,7 +457,7 @@ class ShopWithProductsSerializer(ShopDetailSerializer):
 
 class CategorizedDataSerializer(serializers.Serializer):
     type = serializers.CharField()
-    items = serializers.ListField(child=serializers.DictField()) 
+    items = serializers.ListField(child=serializers.DictField())
 
 class LoadHomeResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
@@ -442,14 +471,14 @@ class AdminShopListSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
     owner_phone = serializers.CharField(source='owner.phone_number', read_only=True)
     products_count = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Shop
         fields = [
             'id', 'shop_id', 'name', 'category', 'address', 'is_approved',
             'owner_name', 'owner_phone', 'products_count', 'created_at'
         ]
-    
+
     def get_products_count(self, obj) -> int:
         return obj.products.count()
 
@@ -458,11 +487,11 @@ class AdminProductListSerializer(serializers.ModelSerializer):
     """Serializer for admin product list with basic info"""
     shop_name = serializers.CharField(source='shop.name', read_only=True)
     shop_id = serializers.CharField(source='shop.shop_id', read_only=True)
-    
+
     class Meta:
         model = Product
         fields = [
-            'id', 'product_id', 'name', 'price', 'category', 
+            'id', 'product_id', 'name', 'price', 'category',
             'stock_quantity', 'shop_name', 'shop_id', 'created_at'
         ]
 
@@ -470,7 +499,7 @@ class AdminProductListSerializer(serializers.ModelSerializer):
 class AdminShopApprovalSerializer(serializers.ModelSerializer):
     approval_action = serializers.ChoiceField(choices=['approve', 'reject'], write_only=True)
     rejection_reason = serializers.CharField(required=False, allow_blank=True)
-    
+
     class Meta:
         model = Shop
         fields = ['id', 'shop_id', 'is_approved', 'approval_action', 'rejection_reason']

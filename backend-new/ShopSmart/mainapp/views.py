@@ -13,19 +13,21 @@ from rest_framework.response import Response
 from django.db.models import Avg, Count,F
 from .choices import ShopTypes, ProductTypes
 from .permissions import (
-    IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner, 
+    IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner,
     IsOwnerOfApprovedShop, IsAdmin
 )
 from .serializers import (
-    ProductSerializer, ProductDetailSerializer, 
-    UserProfileSerializer, ShopSerializer, ShopDetailSerializer, 
+    ProductSerializer, ProductDetailSerializer,
+    UserProfileSerializer, ShopSerializer, ShopDetailSerializer,
     UserOnboardingSerializer, ShopReviewSerializer, ProductReviewSerializer,
     FavoriteShopSerializer, FavoriteProductSerializer,
     AdminShopListSerializer, AdminShopApprovalSerializer, AdminProductListSerializer,
     ChoicesSerializer, ToggleFavoriteResponseSerializer, ToggleHelpfulResponseSerializer,
-    ApiRootResponseSerializer, LoadHomeResponseSerializer,ShopWithProductsSerializer
+    ApiRootResponseSerializer, LoadHomeResponseSerializer,ShopWithProductsSerializer,
+    ProductSearchSerializer
 )
 from .models import Product, Shop, ShopReview, ProductReview, FavoriteShop, FavoriteProduct
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -34,7 +36,7 @@ logger = logging.getLogger(__name__)
 class ShopListCreateView(generics.ListCreateAPIView):
     queryset = Shop.objects.all()
     serializer_class = ShopSerializer
-    
+
     def get_permissions(self):
         if self.request.method == 'POST':
             self.permission_classes = [IsAuthenticated, IsShopOwnerRole]
@@ -65,6 +67,19 @@ class ProductListCreateView(generics.ListCreateAPIView):
         shop = get_object_or_404(Shop, pk=shop_pk)
         serializer.save(shop=shop)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        trending_products = queryset.filter(position__in=[2, 3]).annotate(review_count=Count('reviews')).order_by('-review_count')[:10]
+        all_products = queryset.exclude(id__in=trending_products.values_list('id', flat=True))
+
+        trending_serializer = self.get_serializer(trending_products, many=True)
+        all_serializer = self.get_serializer(all_products, many=True)
+
+        return Response({
+            'trendingProducts': trending_serializer.data,
+            'allProducts': all_serializer.data
+        })
+
 
 class OnboardingView(APIView):
     permission_classes = [IsAuthenticated]
@@ -80,7 +95,7 @@ class OnboardingView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def get_serializer(self, *args, **kwargs):
         """Helper to integrate serializer_class with APIView."""
         return self.serializer_class(*args, **kwargs)
@@ -125,7 +140,7 @@ class LoadHomeView(APIView):
         """Creates base querysets for shops and products filtered by user's location radius."""
         user_location = Point(user.longitude, user.latitude, srid=4326)
         location_radius = Distance(km=user.location_radius_km)
-        
+
         base_shops_qs = Shop.objects.filter(
             is_approved=True,
             location__distance_lte=(user_location, location_radius)
@@ -134,14 +149,14 @@ class LoadHomeView(APIView):
             avg_rating=Avg('reviews__rating'),
             review_count=Count('reviews')
         )
-        
+
         base_products_qs = Product.objects.filter(
             shop__in=base_shops_qs
         ).annotate(
             avg_rating=Avg('reviews__rating'),
             review_count=Count('reviews')
         ).select_related('shop')
-        
+
         return base_shops_qs, base_products_qs, user_location
 
     def _get_trending_products(self, base_products_qs):
@@ -149,7 +164,7 @@ class LoadHomeView(APIView):
         Gets top 20 trending products based on reviews/position, with randomization.
         """
         return base_products_qs.order_by(
-            F('avg_rating').desc(nulls_last=True), 
+            F('avg_rating').desc(nulls_last=True),
             F('review_count').desc(nulls_last=True),
             '-position',
             '?'  # <-- Ensures variety for items with similar stats
@@ -164,7 +179,7 @@ class LoadHomeView(APIView):
         for p_type, p_label in ProductTypes.choices:
             products_in_category = base_products_qs.filter(product_type=p_type)
             ranked_products = products_in_category.order_by('-position', '?')[:CATEGORY_ITEM_LIMIT]
-            
+
             if ranked_products.exists():
                 serialized_products = ProductSerializer(ranked_products, many=True).data
                 categorized_data.append({
@@ -182,10 +197,10 @@ class LoadHomeView(APIView):
             shops_in_category = base_shops_qs.filter(shop_type=s_type)
 
             ranked_shops = shops_in_category.order_by(
-                '-position', 
+                '-position',
                 '?' # <-- Prioritizes sponsored shops, then shuffles them
             )[:CATEGORY_ITEM_LIMIT]
-            
+
             if ranked_shops.exists():
                 serialized_shops = ShopSerializer(ranked_shops, many=True).data
                 shop_data.append({
@@ -207,9 +222,9 @@ class LoadHomeView(APIView):
 
                 if not base_shops_qs.exists():
                     message = 'No shops found in your radius. Showing results from the wider area.'
-                    
+
                     user_location = Point(user.longitude, user.latitude, srid=4326)
-                    
+
                     all_shops_qs = Shop.objects.filter(is_approved=True).annotate(
                         distance=GisDbDistance('location', user_location),
                         avg_rating=Avg('reviews__rating'),
@@ -229,7 +244,7 @@ class LoadHomeView(APIView):
                 trending_products = self._get_trending_products(base_products_qs)
                 categorized_products = self._get_categorized_products(base_products_qs)
                 nearby_shops = self._get_nearby_shops(base_shops_qs)
-                
+
                 response_payload = {
                     'message': message,
                     'user_location': {'latitude': user.latitude, 'longitude': user.longitude, 'radius_km': user.location_radius_km},
@@ -237,10 +252,10 @@ class LoadHomeView(APIView):
                     'categorized_products': categorized_products,
                     'nearby_shops': nearby_shops
                 }
-                
+
                 serializer = self.serializer_class(response_payload, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
-                
+
             except Exception as e:
                 print(f"Error in LoadHomeView: {str(e)}")
                 return Response({'error': 'Something went wrong while loading data'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -259,6 +274,28 @@ class ProductDetailView(generics.RetrieveAPIView):
     lookup_field = 'pk'
 
 
+class ProductSearchView(generics.ListAPIView):
+    serializer_class = ProductSearchSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        query = self.request.query_params.get('q', None)
+        if not query:
+            return Product.objects.none()
+
+        user_location = Point(self.request.user.longitude, self.request.user.latitude, srid=4326)
+
+        search_vector = SearchVector('name', 'description', 'category')
+        search_query = SearchQuery(query,search_type='websearch')
+
+        queryset = Product.objects.annotate(
+            distance=GisDbDistance('shop__location', user_location),
+            rank=SearchRank(search_vector, search_query)
+        ).filter(rank__gte=0.01).order_by('-position', 'distance')
+
+        return queryset
+
+
 class ChoicesView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChoicesSerializer # FIX: Added serializer_class
@@ -273,12 +310,12 @@ class ChoicesView(APIView):
 class PostShopReviewView(generics.CreateAPIView):
     serializer_class = ShopReviewSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['shop_id'] = self.kwargs['shop_pk']
         return context
-    
+
     def perform_create(self, serializer):
         shop = get_object_or_404(Shop, pk=self.kwargs['shop_pk'], is_approved=True)
         serializer.save(user=self.request.user, shop=shop)
@@ -287,12 +324,12 @@ class PostShopReviewView(generics.CreateAPIView):
 class PostProductReviewView(generics.CreateAPIView):
     serializer_class = ProductReviewSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['product_id'] = self.kwargs['product_pk']
         return context
-    
+
     def perform_create(self, serializer):
         product = get_object_or_404(Product, pk=self.kwargs['product_pk'])
         serializer.save(user=self.request.user, product=product)
@@ -354,23 +391,23 @@ class ToggleProductReviewHelpfulView(APIView):
             message, is_helpful = "Review marked as helpful", True
 
         return Response({'message': message, 'review_id': review.pk, 'is_helpful': is_helpful, 'helpful_count': review.helpful_by.count()}, status=status.HTTP_200_OK)
-    
-    
+
+
 class ToggleFavoriteShopView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ToggleFavoriteResponseSerializer # FIX: Added serializer_class
-    
+
     def post(self, request, shop_pk):
         try:
             shop = get_object_or_404(Shop, pk=shop_pk, is_approved=True)
             favorite, created = FavoriteShop.objects.get_or_create(user=request.user, shop=shop)
-            
+
             if created:
                 message, is_favorite = "Shop added to favorites", True
             else:
                 favorite.delete()
                 message, is_favorite = "Shop removed from favorites", False
-                
+
             return Response({'message': message, 'is_favorite': is_favorite, 'shop_id': shop.shop_id}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Error toggling favorite shop: {str(e)}")
@@ -380,18 +417,18 @@ class ToggleFavoriteShopView(APIView):
 class ToggleFavoriteProductView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ToggleFavoriteResponseSerializer # FIX: Added serializer_class
-    
+
     def post(self, request, product_pk):
         try:
             product = get_object_or_404(Product, pk=product_pk)
             favorite, created = FavoriteProduct.objects.get_or_create(user=request.user, product=product)
-            
+
             if created:
                 message, is_favorite = "Product added to favorites", True
             else:
                 favorite.delete()
                 message, is_favorite = "Product removed from favorites", False
-                
+
             return Response({'message': message, 'is_favorite': is_favorite, 'product_id': product.product_id}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Error toggling favorite product: {str(e)}")
@@ -454,7 +491,7 @@ class EditProductView(generics.UpdateAPIView):
 
 class DeleteProductView(generics.DestroyAPIView):
     """Delete a product"""
-    serializer_class = ProductSerializer 
+    serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
 
@@ -485,7 +522,7 @@ class AdminShopsListView(generics.ListAPIView):
     """
     serializer_class = AdminShopListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
-    
+
     def get_queryset(self):
         return Shop.objects.select_related('owner')
 
@@ -496,7 +533,7 @@ class AdminProductsListView(generics.ListAPIView):
     """
     serializer_class = AdminProductListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
-    
+
     def get_queryset(self):
         return Product.objects.select_related('shop').order_by('-created_at')
 
@@ -504,7 +541,7 @@ class AdminProductsListView(generics.ListAPIView):
 class AdminPendingShopsView(generics.ListAPIView):
     serializer_class = ShopDetailSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
-    
+
     def get_queryset(self):
         return Shop.objects.filter(is_approved=False).select_related('owner')
 
@@ -514,11 +551,11 @@ class ApproveShopView(generics.UpdateAPIView):
     serializer_class = AdminShopApprovalSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
     lookup_field = 'pk'
-    
+
     def put(self, request, *args, **kwargs):
         shop = self.get_object()
         serializer = self.get_serializer(shop, data=request.data, partial=True)
-        
+
         if serializer.is_valid():
             action = serializer.validated_data['approval_action']
             if action == 'approve':
@@ -531,10 +568,10 @@ class ApproveShopView(generics.UpdateAPIView):
                 shop.approval_date = None
                 shop.rejection_reason = serializer.validated_data.get('rejection_reason', '')
                 message = f"Shop '{shop.name}' has been rejected"
-            
+
             shop.save()
             return Response({'message': message, 'shop_id': shop.shop_id, 'is_approved': shop.is_approved}, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

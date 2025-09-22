@@ -26,6 +26,7 @@ from .views import (
 
     # views for helpful toggle
     ToggleShopReviewHelpfulView, ToggleProductReviewHelpfulView,
+    ProductSearchView,
 )
 
 
@@ -52,6 +53,7 @@ urlpatterns = [
     path('shops/<int:shop_pk>/toggle-favorite/', ToggleFavoriteShopView.as_view(), name='toggle-favorite-shop'),
     
     # Product endpoints
+    path('products/search/', ProductSearchView.as_view(), name='product-search'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
     path('products/<int:product_pk>/reviews/', PostProductReviewView.as_view(), name='post-product-review'),
     path('products/<int:product_pk>/get/reviews/',ProductReviewsListView.as_view(), name='get-product-reviews'),

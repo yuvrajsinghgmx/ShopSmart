@@ -10,6 +10,11 @@ class ShopTypes(models.TextChoices):
     GROCERY = "grocery", "Grocery"
     CLOTHING = "clothing", "Clothing"
     ELECTRONICS = "electronics", "Electronics"
+    FOOD_DELIVERY = "food_delivery", "Food & Delivery"
+    BEAUTY = "beauty", "Beauty & Personal Care"
+    HOME = "home", "Home & Furniture"
+    PHARMACY = "pharmacy", "Pharmacy & Wellness"
+    SPORTS = "sports", "Sports & Fitness"
 
 
 class ProductTypes(models.TextChoices):
@@ -17,3 +22,7 @@ class ProductTypes(models.TextChoices):
     FRUIT = "fruit", "Fruit"
     CLOTHES = "clothes", "Clothes"
     ELECTRONICS = "electronics", "Electronics"
+    FASTFOOD = "fastfood", "Fast Food"
+    BEAUTY = "beauty", "Beauty Product"
+    MEDICINE = "medicine", "Medicine"
+    HOME_APPLIANCE = "home_appliance", "Home Appliance"
