@@ -288,6 +288,7 @@ fun OnBoardingScreen(
                                     imageFile = imageUri?.let { uriToFile(context, it) },
                                     email = email // convert Uri -> File
                                 )
+                                onboardingComplete(selectedRole!!)
                             }
                         }
                     }
