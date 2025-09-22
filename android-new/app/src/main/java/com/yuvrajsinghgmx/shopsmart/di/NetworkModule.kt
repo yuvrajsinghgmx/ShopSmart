@@ -6,10 +6,12 @@ import com.google.gson.GsonBuilder
 import com.yuvrajsinghgmx.shopsmart.data.TokenAuthenticator
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.FavoritesApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.LogoutApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.RefreshApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.LogoutResponse
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.Module
 import dagger.Provides
@@ -92,4 +94,9 @@ object NetworkModule {
     @Singleton
     fun provideDjangoAuthApi(retrofit: Retrofit): DjangoAuthApi =
         retrofit.create(DjangoAuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
+        retrofit.create(LogoutApi::class.java)
 }
