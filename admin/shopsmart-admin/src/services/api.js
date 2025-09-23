@@ -60,6 +60,8 @@ export const logout = () => {
 
 export const getShops = () => apiRequest('admin/shops/', { method: 'GET' });
 
+export const getShopDetails = (pk) => apiRequest(`shops/${pk}/`, { method: 'GET' });
+
 export const updateShopStatus = (id, action) => {
   return apiRequest(`admin/shops/${id}/approve/`, {
     method: 'PUT',
@@ -74,6 +76,8 @@ export const deleteShop = (id) => {
 };
 
 export const getProducts = () => apiRequest('admin/products/', { method: 'GET' });
+
+export const getProductDetails = (pk) => apiRequest(`products/${pk}/`, { method: 'GET' });
 
 export const deleteProduct = (id) => {
   return apiRequest(`admin/products/${id}/delete/`, {

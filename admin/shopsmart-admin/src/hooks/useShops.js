@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { getShops, updateShopStatus, deleteShop } from '../services/api';
+import { getShops, updateShopStatus, deleteShop, getShopDetails } from '../services/api';
 
 const mapShopData = (shop) => ({
   ...shop,
-  // Map backend fields to frontend component expectations
-  pk: shop.id, // The numeric primary key for actions
-  id: shop.shop_id, // The string ID for display
+  pk: shop.id,
+  id: shop.shop_id,
   owner: shop.owner_name,
   status: shop.is_approved ? 'Approved' : 'Pending',
 });
@@ -15,6 +14,11 @@ export const useShops = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedShopDetails, setSelectedShopDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
 
   const fetchShops = useCallback(async () => {
     try {
@@ -48,18 +52,37 @@ export const useShops = () => {
           await deleteShop(pk);
           alert(`Shop has been deleted!`);
         } else {
-          return; // User cancelled
+          return;
         }
-      } else { // 'approve' or 'reject'
+      } else {
         const actionVerb = action === 'approve' ? 'Approved' : 'Rejected';
         await updateShopStatus(pk, action);
         alert(`Shop has been ${actionVerb}!`);
       }
-      // Refetch data to show updated state
       fetchShops();
     } catch (err) {
       alert(`Error performing action: ${err.message}`);
     }
+  };
+
+  const handleViewDetails = useCallback(async (pk) => {
+    try {
+      setDetailsLoading(true);
+      setDetailsError(null);
+      setIsModalOpen(true);
+      const data = await getShopDetails(pk);
+      setSelectedShopDetails(data);
+    } catch (err) {
+      setDetailsError(err.message || 'Failed to fetch shop details.');
+    } finally {
+      setDetailsLoading(false);
+    }
+  }, []);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedShopDetails(null);
+    setDetailsError(null);
   };
 
   return {
@@ -68,5 +91,11 @@ export const useShops = () => {
     shops: filteredShops,
     setSearchTerm,
     handleAction,
+    isModalOpen,
+    selectedShopDetails,
+    detailsLoading,
+    detailsError,
+    handleViewDetails,
+    closeModal,
   };
 };
