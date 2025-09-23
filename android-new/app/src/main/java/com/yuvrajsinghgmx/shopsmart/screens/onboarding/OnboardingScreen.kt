@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -79,7 +81,7 @@ fun OnBoardingScreen(
     var email by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val rememberPermissionState = rememberLocationPermissionState()
+    val (hasPermission, shouldShowRationale, requestPermission) = rememberLocationPermissionState()
 
     // Error states
     var nameError by remember { mutableStateOf(false) }
@@ -87,14 +89,10 @@ fun OnBoardingScreen(
     var emailError by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        when (val state=authState) {
-            is AuthState.onboardingSuccess -> {
-                onboardingComplete(state.role)
-            }
-            is AuthState.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-            }
-            else -> Unit
+        if (authState is AuthState.onboardingSuccess) {
+            onboardingComplete((authState as AuthState.onboardingSuccess).role)
+        } else if (authState is AuthState.Error) {
+            Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -276,7 +274,7 @@ fun OnBoardingScreen(
 
                 try {
                     if (!nameError && !roleError && !emailError && selectedRole != null) {
-                        if (rememberPermissionState) {
+                        if (hasPermission) {
                             getUserLocation(context) { lat, long, address ->
                                 onboardingViewmodel.completeOnboarding(
                                     role = selectedRole!!.name,
@@ -288,7 +286,16 @@ fun OnBoardingScreen(
                                     imageFile = imageUri?.let { uriToFile(context, it) },
                                     email = email // convert Uri -> File
                                 )
-                                onboardingComplete(selectedRole!!)
+                            }
+                        }else{
+                            if (shouldShowRationale) {
+                                requestPermission()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Location permission is required to continue onboarding",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
                     }
@@ -319,6 +326,16 @@ fun OnBoardingScreen(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+    }
+    if (!hasPermission && shouldShowRationale) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Location Required") },
+            text = { Text("We need your location to show nearby shops.") },
+            confirmButton = {
+                TextButton(onClick = { requestPermission() }) { Text("Grant") }
+            }
+        )
     }
 }
 

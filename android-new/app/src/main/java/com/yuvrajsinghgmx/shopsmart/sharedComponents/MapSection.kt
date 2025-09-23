@@ -94,7 +94,7 @@ fun FullScreenMapPickerDialog(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val geocoder = remember { Geocoder(context, Locale.getDefault()) }
-    val locationPermission = rememberLocationPermissionState()
+    val (hasPermission, shouldShowRationale, requestPermission) = rememberLocationPermissionState()
     var selectedLocation by remember { mutableStateOf(initialLocation) }
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     var query by remember { mutableStateOf("") }
@@ -109,8 +109,10 @@ fun FullScreenMapPickerDialog(
     }
     val markerState = remember { MarkerState(position = initialLocation ?: defaultLocation) }
 
-        LaunchedEffect(locationPermission) {
-            if (locationPermission) {
+        LaunchedEffect(Unit) {
+            if (!hasPermission) {
+                requestPermission()
+            }else {
                 try {
                     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         location?.let {

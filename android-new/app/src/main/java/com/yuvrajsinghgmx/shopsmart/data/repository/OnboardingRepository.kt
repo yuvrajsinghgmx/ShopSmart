@@ -3,6 +3,8 @@ package com.yuvrajsinghgmx.shopsmart.data.repository
 import android.util.Log
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.OnboardingResponse
+import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
+import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -65,7 +67,8 @@ class OnboardingRepository @Inject constructor(
                     phone = authPrefs.getPhone(),
                     profilePic = response.profileImage,
                     isNewUser = false,
-                    role = role
+                    role = role,
+                    isOnboardingCompleted = true
                 )
             }
         } catch (e: HttpException) {
