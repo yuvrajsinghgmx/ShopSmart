@@ -98,16 +98,6 @@ fun LoginScreen(
                 scope.launch { snackbarHostState.showSnackbar("OTP Sent!") }
             }
             is AuthState.AuthSuccess -> {
-                authPrefs.saveAuthData(
-                    accessToken = state.djangoAuthResponse.access,
-                    refreshToken = state.djangoAuthResponse.refresh,
-                    userId = state.djangoAuthResponse.user.id ?:0,
-                    name = state.djangoAuthResponse.user.name ?: "",
-                    phone = state.djangoAuthResponse.user.phoneNumber ?: "",
-                    profilePic = state.djangoAuthResponse.user.profilePic,
-                    isNewUser = state.djangoAuthResponse.user.isNewUser,
-                    role = state.djangoAuthResponse.user.role
-                )
                 onLogInSuccess(state.djangoAuthResponse.user.isNewUser)
             }
             is AuthState.Error -> {

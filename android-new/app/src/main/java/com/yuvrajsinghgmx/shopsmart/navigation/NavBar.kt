@@ -42,11 +42,14 @@ fun AppNavHost(
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
 
-    val startDestination = if (authPrefs.getAccessToken().isNullOrBlank()) {
-        "login_route"
-    } else {
+    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank() && authPrefs.isOnboarded() && !authPrefs.getRole().isNullOrBlank()) {
         "main_graph"
+    } else if (!authPrefs.getAccessToken().isNullOrBlank()) {
+        "onboarding"
+    } else {
+        "login_route"
     }
+
 
     NavHost(
         navController = navController,

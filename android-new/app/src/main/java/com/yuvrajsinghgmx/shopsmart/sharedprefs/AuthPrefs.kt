@@ -23,7 +23,8 @@ class AuthPrefs @Inject constructor(
         phone: String?,
         profilePic: String?,
         isNewUser: Boolean,
-        role: String?
+        role: String?,
+        isOnboardingCompleted: Boolean
     ) {
         prefs.edit().apply {
             putString("access_token", accessToken)
@@ -34,6 +35,7 @@ class AuthPrefs @Inject constructor(
             putString("profile_pic", profilePic)
             putBoolean("is_new_user",isNewUser )
             putString("role", role)
+            putBoolean("onboarding_completed", isOnboardingCompleted)
             apply()
         }
     }
@@ -46,6 +48,7 @@ class AuthPrefs @Inject constructor(
     fun getProfilePic(): String? = prefs.getString("profile_pic", null)
     fun getRole(): String? = prefs.getString("role", null)
     fun isNewUser(): Boolean = prefs.getBoolean("is_new_user", false)
+    fun isOnboarded(): Boolean = prefs.getBoolean("onboarding_completed", false)
     fun getUser(): User? {
         val id = getUserId()
         val name = getName()

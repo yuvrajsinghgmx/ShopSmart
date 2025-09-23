@@ -70,7 +70,8 @@ class AuthRepositoryImpl @Inject constructor(
                 phone = resp.user.phoneNumber,
                 profilePic = resp.user.profilePic,
                 isNewUser = resp.user.isNewUser,
-                role = resp.user.role
+                role = resp.user.role,
+                isOnboardingCompleted = false
             )
             resp
         } catch (e: HttpException) {
