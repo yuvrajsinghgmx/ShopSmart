@@ -2,6 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.onboarding
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Geocoder
 import android.net.Uri
 import android.util.Log
@@ -288,15 +289,7 @@ fun OnBoardingScreen(
                                 )
                             }
                         }else{
-                            if (shouldShowRationale) {
-                                requestPermission()
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Location permission is required to continue onboarding",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                            requestPermission()
                         }
                     }
                 } catch (e: Exception) {
@@ -327,15 +320,34 @@ fun OnBoardingScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
-    if (!hasPermission && shouldShowRationale) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Location Required") },
-            text = { Text("We need your location to show nearby shops.") },
-            confirmButton = {
-                TextButton(onClick = { requestPermission() }) { Text("Grant") }
-            }
-        )
+    if (!hasPermission) {
+        if (shouldShowRationale){
+            AlertDialog(
+                onDismissRequest = {},
+                title = { Text("Location Required") },
+                text = { Text("We need your location to show nearby shops.") },
+                confirmButton = {
+                    TextButton(onClick = { requestPermission() }) { Text("Grant") }
+                }
+            )
+        }else{
+            AlertDialog(
+                onDismissRequest = {},
+                title = { Text("Permission Required") },
+                text = { Text("Location permission was permanently denied. Please enable it in settings to continue.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val intent = Intent(
+                            android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", context.packageName, null)
+                        )
+                        context.startActivity(intent)
+                    }) {
+                        Text("Open Settings")
+                    }
+                }
+            )
+        }
     }
 }
 

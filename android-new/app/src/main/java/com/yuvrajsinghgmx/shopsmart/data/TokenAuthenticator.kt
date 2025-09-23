@@ -42,7 +42,8 @@ class TokenAuthenticator @Inject constructor(
                     profilePic = authPrefs.getProfilePic(),
                     phone = authPrefs.getPhone(),
                     isNewUser = authPrefs.isNewUser(),
-                    role = authPrefs.getRole()
+                    role = authPrefs.getRole(),
+                    isOnboardingCompleted = authPrefs.isOnboarded()
                 )
 
                 // Retry request with **new access token**
