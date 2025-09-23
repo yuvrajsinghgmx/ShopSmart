@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
                 val bottomNavRoutes = listOf(
                     BottomNavItem.Home.route,
-                    BottomNavItem.Search.route,
+                    BottomNavItem.Cart.route,
                     BottomNavItem.Saved.route,
                     BottomNavItem.Profile.route
                 )
