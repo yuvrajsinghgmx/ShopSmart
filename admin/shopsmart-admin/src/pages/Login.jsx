@@ -37,7 +37,7 @@ const Login = ({ onLoginSuccess }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2"
+              className="w-full px-3 py-2 mt-1 border border-gray-600 rounded-md focus:outline-none focus:ring-2"
             />
           </div>
           <div>
@@ -50,7 +50,7 @@ const Login = ({ onLoginSuccess }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 text-text-light bg-background-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2"
+              className="w-full px-3 py-2 mt-1 border border-gray-600 rounded-md focus:outline-none focus:ring-2"
             />
           </div>
           {error && <p className="text-sm text-center text-red-500 font-semibold">{error}</p>}

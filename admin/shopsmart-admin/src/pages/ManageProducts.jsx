@@ -15,7 +15,7 @@ const ProductDetailsDisplay = ({ product, loading, error }) => {
     return <div className="flex justify-center items-center gap-2"><LoaderCircle className="animate-spin" /><span>Loading details...</span></div>;
   }
   if (error) {
-    return <div className="text-danger text-center">{error}</div>;
+    return <div className="text-center">{error}</div>;
   }
   if (!product) return null;
 
@@ -69,7 +69,7 @@ const ManageProducts = () => {
     if (error) {
       return (
          <tr>
-            <td colSpan="7" className="text-center p-6 text-danger">
+            <td colSpan="7" className="text-center p-6">
               <div className="flex justify-center items-center gap-2">
                 <AlertTriangle />
                 <span>Error: {error}</span>
@@ -88,11 +88,11 @@ const ManageProducts = () => {
     }
 
     return products.map(product => (
-      <tr key={product.pk} className="border-b border-gray-700 hover:bg-sidebar-dark">
+      <tr key={product.pk} className="border-b border-gray-700">
         <td className="p-3">{product.id}</td>
         <td className="p-3">
            <span 
-            className="cursor-pointer hover:underline text-accent"
+            className="cursor-pointer hover:underline"
             onClick={() => handleViewDetails(product.pk)}
           >
             {product.name}
@@ -105,7 +105,7 @@ const ManageProducts = () => {
         <td className="p-3 text-center">
           <button
             onClick={() => handleAction(product.pk, 'delete')}
-            className="bg-danger text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
+            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
           >
             Delete
           </button>
@@ -122,12 +122,12 @@ const ManageProducts = () => {
           type="text"
           placeholder="Search by Product ID, Name, or Shop..."
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-card-dark text-text-light p-3 pl-10 rounded-lg border-2 border-gray-600 focus:border-accent focus:outline-none"
+          className="w-full p-3 pl-10 rounded-lg border-2 border-gray-600 focus:outline-none"
         />
         <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
       </div>
 
-      <div className="bg-card-dark p-6 rounded-lg shadow-md overflow-x-auto">
+      <div className="p-6 rounded-lg shadow-md overflow-x-auto">
         <table className="w-full min-w-[900px] text-left">
           <thead className="border-b border-gray-600">
             <tr>

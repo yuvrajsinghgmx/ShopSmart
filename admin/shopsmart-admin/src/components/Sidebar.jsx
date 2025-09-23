@@ -27,7 +27,7 @@ const NavLink = ({ name, icon, isActive, onClick }) => (
 );
 
 const Sidebar = ({ activePage, setActivePage, onLogout }) => (
-  <aside className="w-60 bg-sidebar-dark h-screen p-4 flex flex-col">
+  <aside className="w-60 h-screen p-4 flex flex-col">
     <div>
       <div className="text-2xl font-bold mb-8">ShopSmart Admin</div>
       <nav className="flex flex-col gap-2">

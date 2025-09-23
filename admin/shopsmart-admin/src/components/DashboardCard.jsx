@@ -1,7 +1,7 @@
 const DashboardCard = ({ title, value, icon }) => (
-  <div className="flex-1 bg-card-dark p-6 rounded-lg shadow-md">
+  <div className="flex-1 p-6 rounded-lg shadow-md">
     <div className="flex items-center">
-      <div className="mr-4 text-accent">
+      <div className="mr-4">
         {icon}
       </div>
       <div>

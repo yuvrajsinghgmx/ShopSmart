@@ -54,8 +54,8 @@ const ManageShops = () => {
 
   const getStatusClass = (status) => {
     const classes = {
-      Approved: 'text-approved font-semibold',
-      Pending: 'text-pending font-semibold',
+      Approved: 'font-semibold',
+      Pending: 'font-semibold',
     };
     return classes[status] || 'text-gray-400';
   };
@@ -77,7 +77,7 @@ const ManageShops = () => {
     if (error) {
       return (
          <tr>
-            <td colSpan="6" className="text-center p-6 text-danger">
+            <td colSpan="6" className="text-center p-6">
               <div className="flex justify-center items-center gap-2">
                 <AlertTriangle />
                 <span>Error: {error}</span>
@@ -96,11 +96,11 @@ const ManageShops = () => {
     }
 
     return shops.map(shop => (
-      <tr key={shop.pk} className="border-b border-gray-700 hover:bg-sidebar-dark">
+      <tr key={shop.pk} className="border-b border-gray-700">
         <td className="p-3">{shop.id}</td>
         <td className="p-3">
           <span 
-            className="cursor-pointer hover:underline text-accent"
+            className="cursor-pointer hover:underline"
             onClick={() => handleViewDetails(shop.pk)}
           >
             {shop.name}
@@ -112,19 +112,19 @@ const ManageShops = () => {
         <td className="p-3 text-center">
           <button
             onClick={() => handleAction(shop.pk, 'approve')}
-            className="bg-approved text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
+            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
           >
             Approve
           </button>
           <button
             onClick={() => handleAction(shop.pk, 'reject')}
-            className="bg-pending text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
+            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
           >
             Reject
           </button>
           <button
             onClick={() => handleAction(shop.pk, 'delete')}
-            className="bg-danger text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
+            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
           >
             Delete
           </button>
@@ -141,12 +141,12 @@ const ManageShops = () => {
           type="text"
           placeholder="Search by Shop ID or Name..."
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-card-dark text-text-light p-3 pl-10 rounded-lg border-2 border-gray-600 focus:border-accent focus:outline-none"
+          className="w-full p-3 pl-10 rounded-lg border-2 border-gray-600 focus:outline-none"
         />
         <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
       </div>
 
-      <div className="bg-card-dark p-6 rounded-lg shadow-md overflow-x-auto">
+      <div className="p-6 rounded-lg shadow-md overflow-x-auto">
         <table className="w-full min-w-[800px] text-left">
           <thead className="border-b border-gray-600">
             <tr>
