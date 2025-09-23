@@ -120,9 +120,25 @@ class SharedAppViewModel @Inject constructor(
     }
 
     fun logout() {
-        firebaseAuth.signOut()
-        authPrefs.clearAuthData()
-        _authState.value = AuthState.Idle
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try{
+
+                val beforeToken = authPrefs.getRefreshToken()
+                Log.d("AuthDebug", "Before logout refreshToken = $beforeToken")
+
+                firebaseAuth.signOut()
+                val refresh = authPrefs.getRefreshToken()
+                authRepository.logout(refresh)
+
+                val afterToken = authPrefs.getRefreshToken()
+                Log.d("AuthDebug", "After logout refreshToken = $afterToken")
+
+                _authState.value = AuthState.Idle
+            }catch (e: Exception){
+                _authState.value = AuthState.Error(e.message?:"Logout Failed")
+            }
+        }
     }
 
     fun completeOnboarding(

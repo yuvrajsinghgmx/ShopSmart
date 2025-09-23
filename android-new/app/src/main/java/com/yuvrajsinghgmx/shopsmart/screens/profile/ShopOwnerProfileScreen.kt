@@ -18,7 +18,7 @@ fun ShopOwnerProfileScreen(
         fontSize = 24.sp)
     Button(
         onClick = {
-            FirebaseAuth.getInstance().signOut()
+            viewModel.logout()
             navController.navigate("login_route") {
                 popUpTo("main_graph") { inclusive = true }
                 launchSingleTop = true
