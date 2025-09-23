@@ -5,6 +5,7 @@ class Role(models.TextChoices):
     CUSTOMER = "CUSTOMER", _("Customer")
     SHOP_OWNER = "SHOP_OWNER", _("Shop Owner")
     ADMIN = "ADMIN", _("Admin")
+    DELIVERY_BOY = 'DELIVERY_BOY', _('Delivery Boy')
 
 class ShopTypes(models.TextChoices):
     GROCERY = "grocery", "Grocery"

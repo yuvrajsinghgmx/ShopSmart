@@ -13,7 +13,7 @@ from .managers import CustomUserManager
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True,null=True,blank=True)
     phone_number = models.CharField(max_length=15, unique=True, blank=True)
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CUSTOMER)
+    role = models.CharField(max_length=20, choices=Role.choices, null=True , blank=True)
     full_name = models.CharField(max_length=150, blank=True)
     profile_image = models.URLField(max_length=1024, null=True, blank=True)
     current_address = models.TextField(blank=True)
@@ -36,6 +36,13 @@ class User(AbstractUser):
         help_text=_('Specific permissions for this user.'),
         verbose_name=_('user permissions'),
     )
+    managed_by = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='managed_users'
+    )
 
     objects = CustomUserManager()
 
@@ -50,7 +57,7 @@ class Shop(models.Model):
     shop_id = models.CharField(max_length=20, unique=True, editable=False)  
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shops")
     name = models.CharField(max_length=100)
-
+    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, help_text="Tax percentage for this shop")
     shop_type = models.CharField(max_length=50, choices=ShopTypes.choices)
     
     images = models.JSONField(default=list, help_text="List of image URLs from Firebase Storage")

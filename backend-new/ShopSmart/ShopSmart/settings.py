@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'mainapp.apps.MainappConfig',
     'drf_spectacular',
+    'orders'
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,7 @@ if ENVIRONMENT == "development":
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': os.getenv('DB_NAME', 'dev_db'),
+            'NAME': os.getenv('DB_NAME', 'dev_shopsmart'),
             'USER': os.getenv('DB_USER', 'postgres'),
             'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
             'HOST': os.getenv('DB_HOST', '127.0.0.1'),
