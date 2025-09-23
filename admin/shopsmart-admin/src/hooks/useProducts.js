@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { getProducts, deleteProduct } from '../services/api';
+import { getProducts, deleteProduct, getProductDetails } from '../services/api';
 
 const mapProductData = (product) => ({
   ...product,
-  // Map backend fields to frontend component expectations
-  pk: product.id, // The numeric primary key for actions
-  id: product.product_id, // The string ID for display
+  pk: product.id,
+  id: product.product_id,
   shopName: product.shop_name,
 });
 
@@ -14,6 +13,12 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // State for modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProductDetails, setSelectedProductDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -48,14 +53,33 @@ export const useProducts = () => {
           await deleteProduct(pk);
           alert('Product has been deleted!');
         } else {
-          return; // User cancelled
+          return;
         }
       }
-      // Refetch data to show updated state
       fetchProducts();
     } catch (err) {
       alert(`Error performing action: ${err.message}`);
     }
+  };
+  
+  const handleViewDetails = useCallback(async (pk) => {
+    try {
+      setDetailsLoading(true);
+      setDetailsError(null);
+      setIsModalOpen(true);
+      const data = await getProductDetails(pk);
+      setSelectedProductDetails(data);
+    } catch (err) {
+      setDetailsError(err.message || 'Failed to fetch product details.');
+    } finally {
+      setDetailsLoading(false);
+    }
+  }, []);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProductDetails(null);
+    setDetailsError(null);
   };
 
   return {
@@ -64,5 +88,11 @@ export const useProducts = () => {
     products: filteredProducts,
     setSearchTerm,
     handleAction,
+    isModalOpen,
+    selectedProductDetails,
+    detailsLoading,
+    detailsError,
+    handleViewDetails,
+    closeModal,
   };
 };
