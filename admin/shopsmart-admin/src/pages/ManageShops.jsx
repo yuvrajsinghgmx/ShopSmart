@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Header from '../components/Header';
 import { useShops } from '../hooks/useShops';
 import { Search, LoaderCircle, AlertTriangle } from 'lucide-react';
@@ -10,7 +11,21 @@ const DetailItem = ({ label, value }) => (
   </div>
 );
 
-const ShopDetailsDisplay = ({ shop, loading, error }) => {
+const FullscreenImageViewer = ({ src, onClose }) => (
+  <div 
+    className="fixed inset-0 bg-black bg-opacity-80 z-[60] flex justify-center items-center p-4 cursor-zoom-out" 
+    onClick={onClose}
+  >
+    <img 
+      src={src} 
+      alt="Fullscreen view" 
+      className="max-w-full max-h-full object-contain"
+      onClick={(e) => e.stopPropagation()} 
+    />
+  </div>
+);
+
+const ShopDetailsDisplay = ({ shop, loading, error, onImageClick }) => {
   if (loading) {
     return <div className="flex justify-center items-center gap-2"><LoaderCircle className="animate-spin" /><span>Loading details...</span></div>;
   }
@@ -38,7 +53,13 @@ const ShopDetailsDisplay = ({ shop, loading, error }) => {
         <h3 className="text-lg font-semibold mb-2">Images</h3>
         <div className="flex flex-wrap gap-4">
           {shop.images.length > 0 ? shop.images.map((img, i) => (
-            <img key={i} src={img} alt={`Shop image ${i + 1}`} className="w-32 h-32 object-cover rounded-md border-2 border-gray-600" />
+            <img 
+              key={i} 
+              src={img} 
+              alt={`Shop image ${i + 1}`} 
+              className="w-32 h-32 object-cover rounded-md border-2 border-gray-600 cursor-zoom-in transition-transform hover:scale-105"
+              onClick={() => onImageClick(img)}
+            />
           )) : <p className="text-gray-400">No images provided.</p>}
         </div>
       </div>
@@ -51,6 +72,8 @@ const ManageShops = () => {
     loading, error, shops, setSearchTerm, handleAction,
     isModalOpen, selectedShopDetails, detailsLoading, detailsError, handleViewDetails, closeModal 
   } = useShops();
+  
+  const [fullscreenImage, setFullscreenImage] = useState(null);
 
   const getStatusClass = (status) => {
     const classes = {
@@ -165,8 +188,15 @@ const ManageShops = () => {
       </div>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title="Shop Details">
-        <ShopDetailsDisplay shop={selectedShopDetails} loading={detailsLoading} error={detailsError} />
+        <ShopDetailsDisplay 
+          shop={selectedShopDetails} 
+          loading={detailsLoading} 
+          error={detailsError} 
+          onImageClick={setFullscreenImage}
+        />
       </Modal>
+
+      {fullscreenImage && <FullscreenImageViewer src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
     </div>
   );
 };
