@@ -10,7 +10,6 @@ const apiRequest = async (endpoint, options = {}, needsAuth = true) => {
   if (needsAuth) {
     const token = localStorage.getItem('admin_token');
     if (!token) {
-      // This will effectively log the user out if a token is missing for a protected route.
       window.location.href = '/'; 
       throw new Error('No authentication token found. Please log in.');
     }
@@ -28,9 +27,16 @@ const apiRequest = async (endpoint, options = {}, needsAuth = true) => {
 
   try {
     const response = await fetch(`${BASE_URL}/${endpoint}`, config);
+
+    if (response.status === 401 && needsAuth) {
+      logout();
+      window.location.href = '/';
+      throw new Error('Session expired. Please log in again.');
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-      throw new Error(errorData.detail || 'An API error occurred');
+      throw new Error(errorData.detail || `An API error occurred: ${response.statusText}`);
     }
     if (response.status === 204) { // No Content
       return null;
@@ -46,7 +52,7 @@ export const login = async (email, password) => {
   const data = await apiRequest('admin/login/', {
     method: 'POST',
     body: { email, password },
-  }, false); // Login doesn't need auth
+  }, false);
   
   if (data && data.access) {
     localStorage.setItem('admin_token', data.access);
