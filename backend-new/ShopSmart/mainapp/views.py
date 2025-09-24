@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Avg, Count,F
-from .choices import ShopTypes, ProductTypes
+from .choices import ShopTypes, ProductTypes, Role
 from .permissions import (
     IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner,
     IsOwnerOfApprovedShop, IsAdmin
@@ -261,10 +261,19 @@ class LoadHomeView(APIView):
                 return Response({'error': 'Something went wrong while loading data'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ShopDetailView(generics.RetrieveAPIView):
-    queryset = Shop.objects.filter(is_approved=True)
+    """
+    Get detailed information about a specific shop.
+    Admins can view any shop, other users can only view approved shops.
+    """
     serializer_class = ShopDetailSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and (user.is_staff or getattr(user, 'role', None) == Role.ADMIN):
+            return Shop.objects.all()
+        return Shop.objects.filter(is_approved=True)
 
 
 class ProductDetailView(generics.RetrieveAPIView):
