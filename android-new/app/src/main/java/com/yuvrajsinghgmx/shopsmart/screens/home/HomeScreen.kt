@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,14 +21,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,17 +34,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ShopCard
 import com.yuvrajsinghgmx.shopsmart.screens.shops.ShopViewModel
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.NoResultsFound
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.SearchBarWithQuickActions
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.rememberVoiceSearchLauncher
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -61,8 +59,13 @@ fun HomeScreen(
     val state = viewModel.state.value
     val categories = listOf("All", "Groceries", "Fashion", "Electronics")
     var selectedCategory by remember { mutableStateOf("All") }
-
+    var isSearchActive by remember { mutableStateOf(false) }
     val shopState = shopviewModel.state.value
+
+    val voiceSearchLauncher = rememberVoiceSearchLauncher { spokenText ->
+        viewModel.onEvent(HomeEvent.Search(spokenText))
+        isSearchActive = true
+    }
 
     LaunchedEffect(shopState.shops) {
         shopState.shops.forEach { shop ->
@@ -70,6 +73,27 @@ fun HomeScreen(
                 "ShopHomeScreen",
                 "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}"
             )
+        }
+    }
+
+    // Filter shops and products based on search query
+    val filteredShops = remember(state.searchQuery, state.nearbyShops) {
+        if (state.searchQuery.isNullOrBlank()) {
+            state.nearbyShops
+        } else {
+            state.nearbyShops.filter { shop ->
+                shop.shopName.contains(state.searchQuery, ignoreCase = true)
+            }
+        }
+    }
+
+    val filteredProducts = remember(state.searchQuery, state.products) {
+        if (state.searchQuery.isNullOrBlank()) {
+            state.products
+        } else {
+            state.products.filter { product ->
+                product.name.contains(state.searchQuery, ignoreCase = true)
+            }
         }
     }
 
@@ -134,32 +158,115 @@ fun HomeScreen(
                     }
                 }
 
-                // Search Bar
+//                // Search Bar
+//                item {
+//                    OutlinedTextField(
+//                        value = state.searchQuery ?: "",
+//                        onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(56.dp),
+//                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+//                        trailingIcon = {
+//                            Icon(
+//                                Icons.Default.FilterList,
+//                                contentDescription = "Filter"
+//                            )
+//                        },
+//                        placeholder = { Text("Search shops or products...") },
+//                        shape = RoundedCornerShape(12.dp),
+//                        colors = OutlinedTextFieldDefaults.colors(
+//                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+//                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+//                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+//                            focusedBorderColor = MaterialTheme.colorScheme.outline,
+//                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+//                        )
+//                    )
+//                }
+
                 item {
-                    OutlinedTextField(
-                        value = state.searchQuery ?: "",
-                        onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.FilterList,
-                                contentDescription = "Filter"
-                            )
+                    SearchBarWithQuickActions(
+                        searchQuery = state.searchQuery.orEmpty(),
+                        onSearchChange = {
+                            viewModel.onEvent(HomeEvent.Search(it))
+                            isSearchActive = it.isNotBlank()
                         },
-                        placeholder = { Text("Search shops or products...") },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            focusedBorderColor = MaterialTheme.colorScheme.outline,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        onSearchSubmit = {
+                            isSearchActive = true
+                        },
+                        onVoiceSearchClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(
+                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                )
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now…")
+                            }
+                            voiceSearchLauncher.launch(intent)
+                        }
                     )
                 }
+
+                // Show search results or normal content
+                if (isSearchActive && !state.searchQuery.isNullOrBlank()) {
+                    // Search Results
+                    val hasResults = filteredShops.isNotEmpty() || filteredProducts.isNotEmpty()
+
+                    if (!hasResults) {
+                        // No Results Found
+                        item {
+                            NoResultsFound()
+                        }
+                    } else {
+                        // Show filtered results
+                        if (filteredProducts.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Products (${filteredProducts.size})",
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                            item {
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp)
+                                ) {
+                                    items(filteredProducts) { product ->
+                                        ProductCard(
+                                            product = product,
+                                            onClick = {
+                                                sharedProductViewModel.selectedProduct(product)
+                                                navController.navigate("productScreen")
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        if (filteredShops.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text = "Shops (${filteredShops.size})",
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                            items(filteredShops) { shop ->
+                                ShopCard(
+                                    shop = shop,
+                                    onClick = {
+                                        sharedViewModel.setSelectedShop(shop)
+                                        navController.navigate("shopDetails")
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }else{
 
                 // Categories
                 item {
@@ -222,6 +329,7 @@ fun HomeScreen(
                 }
             }
         }
+        }
     }
 }
 
@@ -249,4 +357,3 @@ fun CategoryChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
         }
     }
 }
-
