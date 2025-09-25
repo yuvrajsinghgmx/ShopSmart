@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ProductApi
 import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepositoryImpl
 import com.yuvrajsinghgmx.shopsmart.data.repository.Repository
@@ -22,8 +23,8 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideRepository(): Repository {
-        return Repository()
+    fun provideRepository(productApi: ProductApi): Repository {
+        return Repository(productApi)
     }
     @Provides
     @Singleton

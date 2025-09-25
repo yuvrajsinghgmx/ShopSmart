@@ -134,6 +134,13 @@ fun NavGraphBuilder.mainGraph(
                 navController.navigate("shopDetails")
             })
         }*/
+
+        composable("searchScreen") {
+            SearchScreen(onShopClick = { shop ->
+                sharedViewModel.setSelectedShop(shop)
+                navController.navigate("shopDetails")
+            })
+        }
         composable(BottomNavItem.Cart.route) {
             CartScreen(navController = navController)
         }
