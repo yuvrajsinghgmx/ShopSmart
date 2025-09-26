@@ -66,7 +66,7 @@ export const logout = () => {
 
 export const getShops = () => apiRequest('admin/shops/', { method: 'GET' });
 
-export const getShopDetails = (pk) => apiRequest(`shops/${pk}/`, { method: 'GET' });
+export const getShopDetails = (pk) => apiRequest(`admin/shops/${pk}/`, { method: 'GET' });
 
 export const updateShopStatus = (id, action) => {
   return apiRequest(`admin/shops/${id}/approve/`, {

@@ -262,18 +262,12 @@ class LoadHomeView(APIView):
 
 class ShopDetailView(generics.RetrieveAPIView):
     """
-    Get detailed information about a specific shop.
-    Admins can view any shop, other users can only view approved shops.
+    Get detailed information about a specific APPROVED shop (for customers).
     """
+    queryset = Shop.objects.filter(is_approved=True)
     serializer_class = ShopDetailSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated and (user.is_staff or getattr(user, 'role', None) == Role.ADMIN):
-            return Shop.objects.all()
-        return Shop.objects.filter(is_approved=True)
 
 
 class ProductDetailView(generics.RetrieveAPIView):
@@ -582,6 +576,16 @@ class ApproveShopView(generics.UpdateAPIView):
             return Response({'message': message, 'shop_id': shop.shop_id, 'is_approved': shop.is_approved}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminShopDetailView(generics.RetrieveAPIView):
+    """
+    Admin view for retrieving any shop's details.
+    """
+    queryset = Shop.objects.all()
+    serializer_class = ShopDetailSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    lookup_field = 'pk'
 
 
 class AdminDeleteShopView(generics.DestroyAPIView):
