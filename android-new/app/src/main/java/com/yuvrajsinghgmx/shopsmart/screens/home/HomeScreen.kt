@@ -136,29 +136,39 @@ fun HomeScreen(
 
                 // Search Bar
                 item {
-                    OutlinedTextField(
-                        value = state.searchQuery ?: "",
-                        onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.FilterList,
-                                contentDescription = "Filter"
+                            .height(56.dp)
+                            .clickable { navController.navigate("searchScreen") }
+                    ){
+                        OutlinedTextField(
+                            value = state.searchQuery ?: "",
+                            //onValueChange = { viewModel.onEvent(HomeEvent.Search(it)) },
+                            onValueChange = {
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                            trailingIcon = {
+                                Icon(
+                                    Icons.Default.FilterList,
+                                    contentDescription = "Filter"
+                                )
+                            },
+                            placeholder = { Text("Search shops or products...") },
+                            enabled = false,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                focusedBorderColor = MaterialTheme.colorScheme.outline,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
                             )
-                        },
-                        placeholder = { Text("Search shops or products...") },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            focusedBorderColor = MaterialTheme.colorScheme.outline,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
-                    )
+                    }
+
                 }
 
                 // Categories

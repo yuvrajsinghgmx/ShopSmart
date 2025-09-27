@@ -8,6 +8,7 @@ import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.FavoritesApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.LogoutApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ProductApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.RefreshApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
@@ -99,4 +100,10 @@ object NetworkModule {
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProductApi(retrofit: Retrofit): ProductApi {
+        return retrofit.create(ProductApi::class.java)
+    }
 }

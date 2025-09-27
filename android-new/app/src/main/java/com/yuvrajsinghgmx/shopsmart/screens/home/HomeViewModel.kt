@@ -72,7 +72,11 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.Search -> {
                 _state.value = _state.value.copy(searchQuery = event.query)
-                filterResults(event.query)
+                //filterResults(event.query)
+                viewModelScope.launch {
+                    val results = repository.searchProducts(event.query)
+                    _state.value = _state.value.copy(searchResults = results)
+                }
             }
         }
     }
