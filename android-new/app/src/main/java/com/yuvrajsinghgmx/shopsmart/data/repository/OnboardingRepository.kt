@@ -63,11 +63,11 @@ class OnboardingRepository @Inject constructor(
                     accessToken = authPrefs.getAccessToken() ?: "",
                     refreshToken = authPrefs.getRefreshToken() ?: "",
                     userId = authPrefs.getUserId(),
-                    name = fullName,
+                    name = response.fullName,
                     phone = authPrefs.getPhone(),
                     profilePic = response.profileImage,
                     isNewUser = false,
-                    role = role,
+                    role = response.role,
                     isOnboardingCompleted = true
                 )
             }

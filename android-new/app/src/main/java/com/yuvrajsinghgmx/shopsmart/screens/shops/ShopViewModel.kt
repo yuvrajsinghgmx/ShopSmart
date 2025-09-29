@@ -58,10 +58,6 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
         )
     }
 
-    fun onProfileImagePicked(uri: Uri?) {
-        _state.value = state.value.copy(profileImageUri = uri)
-    }
-
     fun onImagePicked(uri: Uri) {
         _state.value = state.value.copy(imageUris = _state.value.imageUris + uri)
     }
@@ -108,38 +104,18 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
             try {
                 _loading.value = true
 
-                // Profile image
-                val profileImage = s.profileImageUri?.let {
-                    uriToMultipart(context, it, "image_uploads[]")
-                }
-
                 // Multiple extra images
                 val extraImages = s.imageUris.mapNotNull { uri ->
-                    uriToMultipart(context, uri, "image_uploads[]")
+                    uriToMultipart(context, uri, "image_uploads")
                 }
 
                 // Multiple documents
                 val documents = s.documentUris.mapNotNull { uri ->
-                    uriToMultipart(context, uri, "document_uploads[]")
+                    uriToMultipart(context, uri, "document_uploads")
                 }
 
-                // Separate lists for logging and request
-                val profilePart = profileImage?.part
-                val profileName = profileImage?.fileName
-
-                val extraImageParts = extraImages.map { it.part }
-                val extraImageNames = extraImages.map { it.fileName }
-
+                val imageParts = extraImages.map { it.part }
                 val documentParts = documents.map { it.part }
-                val documentNames = documents.map { it.fileName }
-
-                val allImageParts = listOfNotNull(profilePart) + extraImageParts
-
-                // Convert images list to JSON string (using only file names)
-                val imagesJsonString = (listOfNotNull(profileName) + extraImageNames)
-                    .joinToString(separator = ",", prefix = "[", postfix = "]") { "\"$it\"" }
-
-                val imagesJson = imagesJsonString.toRequestBodyJson()
 
                 // Convert text fields
                 val name = s.name.toRequestBodyText()
@@ -152,30 +128,23 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
                 val longitude = (s.location?.longitude ?: 0.0).toString().toRequestBodyText()
 
                 // API call
-                val addshoprequest = repository.addShop(
+                val addShopResponse = repository.addShop(
                     name, address, category, description, shopType, position,
-                    latitude, longitude, imagesJson, allImageParts, documentParts
+                    latitude, longitude, imageParts, documentParts
                 )
 
-                if (addshoprequest.isSuccessful) {
-                    addshoprequest.body()?.let { body ->
+                if (addShopResponse.isSuccessful) {
+                    addShopResponse.body()?.let { body ->
                         _shopResponse.value = body
                         Toast.makeText(context, "Shop added successfully", Toast.LENGTH_SHORT).show()
                         resetForm()
-
-                        Log.d("UploadCheck", "Profile Image: $profileName")
-                        Log.d("UploadCheck", "Extra Images: $extraImageNames")
-                        Log.d("UploadCheck", "Documents: $documentNames")
-                        Log.d("UploadCheck", "allImageParts: $allImageParts")
-                        Log.d("UploadCheck", "documentParts: $documentParts")
-                        Log.d("UploadCheck", "Images JSON sent: ${imagesJson}")
-                        Log.d("UploadCheck", "Response images field: ${body.images}")
+                        Log.d("UploadCheck", "Images uploaded: ${body.images}")
                     } ?: run {
                         _error.value = "Empty response body"
                     }
                 } else {
-                    val errBody = addshoprequest.errorBody()?.string()
-                    _error.value = "Error ${addshoprequest.code()}: $errBody"
+                    val errBody = addShopResponse.errorBody()?.string()
+                    _error.value = "Error ${addShopResponse.code()}: $errBody"
                 }
 
             } catch (e: Exception) {
@@ -189,31 +158,4 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
     private fun resetForm() {
         _state.value = ShopFormState()
     }
-
-//    fun fetchShops() {
-//        viewModelScope.launch {
-//            try {
-//                _state.value = state.value.copy(isLoadingShops = true)
-//                val result = repository.getShops()
-//                result.onSuccess { shops ->
-//                    _state.value = state.value.copy(shops = shops, isLoadingShops = false)
-//                    shops.forEach { shop ->
-//                        Log.d("ShopViewModel", "Shop: ${shop.name}, Owner: ${shop.owner_name}, Address: ${shop.address}")
-//                    }
-//                }.onFailure { error ->
-//                    _state.value = state.value.copy(errorShops = error.message, isLoadingShops = false)
-//                }
-//            }catch (e: Exception) {
-//                _state.value = state.value.copy(
-//                    errorShops = e.message ?: "Unexpected error",
-//                    isLoadingShops = false
-//                )
-//                Log.e("ShopViewModel", "Exception in fetchShops", e)
-//            }finally {
-//                _state.value = state.value.copy(isLoadingShops = false)
-//            }
-//
-//        }
-//    }
-
 }

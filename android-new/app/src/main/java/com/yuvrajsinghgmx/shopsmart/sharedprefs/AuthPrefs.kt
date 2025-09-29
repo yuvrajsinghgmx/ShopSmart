@@ -48,7 +48,7 @@ class AuthPrefs @Inject constructor(
     fun getProfilePic(): String? = prefs.getString("profile_pic", null)
     fun getRole(): String? = prefs.getString("role", null)
     fun isNewUser(): Boolean = prefs.getBoolean("is_new_user", false)
-    fun isOnboarded(): Boolean = prefs.getBoolean("onboarding_completed", false)
+    fun isOnboardingCompleted(): Boolean = prefs.getBoolean("onboarding_completed", false)
     fun getUser(): User? {
         val id = getUserId()
         val name = getName()

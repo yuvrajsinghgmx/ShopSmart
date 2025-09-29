@@ -55,7 +55,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     shopviewModel: ShopViewModel = hiltViewModel(),
     sharedViewModel: SharedShopViewModel,
-   sharedProductViewModel: SharedProductViewModel,
+    sharedProductViewModel: SharedProductViewModel,
     navController: NavController
 ) {
     val state = viewModel.state.value

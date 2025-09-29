@@ -11,7 +11,6 @@ data class ShopFormState(
     val phoneNumber: String = "",
     val shopAddress: String = "",
     val description: String = "",
-    val profileImageUri: Uri? = null,
     val imageUris: List<Uri> = emptyList(),
     val documentUris: List<Uri> = emptyList(),
     val location: LatLng? = null,

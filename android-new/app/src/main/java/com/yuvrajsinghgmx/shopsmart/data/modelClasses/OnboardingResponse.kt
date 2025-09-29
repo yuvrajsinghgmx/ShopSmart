@@ -3,7 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 import com.google.gson.annotations.SerializedName
 
 data class OnboardingResponse(
-    val role: String,
+    val role: String?,
     @SerializedName("full_name")
     val fullName: String?,
     @SerializedName("profile_image")

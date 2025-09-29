@@ -22,7 +22,6 @@ interface ShopApi {
         @Part("position") position: RequestBody,
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
-        @Part("images") images: RequestBody,
         @Part imageUploads: List<MultipartBody.Part>,      // Multiple images
         @Part documentUploads: List<MultipartBody.Part>    // Multiple documents
     ): Response<AddShopResponse>

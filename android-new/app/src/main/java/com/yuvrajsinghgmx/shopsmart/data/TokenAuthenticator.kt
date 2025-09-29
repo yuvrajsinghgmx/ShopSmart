@@ -43,7 +43,7 @@ class TokenAuthenticator @Inject constructor(
                     phone = authPrefs.getPhone(),
                     isNewUser = authPrefs.isNewUser(),
                     role = authPrefs.getRole(),
-                    isOnboardingCompleted = authPrefs.isOnboarded()
+                    isOnboardingCompleted = authPrefs.isOnboardingCompleted()
                 )
 
                 // Retry request with **new access token**

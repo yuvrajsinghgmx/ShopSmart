@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     content = { padding ->
-                        AppNavHost(navController,padding)
+                        AppNavHost(navController, padding)
                     }
                 )
             }

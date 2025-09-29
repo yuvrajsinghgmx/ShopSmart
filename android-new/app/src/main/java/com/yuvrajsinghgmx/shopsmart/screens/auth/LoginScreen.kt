@@ -98,7 +98,7 @@ fun LoginScreen(
                 scope.launch { snackbarHostState.showSnackbar("OTP Sent!") }
             }
             is AuthState.AuthSuccess -> {
-                onLogInSuccess(state.djangoAuthResponse.user.isNewUser)
+                onLogInSuccess(authPrefs.isNewUser())
             }
             is AuthState.Error -> {
                 scope.launch { snackbarHostState.showSnackbar(state.message) }
