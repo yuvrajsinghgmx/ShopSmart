@@ -105,7 +105,7 @@ private fun CartHeading(
             Surface(
                 shape = CircleShape,
                 color = colorScheme.primary,
-                modifier = Modifier.size(30.dp) // Slightly larger than before
+                modifier = Modifier.size(30.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center
@@ -130,45 +130,33 @@ private fun CartContent(
     onRemoveItem: (String) -> Unit,
     totalItemCount: Int
 ) {
-    // Use a Column to stack the fixed Heading and the scrollable LazyColumn
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // 1. FIXED HEADING (Outside the LazyColumn)
-        // Apply horizontal padding here to align with the list content
         CartHeading(
             itemCount = totalItemCount,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp) // Adjusted padding
         )
 
-        // 2. SCROLLABLE CONTENT (LazyColumn)
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f), // Makes LazyColumn take all available vertical space
-
-            // Note: Vertical padding and arrangement are defined here.
-            // Horizontal padding is moved to the Heading and the Cards themselves
-            contentPadding = PaddingValues(bottom = 16.dp), // Only needed for bottom spacing
+                .weight(1f),
+            contentPadding = PaddingValues(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // ITEMS
             items(cartItems, key = { it.product.productId }) { cartItem ->
-                // Apply horizontal padding to the Card item here since it was removed
-                // from the LazyColumn contentPadding
                 CartItemCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), // Applied horizontal padding to item card
+                        .padding(horizontal = 16.dp),
                     cartItem = cartItem,
                     onQuantityChange = onQuantityChange,
                     onToggleSelection = onToggleSelection,
                     onRemoveItem = onRemoveItem
                 )
             }
-
-            // SPACER (Still needed for bottom bar offset, though might need adjustment
-            // depending on where this CartContent is placed inside the Scaffold padding)
             item {
                 Spacer(modifier = Modifier.height(80.dp))
             }
@@ -197,13 +185,11 @@ fun CartItemCard(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
 
-            // 1. Main Content: Image and Details
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp) // Main padding for content
+                    .padding(16.dp)
             ) {
-                // Product Image and Selection Overlay (Start)
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -217,7 +203,6 @@ fun CartItemCard(
                         modifier = Modifier.fillMaxSize()
                     )
 
-                    // Compact Selection Checkbox Overlay
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopStart)
@@ -240,16 +225,14 @@ fun CartItemCard(
                         }
                     }
                 }
-                // Product Image and Selection Overlay (End)
 
                 Spacer(Modifier.width(16.dp))
 
-                // Product Details and Quantity Control (Aligned Vertically)
                 Column(
                     modifier = Modifier.weight(1f).height(100.dp), // Match image height
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Product Info (Name, Price, Shop)
+
                     Column {
                         Text(
                             text = product.name,
@@ -269,7 +252,6 @@ fun CartItemCard(
 
                     Spacer(Modifier.height(3.dp))
 
-                    // Quantity Control (Horizontal Row)
                     QuantityControlRow(
                         quantity = cartItem.quantity,
                         onIncrement = { onQuantityChange(product.productId, cartItem.quantity + 1) },
@@ -279,7 +261,6 @@ fun CartItemCard(
                 }
             }
 
-            // 2. Delete Icon (Top Right Corner)
             IconButton(
                 onClick = { onRemoveItem(product.productId) },
                 modifier = Modifier
@@ -295,7 +276,6 @@ fun CartItemCard(
             }
         }
 
-        // Shop Info (Separate row at the bottom)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -312,7 +292,6 @@ fun CartItemCard(
     }
 }
 
-// Separate Composable for Horizontal Quantity Control
 @Composable
 private fun QuantityControlRow(
     quantity: Int,
@@ -339,7 +318,6 @@ private fun QuantityControlRow(
             )
         }
 
-        // Quantity Display
         Text(
             text = "$quantity",
             style = MaterialTheme.typography.titleMedium,
@@ -347,7 +325,6 @@ private fun QuantityControlRow(
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 
-        // Increment Button
         IconButton(
             onClick = onIncrement,
             modifier = Modifier.size(32.dp)
@@ -494,120 +471,4 @@ private fun EmptyCartContent() {
         }
     }
 }
-/*
-@Preview(showBackground = true)
-@Composable
-fun CartScreenPreview() {
-    val sampleItems = listOf(
-        CartItem(
-            product = Product(
-                productId = "1",
-                name = "Bluetooth Speaker",
-                shopName = "Sound World",
-                price = "89.99", // String type, not Double
-                imageUrl = listOf("https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"),
-                distance = "3 km",
-                review = "4.8", // also String if that’s how your model is defined
-                category = "Electronics",
-                description = "High-quality portable Bluetooth speaker",
-                shopId = "shop_123",
-                shopNumber = "S-12",
-                isFavorite = false
-            ),
-            quantity = 2,
-            isSelected = true
-        ),
-        CartItem(
-            product = Product(
-                productId = "1",
-                name = "Bluetooth Speaker",
-                shopName = "Sound World",
-                price = "89.99", // String type, not Double
-                imageUrl = listOf("https://images.unsplash.com/photo-1455885662065-29d2d09995c4?auto=format&fit=crop&w=400&q=80"),
-                distance = "3 km",
-                review = "4.8", // also String if that’s how your model is defined
-                category = "Electronics",
-                description = "High-quality portable Bluetooth speaker",
-                shopId = "shop_123",
-                shopNumber = "S-12",
-                isFavorite = false
-            ),
-            quantity = 1,
-            isSelected = false
-        )
-    )
 
-    MaterialTheme {
-        CartContent(
-            cartItems = sampleItems,
-            onQuantityChange = { _, _ -> },
-            onToggleSelection = {},
-            onRemoveItem = {},
-            totalItemCount = 4
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CartTopBarPreview() {
-    MaterialTheme {
-        CartTopBar(
-            onNavigateBack = {},
-            itemCount = 2,
-            onClearCart = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CartItemCardPreview() {
-    val sampleItem = CartItem(
-        product = Product(
-            productId = "1",
-            name = "Bluetooth Speaker",
-            shopName = "Sound World",
-            price = "89.99", // String type, not Double
-            imageUrl = listOf("https://via.placeholder.com/150"),
-            distance = "3 km",
-            review = "4.8", // also String if that’s how your model is defined
-            category = "Electronics",
-            description = "High-quality portable Bluetooth speaker",
-            shopId = "shop_123",
-            shopNumber = "S-12",
-            isFavorite = false
-        ),
-        quantity = 1,
-        isSelected = true
-    )
-
-    MaterialTheme {
-        CartItemCard(
-            cartItem = sampleItem,
-            onQuantityChange = { _, _ -> },
-            onToggleSelection = {},
-            onRemoveItem = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CartBottomBarPreview() {
-    MaterialTheme {
-        CartBottomBar(
-            totalAmount = 239.98,
-            selectedItemsCount = 2,
-            onCheckout = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EmptyCartContentPreview() {
-    MaterialTheme {
-        EmptyCartContent()
-    }
-}*/
