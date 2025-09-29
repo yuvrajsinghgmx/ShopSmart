@@ -57,4 +57,3 @@ fun String.toRequestBodyJson(): RequestBody =
 
 fun String.toRequestBodyText(): RequestBody =
     toRequestBody("text/plain".toMediaTypeOrNull())
-

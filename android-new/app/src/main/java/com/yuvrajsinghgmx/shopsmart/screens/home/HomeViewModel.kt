@@ -108,7 +108,7 @@ class HomeViewModel @Inject constructor(
                 product.category.contains(lowerQ, ignoreCase = true)
             ) {
                 val shop =
-                    allShops.find { it.shopName == product.shopName || it.shopNumber.toString() == product.shopNumber }
+                    allShops.find { it.shopName == product.shopName || it.shopNumber == product.shopNumber }
                 if (shop != null) matchedShops.add(shop.shopName)
                 results.add(SearchResult(product = product, shop = shop))
             }

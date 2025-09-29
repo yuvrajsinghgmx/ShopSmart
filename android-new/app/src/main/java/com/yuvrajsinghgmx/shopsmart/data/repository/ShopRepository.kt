@@ -19,27 +19,13 @@ class ShopRepository @Inject constructor(private val api: ShopApi) {
         position: RequestBody,
         latitude: RequestBody,
         longitude: RequestBody,
-        imagesJson: RequestBody,
         imageParts: List<MultipartBody.Part>,
         documentParts: List<MultipartBody.Part>
     ): Response<AddShopResponse> {
         return api.addShop(
             name, address, category, description, shopType, position,
-            latitude, longitude, imagesJson, imageParts, documentParts
+            latitude, longitude,imageParts, documentParts
         )
     }
-
-//    suspend fun getShops(): Result<List<ShopItem>> {
-//        return try {
-//            val response = api.getShops()
-//            if (response.isSuccessful) {
-//                Result.success(response.body() ?: emptyList())
-//            } else {
-//                Result.failure(Exception(response.message()))
-//            }
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
 }
 

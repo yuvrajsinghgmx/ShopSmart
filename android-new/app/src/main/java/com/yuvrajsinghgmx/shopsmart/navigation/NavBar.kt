@@ -37,19 +37,16 @@ fun AppNavHost(
     navController: NavHostController,
     padding: PaddingValues
 ) {
-    val sharedProductViewModel: SharedProductViewModel = viewModel()
+    val sharedProductViewModel: SharedProductViewModel = hiltViewModel()
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
-    val authPrefs: AuthPrefs = sharedAppViewModel.authPrefs
+    val authPrefs = AuthPrefs(LocalContext.current)
 
-    val startDestination = if (!authPrefs.getAccessToken().isNullOrBlank() && authPrefs.isOnboarded() && !authPrefs.getRole().isNullOrBlank()) {
-        "main_graph"
-    } else if (!authPrefs.getAccessToken().isNullOrBlank()) {
-        "onboarding"
-    } else {
-        "login_route"
+    val startDestination = when {
+        authPrefs.getAccessToken().isNullOrBlank() -> "login_route"
+        !authPrefs.isOnboardingCompleted() -> "onboarding"
+        else -> "main_graph"
     }
-
 
     NavHost(
         navController = navController,
