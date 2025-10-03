@@ -81,12 +81,12 @@ fun SearchScreen(
                 ) {
                     groupedResults.forEach { (shop, products) ->
                         item {
-                            ShopProductRow(
-                                shop = shop,
-                                products = products,
-                                onProductClick = onProductClick,
-                                onShopClick = onShopClick
-                            )
+//                            ShopProductRow(
+//                                shop = shop,
+//                                products = products,
+//                                onProductClick = onProductClick,
+//                                onShopClick = onShopClick
+//                            )
                         }
                     }
                 }
@@ -95,73 +95,73 @@ fun SearchScreen(
     }
 }
 
-@Composable
-fun ShopProductRow(
-    shop: Shop,
-    products: List<Product>,
-    onProductClick: (Product) -> Unit,
-    onShopClick: (Shop) -> Unit
-) {
-    Surface(
-        shadowElevation = 4.dp,
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(170.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            LazyRow(
-                modifier = Modifier.weight(2.5f),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(products) { product ->
-                    MiniProductCard(product = product, onClick = { onProductClick(product) })
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp)
-                    .background(MaterialTheme.colorScheme.outlineVariant)
-            )
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clickable { onShopClick(shop) }
-                    .padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ShopCircleImage(imageUrl = shop.imageUrl.firstOrNull())
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = shop.shopName,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    maxLines = 2,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = shop.distance,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 13.sp
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun ShopProductRow(
+//    shop: Shop,
+//    products: List<Product>,
+//    onProductClick: (Product) -> Unit,
+//    onShopClick: (Shop) -> Unit
+//) {
+//    Surface(
+//        shadowElevation = 4.dp,
+//        shape = RoundedCornerShape(18.dp),
+//        color = MaterialTheme.colorScheme.surface,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 6.dp, horizontal = 4.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(170.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            LazyRow(
+//                modifier = Modifier.weight(2.5f),
+//                contentPadding = PaddingValues(horizontal = 16.dp),
+//                horizontalArrangement = Arrangement.spacedBy(12.dp)
+//            ) {
+//                items(products) { product ->
+//                    MiniProductCard(product = product, onClick = { onProductClick(product) })
+//                }
+//            }
+//
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxHeight()
+//                    .width(1.dp)
+//                    .background(MaterialTheme.colorScheme.outlineVariant)
+//            )
+//
+//            Column(
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .fillMaxHeight()
+//                    .clickable { onShopClick(shop) }
+//                    .padding(horizontal = 8.dp),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                ShopCircleImage(imageUrl = shop.imageUrl.firstOrNull())
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Text(
+//                    text = shop.shopName,
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 14.sp,
+//                    maxLines = 2,
+//                    textAlign = TextAlign.Center,
+//                    color = MaterialTheme.colorScheme.onSurface
+//                )
+//                Spacer(modifier = Modifier.height(4.dp))
+//                Text(
+//                    text = shop.distance,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                    fontSize = 13.sp
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun ShopCircleImage(imageUrl: String?) {

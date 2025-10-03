@@ -31,7 +31,7 @@ fun AllProductCard(product: Product) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
+            .height(210.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(color = MaterialTheme.colorScheme.surface)
             .padding(12.dp)

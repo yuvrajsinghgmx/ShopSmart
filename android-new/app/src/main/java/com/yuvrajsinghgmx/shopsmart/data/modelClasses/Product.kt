@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
 data class Product(
+    val id: Int,
     val productId: String,
     val name: String,
     val price: String,

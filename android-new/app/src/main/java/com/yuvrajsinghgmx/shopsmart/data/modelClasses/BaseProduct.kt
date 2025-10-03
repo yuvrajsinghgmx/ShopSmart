@@ -1,9 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
-import androidx.room.Embedded
 import com.google.gson.annotations.SerializedName
 
-data class ProductDetailResponse(
+data class BaseProduct(
     @SerializedName("id") val id: Int,
     @SerializedName("product_id") val productId: String,
     @SerializedName("name") val name: String,
@@ -19,7 +18,5 @@ data class ProductDetailResponse(
     @SerializedName("is_favorite") val isFavorite: Boolean,
     @SerializedName("reviews_count") val reviewsCount: Int,
     @SerializedName("average_rating") val averageRating: Double,
-    @SerializedName("created_at") val createdAt: String,
-    @SerializedName("shop_details") val shopDetails: Map<String, String>,
-    @SerializedName("recent_reviews") val recentReviews: List<String>
+    @SerializedName("created_at") val createdAt: String
 )

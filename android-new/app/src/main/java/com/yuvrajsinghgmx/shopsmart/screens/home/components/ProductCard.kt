@@ -35,8 +35,8 @@ fun ProductCard(product: Product, onClick: () -> Unit) {
 
     Card(
         modifier = Modifier
-            .width(170.dp)
-            .height(265.dp)
+            .width(160.dp)
+            .height(230.dp)
             .padding(end = 10.dp)
             .clickable{ onClick() },
         shape = RoundedCornerShape(16.dp),

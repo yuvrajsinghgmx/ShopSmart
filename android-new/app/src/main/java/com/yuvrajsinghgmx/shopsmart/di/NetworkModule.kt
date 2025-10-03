@@ -6,8 +6,10 @@ import com.google.gson.GsonBuilder
 import com.yuvrajsinghgmx.shopsmart.data.TokenAuthenticator
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.FavoritesApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.LoadApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.LogoutApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ProductDetailApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.RefreshApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
@@ -99,4 +101,14 @@ object NetworkModule {
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLoadApi(retrofit: Retrofit): LoadApi =
+        retrofit.create(LoadApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideProductDetailApi(retrofit: Retrofit): ProductDetailApi =
+        retrofit.create(ProductDetailApi::class.java)
 }
