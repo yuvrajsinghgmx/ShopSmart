@@ -19,7 +19,7 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 
 @Composable
 fun ShopCard(shop: Shop, onClick: () -> Unit) {
-    val imageUrl = shop.imageUrl.firstOrNull() ?: "https://via.placeholder.com/150.png?text=Shop"
+    val imageUrl = shop.images.firstOrNull() ?: "https://via.placeholder.com/150.png?text=Shop"
     Log.d("ShopCard", "Loading shop image: $imageUrl")
 
     Card(
@@ -39,7 +39,7 @@ fun ShopCard(shop: Shop, onClick: () -> Unit) {
         ) {
             AsyncImage(
                 model = imageUrl,
-                contentDescription = shop.shopName,
+                contentDescription = shop.name,
                 error = painterResource(R.drawable.error),
                 placeholder = painterResource(R.drawable.error),
                 contentScale = ContentScale.Crop,
@@ -55,7 +55,7 @@ fun ShopCard(shop: Shop, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = shop.shopName,
+                    text = shop.name,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -69,13 +69,13 @@ fun ShopCard(shop: Shop, onClick: () -> Unit) {
                     )
                 )
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    text = shop.distance,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                )
+//                Text(
+//                    text = shop.distance,
+//                    style = MaterialTheme.typography.bodyMedium.copy(
+//                        fontWeight = FontWeight.Medium,
+//                        color = MaterialTheme.colorScheme.primary
+//                    )
+//                )
             }
         }
     }

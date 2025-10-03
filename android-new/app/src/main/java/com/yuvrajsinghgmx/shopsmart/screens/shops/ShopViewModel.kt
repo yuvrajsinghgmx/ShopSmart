@@ -4,27 +4,26 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopResponse
+import com.google.android.gms.maps.model.LatLng
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopResponse
 import com.yuvrajsinghgmx.shopsmart.data.repository.ShopRepository
+import com.yuvrajsinghgmx.shopsmart.utils.toRequestBodyText
+import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.runtime.State
-import com.google.android.gms.maps.model.LatLng
-import com.yuvrajsinghgmx.shopsmart.utils.toRequestBodyJson
-import com.yuvrajsinghgmx.shopsmart.utils.toRequestBodyText
-import com.yuvrajsinghgmx.shopsmart.utils.uriToMultipart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(private val repository: ShopRepository) : ViewModel() {
 
-    private val _shopResponse = MutableStateFlow<AddShopResponse?>(null)
-    val shopResponse: StateFlow<AddShopResponse?> = _shopResponse
+    private val _shopResponse = MutableStateFlow<ShopResponse?>(null)
+    val shopResponse: StateFlow<ShopResponse?> = _shopResponse
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading

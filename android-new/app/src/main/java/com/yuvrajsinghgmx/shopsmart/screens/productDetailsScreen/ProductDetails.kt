@@ -4,6 +4,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,20 +16,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 
 
 @Composable
 fun ProductDetails(
-    sharedViewModel: SharedProductViewModel,
+    productId: Int,
     navController: NavController,
     viewModel: ProductDetailsViewModel = hiltViewModel()
 ) {
-    val isSaved by viewModel.isProductSaved.collectAsState()
+    val productDetails by viewModel.productDetails.collectAsState()
+    val isSaved = productDetails?.isFavorite ?: false
+    val loading by viewModel.loading.collectAsState()
+    val error by viewModel.error.collectAsState()
     val context = LocalContext.current
 
-    val selectedProduct = sharedViewModel.selectedProduct.collectAsState().value
-
+    // Collect events (share, call, toast)
     LaunchedEffect(Unit) {
         viewModel.eventFlow.collect { event ->
             when (event) {
@@ -42,39 +44,62 @@ fun ProductDetails(
                     }
                     context.startActivity(Intent.createChooser(intent, "Share via"))
                 }
-
                 is UiEvent.CallShop -> {
                     val intent = Intent(Intent.ACTION_DIAL).apply {
                         data = "tel:${event.phoneNumber}".toUri()
                     }
                     context.startActivity(intent)
                 }
-
                 is UiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-    if (selectedProduct != null) {
-        LaunchedEffect(selectedProduct) {
-            viewModel.setInitialFavoriteState(selectedProduct.isFavorite);
+
+    // Fetch product details when composable is first launched
+    LaunchedEffect(productId) {
+        viewModel.fetchProductDetails(productId)
+    }
+
+    when {
+        loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
-        ProductDetailsUI(
-            product = selectedProduct,
-            onBack = { navController.popBackStack() },
-            onShareClick = { viewModel.onShareClick(selectedProduct) },
-            onCallClick = { viewModel.onCallClick(selectedProduct.shopNumber) },
-            onSaveClick = { viewModel.onSaveClick(selectedProduct.productId) },
-            isProductSaved = isSaved,
-            navController = navController
-        )
-    } else {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "Product not found")
+
+        error != null -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = error ?: "Unknown error")
+            }
+        }
+
+        productDetails != null -> {
+            ProductDetailsUI(
+                product = productDetails!!,
+                onBack = { navController.popBackStack() },
+                onShareClick = { viewModel.onShareClick() },
+                onCallClick = { viewModel.onCallClick() },
+                onSaveClick = { viewModel.onSaveClick() },
+                isProductSaved = isSaved,
+                navController = navController
+            )
+        }
+
+        else -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Product not found")
+            }
         }
     }
 }

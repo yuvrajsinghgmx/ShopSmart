@@ -81,7 +81,7 @@ fun LoginScreen(
     var otp by remember { mutableStateOf("") }
     var showOtpField by remember { mutableStateOf(false) }
 
-    val initialTime = 120
+    val initialTime = 60
     var ticks by remember { mutableIntStateOf(initialTime) }
     var isTimerRunning by remember { mutableStateOf(false) }
 
@@ -134,7 +134,6 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 🔹 Logo
             Box(
                 modifier = Modifier
                     .size(120.dp)

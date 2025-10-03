@@ -1,11 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.data.interfaces
 
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopResponse
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
-import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -24,5 +22,5 @@ interface ShopApi {
         @Part("longitude") longitude: RequestBody,
         @Part imageUploads: List<MultipartBody.Part>,      // Multiple images
         @Part documentUploads: List<MultipartBody.Part>    // Multiple documents
-    ): Response<AddShopResponse>
+    ): Response<ShopResponse>
 }

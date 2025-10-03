@@ -1,7 +1,5 @@
 package com.yuvrajsinghgmx.shopsmart.navigation
 
-import android.app.Activity
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -12,19 +10,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.home.SharedProductViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
+import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetailsViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
@@ -37,7 +37,7 @@ fun AppNavHost(
     navController: NavHostController,
     padding: PaddingValues
 ) {
-    val sharedProductViewModel: SharedProductViewModel = hiltViewModel()
+    val sharedProductViewModel: ProductDetailsViewModel = hiltViewModel()
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs = AuthPrefs(LocalContext.current)
@@ -54,7 +54,7 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         authGraph(navController, sharedAppViewModel)
-        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel)
+        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel,authPrefs)
     }
 }
 
@@ -117,14 +117,15 @@ fun NavGraphBuilder.mainGraph(
     navController: NavController,
     sharedAppViewModel: SharedAppViewModel,
     sharedViewModel: SharedShopViewModel,
-    sharedProductViewModel: SharedProductViewModel
+    sharedProductViewModel: ProductDetailsViewModel,
+    authPrefs: AuthPrefs
 ) {
     navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
         composable(BottomNavItem.Home.route) {
             HomeScreen(
                 navController = navController,
                 sharedViewModel = sharedViewModel,
-                sharedProductViewModel = sharedProductViewModel
+                authPrefs = authPrefs
             )
         }
         composable(BottomNavItem.Search.route) {
@@ -149,9 +150,18 @@ fun NavGraphBuilder.mainGraph(
                 onBackClick = { navController.popBackStack() }
             )
         }
-        composable("productScreen") {
-            ProductDetails(sharedProductViewModel, navController)
+        composable(
+            route = "productScreen/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            ProductDetails(
+                productId = id,
+                navController = navController,
+                viewModel = sharedProductViewModel
+            )
         }
+
         composable("reviewScreen/{type}/{id}") { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type")
             val id = backStackEntry.arguments?.getString("id") ?: ""
