@@ -50,9 +50,9 @@ const ShopDetailsDisplay = ({ shop, loading, error, onImageClick }) => {
       <DetailItem label="Description" value={shop.description} />
       <DetailItem label="Created At" value={new Date(shop.created_at).toLocaleString()} />
       <div>
-        <h3 className="text-lg font-semibold mb-2">Images</h3>
+        <h3 className="text-lg font-semibold mb-2">Shop Images</h3>
         <div className="flex flex-wrap gap-4">
-          {shop.images.length > 0 ? shop.images.map((img, i) => (
+          {shop.images && shop.images.length > 0 ? shop.images.map((img, i) => (
             <img 
               key={i} 
               src={img} 
@@ -60,7 +60,21 @@ const ShopDetailsDisplay = ({ shop, loading, error, onImageClick }) => {
               className="w-32 h-32 object-cover rounded-md border-2 border-gray-600 cursor-zoom-in transition-transform hover:scale-105"
               onClick={() => onImageClick(img)}
             />
-          )) : <p className="text-gray-400">No images provided.</p>}
+          )) : <p className="text-gray-400">No shop images provided.</p>}
+        </div>
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Document Images</h3>
+        <div className="flex flex-wrap gap-4">
+          {shop.document_images && shop.document_images.length > 0 ? shop.document_images.map((img, i) => (
+            <img 
+              key={i} 
+              src={img} 
+              alt={`Document image ${i + 1}`} 
+              className="w-32 h-32 object-cover rounded-md border-2 border-gray-600 cursor-zoom-in transition-transform hover:scale-105"
+              onClick={() => onImageClick(img)}
+            />
+          )) : <p className="text-gray-400">No document images provided.</p>}
         </div>
       </div>
     </div>

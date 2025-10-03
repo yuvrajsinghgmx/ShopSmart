@@ -234,7 +234,7 @@ class ShopDetailSerializer(ShopSerializer):
     recent_reviews = serializers.SerializerMethodField()
 
     class Meta(ShopSerializer.Meta):
-        fields = ShopSerializer.Meta.fields + ['products_count', 'recent_reviews']
+        fields = ShopSerializer.Meta.fields + ['products_count', 'recent_reviews', 'document_images']
 
     def get_products_count(self, obj) -> int:
         return obj.products.count()
