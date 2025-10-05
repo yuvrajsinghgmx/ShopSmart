@@ -5,10 +5,10 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ProductDetailResponse
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class ProductRepository @Inject constructor(private val api: ProductDetailApi) {
-    suspend fun getProductDetails(productId: Int): Result<ProductDetailResponse> {
+class ProductDetailsRepository @Inject constructor(private val api: ProductDetailApi) {
+    suspend fun getProductDetails(id: Int): Result<ProductDetailResponse> {
         return try {
-            val response = api.getProductDetails(productId)
+            val response = api.getProductDetails(id)
             if (response.isSuccessful) {
                 response.body()?.let { Result.success(it) }
                     ?: Result.failure(Exception("Empty response body"))

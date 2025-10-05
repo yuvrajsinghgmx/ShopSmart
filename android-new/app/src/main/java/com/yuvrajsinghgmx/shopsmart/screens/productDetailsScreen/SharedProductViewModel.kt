@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ProductDetailResponse
 import com.yuvrajsinghgmx.shopsmart.data.repository.FavoritesRepository
-import com.yuvrajsinghgmx.shopsmart.data.repository.ProductRepository
+import com.yuvrajsinghgmx.shopsmart.data.repository.ProductDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
-    private val productRepository: ProductRepository,
+    private val productDetailsRepository: ProductDetailsRepository,
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
@@ -37,7 +37,7 @@ class ProductDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
-            val result = productRepository.getProductDetails(id)
+            val result = productDetailsRepository.getProductDetails(id)
             result.onSuccess { response ->
                 _productDetails.value = response
             }.onFailure { e ->

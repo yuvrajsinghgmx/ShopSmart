@@ -21,5 +21,5 @@ data class ProductDetailResponse(
     @SerializedName("average_rating") val averageRating: Double,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("shop_details") val shopDetails: Map<String, String>,
-    @SerializedName("recent_reviews") val recentReviews: List<String>
+    @SerializedName("recent_reviews") val recentReviews: List<Review>
 )
