@@ -49,9 +49,9 @@ class ProductDetailsViewModel @Inject constructor(
 
     // toggle favorite
     fun onSaveClick() {
-        val productId = _productDetails.value?.productId ?: return
+        val id = _productDetails.value?.id ?: return
         viewModelScope.launch {
-            val result = favoritesRepository.toggleFavoriteProduct(productId)
+            val result = favoritesRepository.toggleFavoriteProduct(id)
             result.onSuccess { response ->
                 _productDetails.value = _productDetails.value?.copy(isFavorite = response.isFavorite)
                 val message = if (response.isFavorite) "Product saved to favorite"

@@ -11,9 +11,9 @@ class FavoritesRepository @Inject constructor(
     suspend fun getSavedProducts() = api.getSavedProducts()
     suspend fun getSavedShops() = api.getSavedShops()
 
-    suspend fun toggleFavoriteProduct(productId: String): Result<ToggleFavoriteProductResponse> {
+    suspend fun toggleFavoriteProduct(id: Int): Result<ToggleFavoriteProductResponse> {
         return try {
-            val response = api.toggleFavoriteProduct(productId)
+            val response = api.toggleFavoriteProduct(id)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
