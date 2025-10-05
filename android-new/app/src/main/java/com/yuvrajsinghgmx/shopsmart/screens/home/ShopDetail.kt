@@ -52,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -63,20 +64,18 @@ import com.yuvrajsinghgmx.shopsmart.screens.home.components.AllProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.FeaturedProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.UiEvent
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun ShopDetail(
-    viewModel: HomeViewModel = hiltViewModel(),
+    homeViewmodel: HomeViewModel = hiltViewModel(),
     sharedViewModel: SharedShopViewModel,
     onBackClick: () -> Unit = {},
-    navController: NavController,
-    shopViewmodel: ShopDetailsViewmodel = hiltViewModel()
+    navController: NavController
 ) {
     val selectedShop = sharedViewModel.selectedShop.collectAsState().value
-    val state = viewModel.state.value
+    val state = homeViewmodel.state.value
 
-    val isSaved by shopViewmodel.isShopSaved.collectAsState()
+    val isSaved by homeViewmodel.isShopSaved.collectAsState()
     val context = LocalContext.current
 
     if (selectedShop == null) {
@@ -90,10 +89,10 @@ fun ShopDetail(
         }
     } else {
         LaunchedEffect(selectedShop) {
-            shopViewmodel.initialStateFavorite(selectedShop.isFavorite)
+            homeViewmodel.initialStateFavorite(selectedShop.isFavorite)
         }
         LaunchedEffect(Unit) {
-            shopViewmodel.eventFlow.collect() { event ->
+            homeViewmodel.eventFlow.collect() { event ->
                 when (event) {
                     is UiEvent.ShowToast -> {
                         Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
@@ -118,17 +117,15 @@ fun ShopDetail(
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(selectedShop.imageUrl.firstOrNull())
+                            .data(selectedShop.images.firstOrNull())
                             .build(),
-                        contentDescription = selectedShop.shopName,
+                        contentDescription = selectedShop.name,
                         placeholder = painterResource(R.drawable.error),
                         error = painterResource(R.drawable.error),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
 
-
-// Back Button
                     IconButton(
                         onClick = onBackClick,
                         modifier = Modifier
@@ -153,7 +150,7 @@ fun ShopDetail(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             LabelChip(text = selectedShop.category, backgroundColor = GreenPrimary)
                             LabelChip(
-                                text = selectedShop.distance,
+                                text = "${selectedShop.distance} km away",
                                 backgroundColor = Color(0xFF4DB6F7)
                             )
                         }
@@ -161,9 +158,9 @@ fun ShopDetail(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = selectedShop.shopName,
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontSize = 26.sp,
+                            text = selectedShop.name,
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 48.sp,
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
@@ -200,8 +197,8 @@ fun ShopDetail(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                        .padding(vertical = 12.dp, horizontal = 45.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ActionItem(icon = Icons.Filled.LocationOn, label = "Directions")
                     ActionItem(icon = Icons.Filled.Call, label = "Call")
@@ -215,7 +212,7 @@ fun ShopDetail(
                 InfoRow(
                     icon = Icons.Filled.LocationOn,
                     label = "Address",
-                    value = "123 Market Street, Downtown"
+                    value = selectedShop.address
                 )
                 InfoRow(icon = Icons.Filled.Call, label = "Phone", value = "+1 (555) 123-4567")
                 InfoRow(
@@ -226,8 +223,7 @@ fun ShopDetail(
             }
             item {
                 Text(
-                    text = "Your neighbourhood fresh grocery store offering fresh produce, organic foods and " +
-                            "local products at competitive prices.",
+                    text = selectedShop.description,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -248,7 +244,7 @@ fun ShopDetail(
             item {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
 
                 ) {
                     items(state.products) { product ->
@@ -275,7 +271,7 @@ fun ShopDetail(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     rowProducts.forEach { product ->
                         Box(modifier = Modifier.weight(1f)) {
@@ -315,7 +311,7 @@ fun ShopDetail(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedButton(
-                        onClick = { shopViewmodel.toggleFavoriteShop(selectedShop.shopId) },
+                        onClick = { homeViewmodel.toggleFavoriteShop(selectedShop.shopId) },
                         shape = RoundedCornerShape(14.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                         modifier = Modifier
@@ -354,12 +350,15 @@ fun ShopDetail(
 
 @Composable
 fun LabelChip(text: String, backgroundColor: Color) {
-    Surface(color = backgroundColor, shape = RoundedCornerShape(20.dp)) {
+    Surface(color = backgroundColor,
+        modifier = Modifier.height(40.dp),
+        shape = RoundedCornerShape(20.dp)) {
         Text(
             text = text,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
             color = Color.White,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
     }
 }

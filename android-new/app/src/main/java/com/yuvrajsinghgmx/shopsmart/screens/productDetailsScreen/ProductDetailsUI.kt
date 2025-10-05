@@ -43,16 +43,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.ProductImageFromUrl
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LightGreyy
 import com.yuvrajsinghgmx.shopsmart.R
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ProductDetailResponse
 
 @Composable
 fun ProductDetailsUI(
-    product: Product,
+    product: ProductDetailResponse,
     onBack: () -> Unit,
     onShareClick: () -> Unit,
     onCallClick: () -> Unit,
@@ -66,10 +68,11 @@ fun ProductDetailsUI(
             .verticalScroll(rememberScrollState())
             .padding(top = 16.dp)
     ) {
+        // Top Bar: Back + Title + Share
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -92,10 +95,15 @@ fun ProductDetailsUI(
                     .clickable { onShareClick() }
             )
         }
-        ProductImageFromUrl(imageUrls = product.imageUrl)
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Product Images
+        ProductImageFromUrl(imageUrls = product.images)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Product Name
         Text(
             text = product.name,
             style = MaterialTheme.typography.titleLarge,
@@ -104,6 +112,7 @@ fun ProductDetailsUI(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Price & Category
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,14 +129,13 @@ fun ProductDetailsUI(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .background(color = Color.LightGray, shape = RoundedCornerShape(6.dp))
-                    .padding(
-                        horizontal = 8.dp,
-                        vertical = 4.dp
-                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Product Description
         Text(
             text = product.description,
             style = MaterialTheme.typography.bodyMedium,
@@ -136,12 +144,12 @@ fun ProductDetailsUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Shop Info Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp), colors = CardDefaults.cardColors(
-                containerColor = LightGreyy
-            ),
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = LightGreyy),
             elevation = CardDefaults.cardElevation(4.dp)
         ) {
             Row(
@@ -151,20 +159,22 @@ fun ProductDetailsUI(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(3.dp)
-                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(product.shopName, style = MaterialTheme.typography.titleSmall)
 
+                    // Average rating
+                    val avgRating = product.averageRating.toFloat()
                     StarRating(
-                        rating = product.review.toFloat(),
+                        rating = avgRating,
                         maxStars = 5,
-                        onClick = { navController.navigate("reviewScreen/product/${product.productId}") }
-                        )
+                        onClick = {
+                            navController.navigate("reviewScreen/product/${product.productId}")
+                        }
+                    )
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    // Shop distance
+                    val distance = product.shopDetails["distance"] ?: ""
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = "Location",
@@ -173,12 +183,14 @@ fun ProductDetailsUI(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = product.distance,
+                            text = distance,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
+
+                // Placeholder Map Image
                 Image(
                     painter = painterResource(R.drawable.map_placeholder),
                     contentDescription = "Map Placeholder",
@@ -187,13 +199,14 @@ fun ProductDetailsUI(
                         .height(80.dp)
                         .padding(5.dp)
                         .clip(RoundedCornerShape(12.dp)),
-
                     contentScale = ContentScale.Crop
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(20.dp))
-        // call and save buttons
+
+        // Call & Save Buttons
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -211,9 +224,7 @@ fun ProductDetailsUI(
                     contentColor = Color.White
                 )
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Phone,
                         contentDescription = "Call",
@@ -230,14 +241,13 @@ fun ProductDetailsUI(
                     .fillMaxWidth()
                     .height(45.dp),
                 shape = RoundedCornerShape(15.dp),
-                border = BorderStroke(2.dp, GreenPrimary),
+                border = BorderStroke(2.dp, GreenPrimary)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = if (isProductSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = if (isProductSaved) "Saved" else "Save Product",
                         tint = GreenPrimary,
-
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -250,16 +260,15 @@ fun ProductDetailsUI(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-        //view shop
+
+        // View Shop
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
             contentAlignment = Alignment.Center
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "View Shop",
                     style = MaterialTheme.typography.bodyMedium,
@@ -273,6 +282,7 @@ fun ProductDetailsUI(
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(15.dp))
     }
 }

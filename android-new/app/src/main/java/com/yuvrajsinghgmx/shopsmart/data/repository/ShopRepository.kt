@@ -1,8 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.data.repository
 
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.AddShopResponse
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -21,7 +20,7 @@ class ShopRepository @Inject constructor(private val api: ShopApi) {
         longitude: RequestBody,
         imageParts: List<MultipartBody.Part>,
         documentParts: List<MultipartBody.Part>
-    ): Response<AddShopResponse> {
+    ): Response<ShopResponse> {
         return api.addShop(
             name, address, category, description, shopType, position,
             latitude, longitude,imageParts, documentParts

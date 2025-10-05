@@ -2,7 +2,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.shops
 
 import android.net.Uri
 import com.google.android.gms.maps.model.LatLng
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopItem
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopResponse
 import okhttp3.MultipartBody
 
 data class ShopFormState(
@@ -17,7 +17,7 @@ data class ShopFormState(
     val isPickingLocation: Boolean = false,
     val isPhoneError: Boolean = false,
     val isDescriptionError: Boolean = false,
-    val shops: List<ShopItem> = emptyList(),
+    val shops: List<ShopResponse> = emptyList(),
     val isLoadingShops: Boolean = false,
     val errorShops: String? = null
 )
