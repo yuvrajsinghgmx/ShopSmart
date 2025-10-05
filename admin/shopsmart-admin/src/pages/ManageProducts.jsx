@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Header from '../components/Header';
 import { useProducts } from '../hooks/useProducts';
-import { Search, LoaderCircle, AlertTriangle } from 'lucide-react';
+import { Search, LoaderCircle, AlertTriangle, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react';
 import Modal from '../components/Modal';
 
 const DetailItem = ({ label, value }) => (
@@ -70,16 +70,34 @@ const ProductDetailsDisplay = ({ product, loading, error, onImageClick }) => {
 const ManageProducts = () => {
   const { 
     loading, error, products, setSearchTerm, handleAction,
-    isModalOpen, selectedProductDetails, detailsLoading, detailsError, handleViewDetails, closeModal 
+    isModalOpen, selectedProductDetails, detailsLoading, detailsError, handleViewDetails, closeModal,
+    sortConfig, requestSort
   } = useProducts();
 
   const [fullscreenImage, setFullscreenImage] = useState(null);
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) {
+      return <ChevronsUpDown size={16} className="ml-1 inline-block opacity-30" />;
+    }
+    return sortConfig.direction === 'asc' ? <ArrowUp size={16} className="ml-1 inline-block" /> : <ArrowDown size={16} className="ml-1 inline-block" />;
+  };
+
+  const tableHeaders = [
+    { key: 'product_id', label: 'Product ID' },
+    { key: 'name', label: 'Product Name' },
+    { key: 'shop__name', label: 'Shop Name' },
+    { key: 'price', label: 'Price' },
+    { key: 'category', label: 'Category' },
+    { key: 'stock_quantity', label: 'Stock' },
+    { key: 'created_at', label: 'Created At' },
+  ];
 
   const renderTableBody = () => {
     if (loading) {
       return (
         <tr>
-          <td colSpan="7" className="text-center p-6">
+          <td colSpan={tableHeaders.length + 1} className="text-center p-6">
             <div className="flex justify-center items-center gap-2">
               <LoaderCircle className="animate-spin" />
               <span>Loading Products...</span>
@@ -92,10 +110,9 @@ const ManageProducts = () => {
     if (error) {
       return (
          <tr>
-            <td colSpan="7" className="text-center p-6">
-              <div className="flex justify-center items-center gap-2">
-                <AlertTriangle />
-                <span>Error: {error}</span>
+            <td colSpan={tableHeaders.length + 1} className="text-center p-6">
+              <div className="flex justify-center items-center gap-2 text-red-400 font-bold">
+                <AlertTriangle /><span>Error: {error}</span>
               </div>
             </td>
           </tr>
@@ -105,7 +122,7 @@ const ManageProducts = () => {
     if (products.length === 0) {
        return (
           <tr>
-            <td colSpan="7" className="text-center p-6">No products found.</td>
+            <td colSpan={tableHeaders.length + 1} className="text-center p-6">No products found.</td>
           </tr>
        );
     }
@@ -125,6 +142,7 @@ const ManageProducts = () => {
         <td className="p-3">₹{product.price}</td>
         <td className="p-3">{product.category}</td>
         <td className="p-3">{product.stock_quantity}</td>
+        <td className="p-3">{new Date(product.created_at).toLocaleDateString()}</td>
         <td className="p-3 text-center">
           <button
             onClick={() => handleAction(product.pk, 'delete')}
@@ -154,12 +172,13 @@ const ManageProducts = () => {
         <table className="w-full min-w-[900px] text-left">
           <thead className="border-b border-gray-600">
             <tr>
-              <th className="p-3">Product ID</th>
-              <th className="p-3">Product Name</th>
-              <th className="p-3">Shop Name</th>
-              <th className="p-3">Price</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Stock</th>
+              {tableHeaders.map(header => (
+                <th key={header.key} className="p-3 cursor-pointer select-none" onClick={() => requestSort(header.key)}>
+                  <div className="flex items-center gap-2">
+                    {header.label} {getSortIcon(header.key)}
+                  </div>
+                </th>
+              ))}
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>

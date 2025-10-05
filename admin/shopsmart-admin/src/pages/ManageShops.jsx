@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Header from '../components/Header';
 import { useShops } from '../hooks/useShops';
-import { Search, LoaderCircle, AlertTriangle } from 'lucide-react';
+import { Search, LoaderCircle, AlertTriangle, ArrowUp, ArrowDown, ChevronsUpDown } from 'lucide-react';
 import Modal from '../components/Modal';
 
 const DetailItem = ({ label, value }) => (
@@ -84,27 +84,39 @@ const ShopDetailsDisplay = ({ shop, loading, error, onImageClick }) => {
 const ManageShops = () => {
   const { 
     loading, error, shops, setSearchTerm, handleAction,
-    isModalOpen, selectedShopDetails, detailsLoading, detailsError, handleViewDetails, closeModal 
+    isModalOpen, selectedShopDetails, detailsLoading, detailsError, handleViewDetails, closeModal,
+    sortConfig, requestSort
   } = useShops();
   
   const [fullscreenImage, setFullscreenImage] = useState(null);
 
   const getStatusClass = (status) => {
-    const classes = {
-      Approved: 'font-semibold',
-      Pending: 'font-semibold',
-    };
-    return classes[status] || 'text-gray-400';
+    return status === 'Approved' ? 'font-semibold text-green-400' : 'font-semibold text-red-400';
   };
+  
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) {
+      return <ChevronsUpDown size={16} className="ml-1 inline-block opacity-30" />;
+    }
+    return sortConfig.direction === 'asc' ? <ArrowUp size={16} className="ml-1 inline-block" /> : <ArrowDown size={16} className="ml-1 inline-block" />;
+  };
+
+  const tableHeaders = [
+    { key: 'shop_id', label: 'Shop ID' },
+    { key: 'name', label: 'Shop Name' },
+    { key: 'category', label: 'Category' },
+    { key: 'owner__full_name', label: 'Owner' },
+    { key: 'is_approved', label: 'Status' },
+    { key: 'created_at', label: 'Created At'},
+  ];
 
   const renderTableBody = () => {
     if (loading) {
       return (
         <tr>
-          <td colSpan="6" className="text-center p-6">
+          <td colSpan={tableHeaders.length + 1} className="text-center p-6">
             <div className="flex justify-center items-center gap-2">
-              <LoaderCircle className="animate-spin" />
-              <span>Loading Shops...</span>
+              <LoaderCircle className="animate-spin" /> <span>Loading Shops...</span>
             </div>
           </td>
         </tr>
@@ -114,10 +126,9 @@ const ManageShops = () => {
     if (error) {
       return (
          <tr>
-            <td colSpan="6" className="text-center p-6">
-              <div className="flex justify-center items-center gap-2">
-                <AlertTriangle />
-                <span>Error: {error}</span>
+            <td colSpan={tableHeaders.length + 1} className="text-center p-6">
+              <div className="flex justify-center items-center gap-2 text-red-400 font-bold">
+                <AlertTriangle /><span>Error: {error}</span>
               </div>
             </td>
           </tr>
@@ -127,7 +138,7 @@ const ManageShops = () => {
     if (shops.length === 0) {
        return (
           <tr>
-            <td colSpan="6" className="text-center p-6">No shops found.</td>
+            <td colSpan={tableHeaders.length + 1} className="text-center p-6">No shops found.</td>
           </tr>
        );
     }
@@ -136,35 +147,18 @@ const ManageShops = () => {
       <tr key={shop.pk} className="border-b border-gray-700">
         <td className="p-3">{shop.id}</td>
         <td className="p-3">
-          <span 
-            className="cursor-pointer hover:underline"
-            onClick={() => handleViewDetails(shop.pk)}
-          >
+          <span className="cursor-pointer hover:underline" onClick={() => handleViewDetails(shop.pk)}>
             {shop.name}
           </span>
         </td>
         <td className="p-3">{shop.category}</td>
         <td className="p-3">{shop.owner}</td>
         <td className={`p-3 ${getStatusClass(shop.status)}`}>{shop.status}</td>
+        <td className="p-3">{new Date(shop.created_at).toLocaleDateString()}</td>
         <td className="p-3 text-center">
-          <button
-            onClick={() => handleAction(shop.pk, 'approve')}
-            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
-          >
-            Approve
-          </button>
-          <button
-            onClick={() => handleAction(shop.pk, 'reject')}
-            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() => handleAction(shop.pk, 'delete')}
-            className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity"
-          >
-            Delete
-          </button>
+          <button onClick={() => handleAction(shop.pk, 'approve')} className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2">Approve</button>
+          <button onClick={() => handleAction(shop.pk, 'reject')} className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity mr-2">Reject</button>
+          <button onClick={() => handleAction(shop.pk, 'delete')} className="text-black cursor-pointer px-3 py-1 rounded-md text-sm hover:opacity-80 transition-opacity">Delete</button>
         </td>
       </tr>
     ));
@@ -176,7 +170,7 @@ const ManageShops = () => {
       <div className="mb-6 relative">
         <input
           type="text"
-          placeholder="Search by Shop ID or Name..."
+          placeholder="Search by Shop ID, Name, Owner or Category..."
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full p-3 pl-10 rounded-lg border-2 border-gray-600 focus:outline-none"
         />
@@ -184,14 +178,16 @@ const ManageShops = () => {
       </div>
 
       <div className="p-6 rounded-lg shadow-md overflow-x-auto">
-        <table className="w-full min-w-[800px] text-left">
+        <table className="w-full min-w-[900px] text-left">
           <thead className="border-b border-gray-600">
             <tr>
-              <th className="p-3">Shop ID</th>
-              <th className="p-3">Shop Name</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Owner</th>
-              <th className="p-3">Status</th>
+              {tableHeaders.map(header => (
+                <th key={header.key} className="p-3 cursor-pointer select-none" onClick={() => requestSort(header.key)}>
+                  <div className="flex items-center gap-2">
+                    {header.label} {getSortIcon(header.key)}
+                  </div>
+                </th>
+              ))}
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>

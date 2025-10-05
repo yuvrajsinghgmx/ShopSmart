@@ -64,7 +64,10 @@ export const logout = () => {
   localStorage.removeItem('admin_token');
 };
 
-export const getShops = () => apiRequest('admin/shops/', { method: 'GET' });
+export const getShops = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return apiRequest(`admin/shops/?${query}`, { method: 'GET' });
+};
 
 export const getShopDetails = (pk) => apiRequest(`admin/shops/${pk}/`, { method: 'GET' });
 
@@ -81,7 +84,10 @@ export const deleteShop = (id) => {
   });
 };
 
-export const getProducts = () => apiRequest('admin/products/', { method: 'GET' });
+export const getProducts = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return apiRequest(`admin/products/?${query}`, { method: 'GET' });
+};
 
 export const getProductDetails = (pk) => apiRequest(`products/${pk}/`, { method: 'GET' });
 
