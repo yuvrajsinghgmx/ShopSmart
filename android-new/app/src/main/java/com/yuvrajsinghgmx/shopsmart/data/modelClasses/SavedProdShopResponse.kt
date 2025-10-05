@@ -10,7 +10,7 @@ data class SavedProductResponse(
     val productName: String,
     @SerializedName("product_price")
     val productPrice: Double,
-    @SerializedName("product_image")
+    @SerializedName("product_images")
     val productImage: List<String?>,
     @SerializedName("product_category")
     val productCategory: String,
