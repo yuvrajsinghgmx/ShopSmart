@@ -22,6 +22,6 @@ interface FavoritesApi {
 
     @POST("shops/{shop_id}/toggle-favorite/")
     suspend fun toggleFavoriteShop(
-        @Path("shop_id") shopId: String
+        @Path("shop_id") shopId: Int
     ): ToggleFavoriteShopResponse
 }

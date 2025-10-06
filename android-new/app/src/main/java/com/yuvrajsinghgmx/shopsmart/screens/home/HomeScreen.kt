@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.ShopCard
+import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 
 @Composable

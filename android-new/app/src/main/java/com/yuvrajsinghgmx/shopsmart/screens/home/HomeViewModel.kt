@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SearchResult
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.data.repository.FavoritesRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.HomeRepository
+import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.UiEvent
 import com.yuvrajsinghgmx.shopsmart.utils.toUiProduct
 import com.yuvrajsinghgmx.shopsmart.utils.toUiShop
@@ -174,9 +176,9 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun toggleFavoriteShop(shopId: String) {
+    fun toggleFavoriteShop(id: Int) {
         viewModelScope.launch {
-            val result = favRepository.toggleFavoriteShop(shopId)
+            val result = favRepository.toggleFavoriteShop(id)
             result.onSuccess { response ->
                 _isShopSaved.value = response.isFavorite
                 val message = if (response.isFavorite) {
@@ -186,6 +188,7 @@ class HomeViewModel @Inject constructor(
                 }
                 _eventFlow.emit(UiEvent.ShowToast(message))
             }.onFailure { e ->
+                Log.d("Shop Toggle Error", "toggleFavoriteShop: ${e.message}")
                 _error.value = e.message ?: "toggle Failed"
                 _eventFlow.emit(UiEvent.ShowToast("toggle Failed"))
             }

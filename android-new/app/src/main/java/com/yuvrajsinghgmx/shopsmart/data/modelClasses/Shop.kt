@@ -1,5 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.data.modelClasses
 
+import com.google.gson.annotations.SerializedName
+
 data class Shop(
     val id: Int,
     val shopId: String,
@@ -15,19 +17,23 @@ data class Shop(
 
 data class ShopResponse(
     val id: Int,
-    val shop_id: String,
+    @SerializedName("shop_id") val shopId: String,
     val name: String,
     val images: List<String>,
     val address: String,
     val category: String,
     val description: String,
-    val is_approved: Boolean,
-    val owner_name: String,
+    @SerializedName("is_approved") val isApproved: Boolean,
+    @SerializedName("owner_name") val ownerName: String,
     val distance: Double?,
-    val shop_type: String,
+    @SerializedName("shop_type") val shopType: String,
     val position: Int,
-    val is_favorite: Boolean,
-    val reviews_count: Int,
-    val average_rating: Double,
-    val created_at: String
+    @SerializedName("is_favorite") val isFavorite: Boolean,
+    @SerializedName("reviews_count") val reviewsCount: Int,
+    @SerializedName("average_rating") val averageRating: Double,
+    @SerializedName("created_at") val createdAt: String,
+    val sponsored: String,
+    @SerializedName("products_count") val productsCount: Int? = null,
+    @SerializedName("recent_reviews") val recentReviews: List<Review>? = null,
+    @SerializedName("document_images") val documentImages: List<String>? = emptyList()
 )

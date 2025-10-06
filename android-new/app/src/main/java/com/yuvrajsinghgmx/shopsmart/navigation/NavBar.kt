@@ -19,8 +19,8 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
-import com.yuvrajsinghgmx.shopsmart.screens.home.SharedShopViewModel
-import com.yuvrajsinghgmx.shopsmart.screens.home.ShopDetail
+import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
@@ -134,7 +134,11 @@ fun NavGraphBuilder.mainGraph(
             })
         }
         composable(BottomNavItem.Saved.route) {
-            SavedProductScreen(onBack = { handleBack(navController) })
+            SavedProductScreen(
+                onBack = {
+                    handleBack(navController)
+                }
+            )
         }
         composable(BottomNavItem.Profile.route) {
             UserProfileScreen(
