@@ -13,6 +13,7 @@ import com.yuvrajsinghgmx.shopsmart.data.interfaces.ProductDetailApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.RefreshApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopDetailsApi
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.LogoutResponse
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.Module
@@ -111,4 +112,9 @@ object NetworkModule {
     @Singleton
     fun provideProductDetailApi(retrofit: Retrofit): ProductDetailApi =
         retrofit.create(ProductDetailApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideShopDetailsApi(retrofit: Retrofit): ShopDetailsApi =
+        retrofit.create(ShopDetailsApi::class.java)
 }

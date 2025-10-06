@@ -1,6 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.screens.savedProducts
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,11 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
+import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavItem
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LikeColor
@@ -78,7 +81,7 @@ fun SavedProductCard(
                 )
             }
         }
-        Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+        Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
@@ -98,13 +101,6 @@ fun SavedProductCard(
             )
             Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
                 StarRating(product.averageRating, 5,15.dp)
-
-                Spacer(modifier = Modifier.width(20.dp))
-//                Text(
-//                    text = product.,
-//                    style = MaterialTheme.typography.labelSmall,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant
-//                )
             }
         }
     }

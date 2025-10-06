@@ -20,7 +20,7 @@ class FavoritesRepository @Inject constructor(
         }
     }
 
-    suspend fun toggleFavoriteShop(shopId: String): Result<ToggleFavoriteShopResponse> {
+    suspend fun toggleFavoriteShop(shopId: Int): Result<ToggleFavoriteShopResponse> {
         return try {
             val response = api.toggleFavoriteShop(shopId)
             Result.success(response)
