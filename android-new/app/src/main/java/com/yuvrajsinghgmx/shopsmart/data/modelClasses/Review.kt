@@ -19,6 +19,6 @@ data class RatingSummary(
 )
 
 sealed class ReviewTarget {
-    data class Product(val productId: String) : ReviewTarget()
-    data class Shop(val shopId: String) : ReviewTarget()
+    data class Product(val productId: Int) : ReviewTarget()
+    data class Shop(val shopId: Int) : ReviewTarget()
 }

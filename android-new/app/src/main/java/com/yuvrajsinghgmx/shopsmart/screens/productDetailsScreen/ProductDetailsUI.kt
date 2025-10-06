@@ -168,7 +168,7 @@ fun ProductDetailsUI(
                         rating = avgRating,
                         maxStars = 5,
                         onClick = {
-                            navController.navigate("reviewScreen/product/${product.productId}")
+                            navController.navigate("reviewScreen/product/${product.id}")
                         }
                     )
 
