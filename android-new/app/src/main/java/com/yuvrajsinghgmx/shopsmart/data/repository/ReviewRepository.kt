@@ -7,12 +7,12 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ToggleReviewResponse
 import javax.inject.Inject
 
-class ReviewRepository @Inject constructor(private val reviewApi : ReviewApi){
-    suspend fun submitReview(target: ReviewTarget, rating:Int, comment:String): ReviewResponse{
-        val request = ReviewRequest(rating,comment)
-        return when(target){
-            is ReviewTarget.Product -> reviewApi.postProductReview(target.productId,request)
-            is ReviewTarget.Shop -> reviewApi.postShopReview(target.shopId,request)
+class ReviewRepository @Inject constructor(private val reviewApi: ReviewApi) {
+    suspend fun submitReview(target: ReviewTarget, rating: Int, comment: String): ReviewResponse {
+        val request = ReviewRequest(rating, comment)
+        return when (target) {
+            is ReviewTarget.Product -> reviewApi.postProductReview(target.productId, request)
+            is ReviewTarget.Shop -> reviewApi.postShopReview(target.shopId, request)
         }
     }
 
@@ -22,10 +22,11 @@ class ReviewRepository @Inject constructor(private val reviewApi : ReviewApi){
             is ReviewTarget.Shop -> reviewApi.getShopReviews(target.shopId)
         }
     }
+
     suspend fun toggleHelpful(target: ReviewTarget, reviewId: Int): ToggleReviewResponse {
         return when (target) {
-            is ReviewTarget.Product -> reviewApi.toggleProductReviewHelpful(target.productId,reviewId)
-            is ReviewTarget.Shop -> reviewApi.toggleShopReviewHelpful(target.shopId,reviewId)
+            is ReviewTarget.Product -> reviewApi.toggleProductReviewHelpful(target.productId, reviewId)
+            is ReviewTarget.Shop -> reviewApi.toggleShopReviewHelpful(target.shopId, reviewId)
         }
     }
 }

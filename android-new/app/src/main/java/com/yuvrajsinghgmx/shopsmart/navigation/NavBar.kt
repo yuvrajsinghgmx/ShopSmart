@@ -108,8 +108,7 @@ fun NavGraphBuilder.authGraph(
                 navController.navigate("main_graph") {
                     popUpTo("addshop") { inclusive = true }
                 }
-            }
-        )
+            })
     }
 }
 
@@ -164,7 +163,7 @@ fun NavGraphBuilder.mainGraph(
 
         composable("reviewScreen/{type}/{id}") { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type")
-            val id = backStackEntry.arguments?.getString("id") ?: ""
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
             val target = when (type) {
                 "product" -> ReviewTarget.Product(id)
                 "shop" -> ReviewTarget.Shop(id)

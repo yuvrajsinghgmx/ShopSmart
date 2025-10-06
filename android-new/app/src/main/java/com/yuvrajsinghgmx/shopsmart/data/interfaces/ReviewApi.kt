@@ -12,35 +12,35 @@ interface ReviewApi {
 
     @POST("shops/{shop_id}/reviews/")
     suspend fun postShopReview(
-        @Path("shop_id") shopId: String,
+        @Path("shop_id") id: Int,
         @Body request: ReviewRequest
     ): ReviewResponse
 
     @POST("products/{product_id}/reviews/")
     suspend fun postProductReview(
-        @Path("product_id") productId: String,
+        @Path("product_id") id: Int,
         @Body request: ReviewRequest
     ): ReviewResponse
 
     @GET("shops/{shop_id}/get/reviews/")
     suspend fun getShopReviews(
-        @Path("shop_id") shopId : String
+        @Path("shop_id") id : Int
     ): List<ReviewResponse>
 
     @GET("products/{product_id}/get/reviews/")
     suspend fun getProductReviews(
-        @Path("product_id") productId: String
+        @Path("product_id") id: Int
     ): List<ReviewResponse>
 
     @POST("products/{product_id}/reviews/{product_review_id}/toggle-helpful/")
     suspend fun toggleProductReviewHelpful(
-        @Path("product_id") productId: String,
+        @Path("product_id") id: Int,
         @Path("product_review_id") reviewId: Int
     ): ToggleReviewResponse
 
     @POST("shops/{shop_id}/reviews/{shop_review_id}/toggle-helpful/")
     suspend fun toggleShopReviewHelpful(
-        @Path("shop_id") shopId: String,
+        @Path("shop_id") id: Int,
         @Path("shop_review_id") reviewId: Int
     ): ToggleReviewResponse
 }

@@ -146,7 +146,9 @@ fun ReviewScreen(
                             ) {
                                 ReviewItem(
                                     review = review,
-                                    onToggle = { viewModel.toggleHelpful(target, review.id) })
+                                    onToggle = {
+                                        viewModel.toggleHelpful(target, review.id)
+                                    })
                             }
                         }
                     }
