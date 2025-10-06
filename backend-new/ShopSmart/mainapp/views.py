@@ -191,15 +191,16 @@ class LoadHomeView(APIView):
 
     def _get_nearby_shops(self, base_shops_qs):
         """
-        Groups nearby shops by type, prioritizing sponsored but randomizing order.
+        Groups nearby shops by type, prioritizing closest distance, then sponsored, then randomizing order.
         """
         shop_data = []
         for s_type, s_label in ShopTypes.choices:
             shops_in_category = base_shops_qs.filter(shop_type=s_type)
 
             ranked_shops = shops_in_category.order_by(
+                'distance',
                 '-position',
-                '?' # <-- Prioritizes sponsored shops, then shuffles them
+                '?'
             )[:CATEGORY_ITEM_LIMIT]
 
             if ranked_shops.exists():
