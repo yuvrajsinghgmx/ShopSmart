@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getProducts, deleteProduct, getProductDetails } from '../services/api';
 
 const mapProductData = (product) => ({
@@ -13,6 +13,7 @@ export const useProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
   // State for modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,32 +21,43 @@ export const useProducts = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = useCallback(async (search, sort) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getProducts();
+      const params = {};
+      if (search) params.search = search;
+      if (sort.key) {
+        params.ordering = sort.direction === 'desc' ? `-${sort.key}` : sort.key;
+      }
+      const data = await getProducts(params);
       setProducts(data.map(mapProductData));
     } catch (err) {
       setError(err.message || 'Failed to fetch products.');
+      setProducts([]); 
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    const handler = setTimeout(() => {
+      fetchProducts(searchTerm, sortConfig);
+    }, 300); // Debounce search
 
-  const filteredProducts = useMemo(() => {
-    if (!searchTerm) return products;
-    return products.filter(product =>
-      product.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.shopName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [products, searchTerm]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, sortConfig, fetchProducts]);
 
+  const requestSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+  
   const handleAction = async (pk, action) => {
     try {
       if (action === 'delete') {
@@ -56,7 +68,8 @@ export const useProducts = () => {
           return;
         }
       }
-      fetchProducts();
+      // Refetch with current settings
+      fetchProducts(searchTerm, sortConfig);
     } catch (err) {
       alert(`Error performing action: ${err.message}`);
     }
@@ -85,9 +98,11 @@ export const useProducts = () => {
   return {
     loading,
     error,
-    products: filteredProducts,
+    products,
     setSearchTerm,
     handleAction,
+    sortConfig,
+    requestSort,
     isModalOpen,
     selectedProductDetails,
     detailsLoading,

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getShops, updateShopStatus, deleteShop, getShopDetails } from '../services/api';
 
 const mapShopData = (shop) => ({
@@ -14,36 +14,51 @@ export const useShops = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedShopDetails, setSelectedShopDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const fetchShops = useCallback(async () => {
+  const fetchShops = useCallback(async (search, sort) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getShops();
+      const params = {};
+      if (search) {
+        params.search = search;
+      }
+      if (sort.key) {
+        params.ordering = sort.direction === 'desc' ? `-${sort.key}` : sort.key;
+      }
+      const data = await getShops(params);
       setShops(data.map(mapShopData));
     } catch (err) {
       setError(err.message || 'Failed to fetch shops.');
+      setShops([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchShops();
-  }, [fetchShops]);
+    const handler = setTimeout(() => {
+      fetchShops(searchTerm, sortConfig);
+    }, 300); // Debounce 
 
-  const filteredShops = useMemo(() => {
-    if (!searchTerm) return shops;
-    return shops.filter(shop =>
-      shop.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      shop.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [shops, searchTerm]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, sortConfig, fetchShops]);
+
+  const requestSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handleAction = async (pk, action) => {
     try {
@@ -59,7 +74,8 @@ export const useShops = () => {
         await updateShopStatus(pk, action);
         alert(`Shop has been ${actionVerb}!`);
       }
-      fetchShops();
+      // Refetch with current settings
+      fetchShops(searchTerm, sortConfig);
     } catch (err) {
       alert(`Error performing action: ${err.message}`);
     }
@@ -88,9 +104,11 @@ export const useShops = () => {
   return {
     loading,
     error,
-    shops: filteredShops,
+    shops,
     setSearchTerm,
     handleAction,
+    sortConfig,
+    requestSort,
     isModalOpen,
     selectedShopDetails,
     detailsLoading,

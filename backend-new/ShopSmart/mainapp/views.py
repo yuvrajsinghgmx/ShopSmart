@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Avg, Count,F
+from rest_framework.filters import SearchFilter, OrderingFilter
 from .choices import ShopTypes, ProductTypes, Role
 from .permissions import (
     IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner,
@@ -525,6 +526,10 @@ class AdminShopsListView(generics.ListAPIView):
     """
     serializer_class = AdminShopListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['shop_id', 'name', 'category', 'owner__full_name', 'owner__phone_number']
+    ordering_fields = ['id', 'name', 'category', 'owner__full_name', 'products_count', 'is_approved', 'created_at']
+    ordering = ['-created_at']
 
     def get_queryset(self):
         return Shop.objects.select_related('owner')
@@ -536,9 +541,13 @@ class AdminProductsListView(generics.ListAPIView):
     """
     serializer_class = AdminProductListSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['product_id', 'name', 'category', 'shop__name']
+    ordering_fields = ['id', 'name', 'price', 'category', 'stock_quantity', 'shop__name', 'created_at']
+    ordering = ['-created_at']
 
     def get_queryset(self):
-        return Product.objects.select_related('shop').order_by('-created_at')
+        return Product.objects.select_related('shop')
 
 
 class AdminPendingShopsView(generics.ListAPIView):
