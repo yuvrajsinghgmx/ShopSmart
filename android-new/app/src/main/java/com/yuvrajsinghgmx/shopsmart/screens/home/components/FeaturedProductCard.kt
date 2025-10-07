@@ -20,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
@@ -36,9 +38,11 @@ fun FeaturedProductCard(product: Product) {
             .padding(12.dp) // Increased from 8dp to 12dp
     ) {
         AsyncImage(
-            model = product.imageUrl.firstOrNull(),
+            model = product.images.firstOrNull(),
             contentDescription = product.name,
             contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.error),
+            error = painterResource(R.drawable.error),
             modifier = Modifier
                 .height(120.dp)
                 .fillMaxWidth()

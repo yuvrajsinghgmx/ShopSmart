@@ -35,5 +35,8 @@ data class ShopResponse(
     val sponsored: String,
     @SerializedName("products_count") val productsCount: Int? = null,
     @SerializedName("recent_reviews") val recentReviews: List<Review>? = null,
-    @SerializedName("document_images") val documentImages: List<String>? = emptyList()
+    @SerializedName("document_images") val documentImages: List<String>? = emptyList(),
+    val phone: String,
+    @SerializedName("featured_products") val featuredProducts: List<Product>? = emptyList(),
+    @SerializedName("all_products") val allProducts: List<Product>? = emptyList()
 )

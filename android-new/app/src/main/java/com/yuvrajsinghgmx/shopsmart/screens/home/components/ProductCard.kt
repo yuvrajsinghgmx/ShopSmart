@@ -30,7 +30,7 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
 fun ProductCard(product: Product, onClick: () -> Unit) {
-    val imageUrl = product.imageUrl.firstOrNull() ?: "https://i.imgur.com/7JD1z8M.jpeg"
+    val imageUrl = product.images.firstOrNull() ?: "https://i.imgur.com/7JD1z8M.jpeg"
     Log.d("ProductCard", "Loading image for: ${product.name}, URL: $imageUrl")
 
     Card(

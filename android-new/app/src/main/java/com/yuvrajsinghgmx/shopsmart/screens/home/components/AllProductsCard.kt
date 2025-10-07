@@ -37,7 +37,7 @@ fun AllProductCard(product: Product) {
             .padding(12.dp)
     ) {
         AsyncImage(
-            model = product.imageUrl.firstOrNull(),
+            model = product.images.firstOrNull(),
             contentDescription = product.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier

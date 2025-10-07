@@ -62,7 +62,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.yuvrajsinghgmx.shopsmart.R
-import com.yuvrajsinghgmx.shopsmart.screens.home.HomeViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.AllProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.FeaturedProductCard
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.UiEvent
@@ -71,7 +70,6 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 @Composable
 fun ShopDetail(
     sharedViewModel: SharedShopViewModel = hiltViewModel(),
-    homeViewmodel: HomeViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
     navController: NavController
 ) {
@@ -79,20 +77,20 @@ fun ShopDetail(
     val shopDetails = sharedViewModel.shopDetails.collectAsState().value
     val isLoading = sharedViewModel.loading.collectAsState().value
     val error = sharedViewModel.error.collectAsState().value
-    val isSaved by homeViewmodel.isShopSaved.collectAsState()
+    val isSaved by sharedViewModel.isShopSaved.collectAsState()
     val context = LocalContext.current
 
     // Fetch shop details when selectedShop is set
     LaunchedEffect(selectedShop) {
         selectedShop?.let {
             sharedViewModel.getShopDetails(it.id)
-            homeViewmodel.initialStateFavorite(it.isFavorite)
+            sharedViewModel.initialStateFavorite(it.isFavorite)
         }
     }
 
     // Show toast events
     LaunchedEffect(Unit) {
-        homeViewmodel.eventFlow.collect { event ->
+        sharedViewModel.eventFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
@@ -249,7 +247,7 @@ fun ShopDetail(
                 // Shop Info
                 item {
                     InfoRow(icon = Icons.Filled.LocationOn, label = "Address", value = shop.address)
-                    InfoRow(icon = Icons.Filled.Call, label = "Phone", value = "+1 (555) 123-4567")
+                    InfoRow(icon = Icons.Filled.Call, label = "Phone", value = shop.phone)
                     InfoRow(
                         icon = Icons.Filled.AccessTime,
                         label = "Hours",
@@ -270,21 +268,25 @@ fun ShopDetail(
                 }
 
                 // Featured Products
-                item {
-                    Text(
-                        text = "Featured Products",
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                }
+                val featuredProducts = shop.featuredProducts
 
-                item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(homeViewmodel.state.value.products) { product ->
-                            FeaturedProductCard(product)
+                if (!featuredProducts.isNullOrEmpty()) {
+                    item {
+                        Text(
+                            text = "Featured Products",
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                            style = MaterialTheme.typography.headlineLarge
+                        )
+                    }
+
+                    item {
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(featuredProducts) { product ->
+                                FeaturedProductCard(product)
+                            }
                         }
                     }
                 }
@@ -303,23 +305,36 @@ fun ShopDetail(
                     )
                 }
 
-                val allProducts = homeViewmodel.state.value.products
-                items(allProducts.chunked(2)) { rowProducts ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        rowProducts.forEach { product ->
-                            Box(modifier = Modifier.weight(1f)) {
-                                AllProductCard(product)
+                val allProducts = shop.allProducts
+                if (!allProducts.isNullOrEmpty()) {
+                    items(allProducts.chunked(2)) { rowProducts ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            rowProducts.forEach { product ->
+                                Box(modifier = Modifier.weight(1f)) {
+                                    AllProductCard(product)
+                                }
+                            }
+                            // Fill remaining space if odd number of products
+                            if (rowProducts.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
-                        // Fill remaining space if odd number of products
-                        if (rowProducts.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
+                    }
+                } else {
+                    item {
+                        Text(
+                            text = "No products available",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
 
@@ -351,7 +366,7 @@ fun ShopDetail(
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         OutlinedButton(
-                            onClick = { homeViewmodel.toggleFavoriteShop(shop.id) },
+                            onClick = { sharedViewModel.toggleFavoriteShop(shop.id) },
                             shape = RoundedCornerShape(14.dp),
                             border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
                             modifier = Modifier

@@ -8,7 +8,7 @@ data class Product(
     val category: String,
     val review: String,
     val description: String,
-    val imageUrl: List<String>,
+    val images: List<String>,
     val shopName: String,
     val shopId: String,
     val shopNumber: String,
