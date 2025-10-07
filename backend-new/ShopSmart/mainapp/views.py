@@ -10,6 +10,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from django.db.models import Avg, Count,F
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .choices import ShopTypes, ProductTypes, Role
@@ -323,7 +324,10 @@ class PostShopReviewView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         shop = get_object_or_404(Shop, pk=self.kwargs['shop_pk'], is_approved=True)
-        serializer.save(user=self.request.user, shop=shop)
+        user = self.request.user
+        if ShopReview.objects.filter(user=user, shop=shop).exists():
+            raise ValidationError({"error": "You have already reviewed this shop."})
+        serializer.save(user=user, shop=shop)
 
 
 class PostProductReviewView(generics.CreateAPIView):
@@ -337,7 +341,11 @@ class PostProductReviewView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         product = get_object_or_404(Product, pk=self.kwargs['product_pk'])
-        serializer.save(user=self.request.user, product=product)
+        user = self.request.user
+        if ProductReview.objects.filter(user=user, product=product).exists():
+            raise ValidationError({"error": "You have already reviewed this product."})
+
+        serializer.save(user=user, product=product)
 
 
 class ShopReviewsListView(generics.ListAPIView):
