@@ -218,7 +218,7 @@ fun CustomerProfileScreen(
 }
 
 @Composable
-private fun MenuItem(
+fun MenuItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
     trailingText: String? = null,

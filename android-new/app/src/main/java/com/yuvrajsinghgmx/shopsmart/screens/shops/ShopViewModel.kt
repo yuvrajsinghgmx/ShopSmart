@@ -57,14 +57,13 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
         )
     }
 
-    fun onImagePicked(uri: Uri) {
-        _state.value = state.value.copy(imageUris = _state.value.imageUris + uri)
+    fun onImagesPicked(uris: List<Uri>) {
+        _state.value = state.value.copy(imageUris = _state.value.imageUris + uris)
     }
 
-    fun onDocumentPicked(uri: Uri) {
-        _state.value = _state.value.copy(documentUris = _state.value.documentUris + uri)
+    fun onDocumentsPicked(uris: List<Uri>) {
+        _state.value = state.value.copy(documentUris = _state.value.documentUris + uris)
     }
-
     fun removeImage(uri: Uri) {
         _state.value = _state.value.copy(imageUris = _state.value.imageUris - uri)
     }
@@ -122,7 +121,7 @@ class ShopViewModel @Inject constructor(private val repository: ShopRepository) 
                 val category = s.category.toRequestBodyText()
                 val description = s.description.toRequestBodyText()
                 val shopType = s.category.toRequestBodyText()
-                val position = "3".toRequestBodyText()
+                val position = "1".toRequestBodyText()
                 val latitude = (s.location?.latitude ?: 0.0).toString().toRequestBodyText()
                 val longitude = (s.location?.longitude ?: 0.0).toString().toRequestBodyText()
 

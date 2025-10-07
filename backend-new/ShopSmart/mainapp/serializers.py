@@ -5,6 +5,7 @@ from django.contrib.gis.geos import Point
 from django.conf import settings
 from .models import Product, Shop, FavoriteShop, FavoriteProduct, ShopReview, ProductReview
 from .firebase_utils import FirebaseStorageManager
+from random import shuffle
 
 User = get_user_model()
 
@@ -232,9 +233,15 @@ class ShopSerializer(serializers.ModelSerializer):
 class ShopDetailSerializer(ShopSerializer):
     products_count = serializers.SerializerMethodField()
     recent_reviews = serializers.SerializerMethodField()
+    phone = serializers.CharField(source='owner.phone_number', read_only=True)
+    featured_products = serializers.SerializerMethodField()
+    all_products = serializers.SerializerMethodField()
 
     class Meta(ShopSerializer.Meta):
-        fields = ShopSerializer.Meta.fields + ['products_count', 'recent_reviews', 'document_images']
+        fields = ShopSerializer.Meta.fields + [
+            'products_count', 'recent_reviews', 'document_images', 'phone',
+            'featured_products', 'all_products'
+        ]
 
     def get_products_count(self, obj) -> int:
         return obj.products.count()
@@ -242,6 +249,32 @@ class ShopDetailSerializer(ShopSerializer):
     def get_recent_reviews(self, obj) -> List:
         recent_reviews = obj.reviews.order_by('-created_at')[:5]
         return ShopReviewSerializer(recent_reviews, many=True, context=self.context).data
+
+    def _serialize_products(self, products):
+        product_list = []
+        for p in products:
+            reviews = p.reviews.all()
+            avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else 0.0
+            product_list.append({
+                'id': p.id,
+                'product_id': str(p.product_id),
+                'name': p.name,
+                'images': p.images,
+                'price': p.price,
+                'average_rating': avg_rating,
+                'position': p.position
+            })
+        product_list.sort(key=lambda x: (-x['position'], -x['average_rating']))
+        shuffle(product_list)
+        return product_list
+
+    def get_featured_products(self, obj):
+        products = obj.products.filter(position__in=[2, 3])
+        return self._serialize_products(products)
+
+    def get_all_products(self, obj):
+        products = obj.products.filter(position__in=[1, 2, 3])
+        return self._serialize_products(products)
 
 
 class ProductSerializer(serializers.ModelSerializer):
