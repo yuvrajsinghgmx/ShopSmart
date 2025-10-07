@@ -15,17 +15,19 @@ export const useShops = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+  const [pagination, setPagination] = useState({ count: 0, next: null, previous: null });
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedShopDetails, setSelectedShopDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const fetchShops = useCallback(async (search, sort) => {
+  const fetchShops = useCallback(async (search, sort, page) => {
     try {
       setLoading(true);
       setError(null);
-      const params = {};
+      const params = { page };
       if (search) {
         params.search = search;
       }
@@ -33,7 +35,8 @@ export const useShops = () => {
         params.ordering = sort.direction === 'desc' ? `-${sort.key}` : sort.key;
       }
       const data = await getShops(params);
-      setShops(data.map(mapShopData));
+      setShops(data.results.map(mapShopData));
+      setPagination({ count: data.count, next: data.links.next, previous: data.links.previous });
     } catch (err) {
       setError(err.message || 'Failed to fetch shops.');
       setShops([]);
@@ -42,15 +45,19 @@ export const useShops = () => {
     }
   }, []);
 
+  useEffect(() => { // Back to page 1 if sort or search changes
+    setCurrentPage(1);
+  }, [searchTerm, sortConfig]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
-      fetchShops(searchTerm, sortConfig);
+      fetchShops(searchTerm, sortConfig, currentPage);
     }, 300); // Debounce 
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, sortConfig, fetchShops]);
+  }, [searchTerm, sortConfig, currentPage, fetchShops]);
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -75,8 +82,9 @@ export const useShops = () => {
         alert(`Shop has been ${actionVerb}!`);
       }
       // Refetch with current settings
-      fetchShops(searchTerm, sortConfig);
-    } catch (err) {
+      fetchShops(searchTerm, sortConfig, currentPage);
+    } catch (err)
+        {
       alert(`Error performing action: ${err.message}`);
     }
   };
@@ -115,5 +123,8 @@ export const useShops = () => {
     detailsError,
     handleViewDetails,
     closeModal,
+    pagination,
+    currentPage,
+    setCurrentPage,
   };
 };
