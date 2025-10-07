@@ -26,8 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository,
-    private val favRepository: FavoritesRepository
+    private val homeRepository: HomeRepository
 ) : ViewModel() {
     private val _state = mutableStateOf(
         HomeState(
@@ -44,14 +43,8 @@ class HomeViewModel @Inject constructor(
     )
     val state: State<HomeState> = _state
 
-    private val _isShopSaved = MutableStateFlow(false)
-    val isShopSaved: StateFlow<Boolean> = _isShopSaved
-
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
-
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow = _eventFlow
 
     private var allProducts: List<Product> = emptyList()
     private var allShops: List<Shop> = emptyList()
@@ -174,29 +167,5 @@ class HomeViewModel @Inject constructor(
             searchResults = results,
             error = if (results.isEmpty()) "No results found for '$query'" else null
         )
-    }
-
-    fun toggleFavoriteShop(id: Int) {
-        viewModelScope.launch {
-            val result = favRepository.toggleFavoriteShop(id)
-            result.onSuccess { response ->
-                _isShopSaved.value = response.isFavorite
-                val message = if (response.isFavorite) {
-                    "Shop added to favorite"
-                } else {
-                    "Shop removed from favorite"
-                }
-                _eventFlow.emit(UiEvent.ShowToast(message))
-            }.onFailure { e ->
-                Log.d("Shop Toggle Error", "toggleFavoriteShop: ${e.message}")
-                _error.value = e.message ?: "toggle Failed"
-                _eventFlow.emit(UiEvent.ShowToast("toggle Failed"))
-            }
-
-        }
-    }
-
-    fun initialStateFavorite(isFavorite: Boolean) {
-        _isShopSaved.value = isFavorite
     }
 }

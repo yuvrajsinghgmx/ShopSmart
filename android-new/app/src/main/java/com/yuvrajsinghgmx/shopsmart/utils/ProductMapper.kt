@@ -12,7 +12,7 @@ fun BaseProduct.toUiProduct(): Product {
         category = category,
         review = "",
         description = description,
-        imageUrl = images,
+        images = images,
         shopName = shopName,
         shopId = shopId,
         shopNumber = "",

@@ -24,7 +24,7 @@ fun MiniProductCard(product: Product, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         AsyncImage(
-            model = product.imageUrl.firstOrNull() ?: "",
+            model = product.images.firstOrNull() ?: "",
             contentDescription = product.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
