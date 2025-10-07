@@ -131,6 +131,136 @@ class ApiRootView(APIView):
         }
         return Response(data, status=status.HTTP_200_OK)
 
+CATEGORY_ITEM_LIMIT = 20
+
+class LoadHomeView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LoadHomeResponseSerializer
+
+    def _get_base_querysets(self, user):
+        """Creates base querysets for shops and products filtered by user's location radius."""
+        user_location = Point(user.longitude, user.latitude, srid=4326)
+        location_radius = Distance(km=user.location_radius_km)
+
+        base_shops_qs = Shop.objects.filter(
+            is_approved=True,
+            location__distance_lte=(user_location, location_radius)
+        ).annotate(
+            distance=GisDbDistance('location', user_location),
+            avg_rating=Avg('reviews__rating'),
+            review_count=Count('reviews')
+        )
+
+        base_products_qs = Product.objects.filter(
+            shop__in=base_shops_qs
+        ).annotate(
+            avg_rating=Avg('reviews__rating'),
+            review_count=Count('reviews')
+        ).select_related('shop')
+
+        return base_shops_qs, base_products_qs, user_location
+
+    def _get_trending_products(self, base_products_qs):
+        """
+        Gets top 20 trending products based on reviews/position, with randomization.
+        """
+        return base_products_qs.order_by(
+            F('avg_rating').desc(nulls_last=True),
+            F('review_count').desc(nulls_last=True),
+            '-position',
+            '?'  # <-- Ensures variety for items with similar stats
+        )[:CATEGORY_ITEM_LIMIT]
+
+    def _get_categorized_products(self, base_products_qs):
+        """
+        Groups products by type, with weighted random ranking inside each group.
+        (This logic was already correct)
+        """
+        categorized_data = []
+        for p_type, p_label in ProductTypes.choices:
+            products_in_category = base_products_qs.filter(product_type=p_type)
+            ranked_products = products_in_category.order_by('-position', '?')[:CATEGORY_ITEM_LIMIT]
+
+            if ranked_products.exists():
+                serialized_products = ProductSerializer(ranked_products, many=True).data
+                categorized_data.append({
+                    'type': p_label,
+                    'items': serialized_products
+                })
+        return categorized_data
+
+    def _get_nearby_shops(self, base_shops_qs):
+        """
+        Groups nearby shops by type, prioritizing closest distance, then sponsored, then randomizing order.
+        """
+        shop_data = []
+        for s_type, s_label in ShopTypes.choices:
+            shops_in_category = base_shops_qs.filter(shop_type=s_type)
+
+            ranked_shops = shops_in_category.order_by(
+                'distance',
+                '-position',
+                '?'
+            )[:CATEGORY_ITEM_LIMIT]
+
+            if ranked_shops.exists():
+                serialized_shops = ShopSerializer(ranked_shops, many=True).data
+                shop_data.append({
+                    'type': s_label,
+                    'items': serialized_shops
+                })
+        return shop_data
+
+    def get(self, request):
+            try:
+                user = request.user
+                if not user.latitude or not user.longitude:
+                    return Response({
+                        'error': 'Location not set. Please complete onboarding.'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                base_shops_qs, base_products_qs, user_location = self._get_base_querysets(user)
+                message = 'Homepage loaded successfully.'
+
+                if not base_shops_qs.exists():
+                    message = 'No shops found in your radius. Showing results from the wider area.'
+
+                    user_location = Point(user.longitude, user.latitude, srid=4326)
+
+                    all_shops_qs = Shop.objects.filter(is_approved=True).annotate(
+                        distance=GisDbDistance('location', user_location),
+                        avg_rating=Avg('reviews__rating'),
+                        review_count=Count('reviews')
+                    ).order_by('distance')
+
+                    nearest_shop_ids = list(all_shops_qs.values_list('id', flat=True)[:50])
+                    base_shops_qs = all_shops_qs.filter(id__in=nearest_shop_ids)
+
+                    base_products_qs = Product.objects.filter(
+                        shop_id__in=nearest_shop_ids
+                    ).annotate(
+                        avg_rating=Avg('reviews__rating'),
+                        review_count=Count('reviews')
+                    ).select_related('shop')
+
+                trending_products = self._get_trending_products(base_products_qs)
+                categorized_products = self._get_categorized_products(base_products_qs)
+                nearby_shops = self._get_nearby_shops(base_shops_qs)
+
+                response_payload = {
+                    'message': message,
+                    'user_location': {'latitude': user.latitude, 'longitude': user.longitude, 'radius_km': user.location_radius_km},
+                    'trending_products': trending_products,
+                    'categorized_products': categorized_products,
+                    'nearby_shops': nearby_shops
+                }
+
+                serializer = self.serializer_class(response_payload, context={'request': request})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                print(f"Error in LoadHomeView: {str(e)}")
+                return Response({'error': 'Something went wrong while loading data'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ShopDetailView(generics.RetrieveAPIView):

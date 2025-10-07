@@ -3,10 +3,9 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .firebaseauth_views import FirebaseAuthView, LogoutView
 from .admin_auth_views import AdminLoginView
-from .load import LoadHomeView
 from .views import (
     # Core views
-    ShopDetailView, ProductDetailView,
+    LoadHomeView,ShopDetailView, ProductDetailView,
     PostShopReviewView, PostProductReviewView, ChoicesView,
     
     # Favorites
