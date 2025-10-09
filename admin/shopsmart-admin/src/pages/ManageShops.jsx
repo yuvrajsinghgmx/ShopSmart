@@ -85,7 +85,8 @@ const ManageShops = () => {
   const { 
     loading, error, shops, setSearchTerm, handleAction,
     isModalOpen, selectedShopDetails, detailsLoading, detailsError, handleViewDetails, closeModal,
-    sortConfig, requestSort
+    sortConfig, requestSort,
+    pagination, currentPage, setCurrentPage,
   } = useShops();
   
   const [fullscreenImage, setFullscreenImage] = useState(null);
@@ -195,6 +196,27 @@ const ManageShops = () => {
             {renderTableBody()}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-4 px-6">
+        <span className="text-sm">Showing {shops.length} of {pagination.count} results</span>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={!pagination.previous}
+            className="px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-200"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 font-semibold">Page {currentPage}</span>
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={!pagination.next}
+            className="px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-200"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} title="Shop Details">

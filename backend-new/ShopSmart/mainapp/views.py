@@ -14,6 +14,7 @@ from rest_framework.exceptions import ValidationError
 from django.db.models import Avg, Count,F
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .choices import ShopTypes, ProductTypes, Role
+from .pagination import StandardResultsSetPagination
 from .permissions import (
     IsOwnerOfShop, IsShopOwnerRole, IsApprovedShopOwner,
     IsOwnerOfApprovedShop, IsAdmin
@@ -71,15 +72,23 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        trending_products = queryset.filter(position__in=[2, 3]).annotate(review_count=Count('reviews')).order_by('-review_count')[:10]
-        all_products = queryset.exclude(id__in=trending_products.values_list('id', flat=True))
+        trending_products_qs = queryset.filter(position__in=[2, 3]).annotate(review_count=Count('reviews')).order_by('-review_count')[:10]
+        all_products_qs = queryset.exclude(id__in=trending_products_qs.values_list('id', flat=True))
 
-        trending_serializer = self.get_serializer(trending_products, many=True)
-        all_serializer = self.get_serializer(all_products, many=True)
+        page = self.paginate_queryset(all_products_qs)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response = self.get_paginated_response(serializer.data)
+            trending_serializer = self.get_serializer(trending_products_qs, many=True)
+            response.data['trendingProducts'] = trending_serializer.data
+            return response
 
+        # Fallback if paginator not used in settings
+        all_serializer = self.get_serializer(all_products_qs, many=True)
+        trending_serializer = self.get_serializer(trending_products_qs, many=True)
         return Response({
             'trendingProducts': trending_serializer.data,
-            'allProducts': all_serializer.data
+            'results': all_serializer.data
         })
 
 
@@ -539,6 +548,7 @@ class AdminShopsListView(generics.ListAPIView):
     search_fields = ['shop_id', 'name', 'category', 'owner__full_name', 'owner__phone_number']
     ordering_fields = ['id', 'name', 'category', 'owner__full_name', 'products_count', 'is_approved', 'created_at']
     ordering = ['-created_at']
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return Shop.objects.select_related('owner')
@@ -554,6 +564,7 @@ class AdminProductsListView(generics.ListAPIView):
     search_fields = ['product_id', 'name', 'category', 'shop__name']
     ordering_fields = ['id', 'name', 'price', 'category', 'stock_quantity', 'shop__name', 'created_at']
     ordering = ['-created_at']
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         return Product.objects.select_related('shop')
