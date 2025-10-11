@@ -18,6 +18,8 @@ import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
 import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
+import com.yuvrajsinghgmx.shopsmart.screens.cart.CartScreen
+import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.ShopDetail
@@ -117,7 +119,8 @@ fun NavGraphBuilder.mainGraph(
     sharedAppViewModel: SharedAppViewModel,
     sharedViewModel: SharedShopViewModel,
     sharedProductViewModel: ProductDetailsViewModel,
-    authPrefs: AuthPrefs
+    authPrefs: AuthPrefs,
+    cartViewModel: CartViewModel
 ) {
     navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
         composable(BottomNavItem.Home.route) {
@@ -127,12 +130,14 @@ fun NavGraphBuilder.mainGraph(
                 authPrefs = authPrefs
             )
         }
-        composable(BottomNavItem.Search.route) {
-            SearchScreen(onShopClick = { shop ->
-                sharedViewModel.setSelectedShop(shop)
-                navController.navigate("shopDetails")
-            })
+
+        composable(BottomNavItem.Cart.route) {
+            CartScreen(
+                navController = navController,
+                viewModel = cartViewModel
+            )
         }
+
         composable(BottomNavItem.Saved.route) {
             SavedProductScreen(
                 onBack = {

@@ -17,6 +17,7 @@ import com.yuvrajsinghgmx.shopsmart.utils.toUiProduct
 import com.yuvrajsinghgmx.shopsmart.utils.toUiShop
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,20 +55,18 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadHomeData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                _state.value = _state.value.copy(isLoading = true)
-
                 val data = homeRepository.getLoadData() // Retrofit call
 
                 // Trending products
-                val trendingProducts = withContext(Dispatchers.Default) {
+                val trendingProductsDeferred = async(Dispatchers.Default) {
                     data.trendingProducts.map { it.toUiProduct()
                     }
                 }
 
                 // Categorized products
-                val categorized = withContext(Dispatchers.Default){
+                val categorizedDeferred = async(Dispatchers.Default){
                     data.categorizedProducts.map { category ->
                         CategorizedProductsUi(
                             type = category.type,
@@ -77,18 +76,21 @@ class HomeViewModel @Inject constructor(
                 }
 
                 // Nearby shops
-                val nearbyShops = withContext(Dispatchers.Default){
+                val nearbyShopsDeferred = async(Dispatchers.Default){
                     data.nearbyShops.flatMap { shopGroup ->
                         shopGroup.items.map { it.toUiShop() }
                     }
                 }
 
+                val trendingProducts = trendingProductsDeferred.await()
+                val categorized = categorizedDeferred.await()
+                val nearbyShops = nearbyShopsDeferred.await()
+
                 // Cache for search
                 allProducts = trendingProducts + categorized.flatMap { it.items }
                 allShops = nearbyShops
 
-                // Update state
-                _state.value = _state.value.copy(
+                val newState = HomeState(
                     isLoading = false,
                     products = trendingProducts,
                     allProducts = allProducts,
@@ -103,6 +105,11 @@ class HomeViewModel @Inject constructor(
                     },
                     searchQuery = ""
                 )
+                // Update UI on Main thread
+                withContext(Dispatchers.Main) {
+                    _state.value = newState
+                }
+
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
                     isLoading = false,

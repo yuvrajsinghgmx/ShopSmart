@@ -6,9 +6,11 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedShopResponse
 import com.yuvrajsinghgmx.shopsmart.data.repository.FavoritesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,24 +31,27 @@ class SavedViewModel @Inject constructor(private val repository: FavoritesReposi
     }
 
     private fun fetchSavedProducts(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try{
                 val response = repository.getSavedProducts()
-                _savedProducts.value = response
+                withContext(Dispatchers.Main) {
+                    _savedProducts.value = response
+                }
             }catch (e: Exception){
                 _error.value = e.message?:"something went wrong while fetching saved products"
             }
         }
     }
     private fun fetchSavedShops(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try{
                 val response = repository.getSavedShops()
-                _savedShops.value = response
+                withContext(Dispatchers.Main) {
+                    _savedShops.value = response
+                }
             }catch (e: Exception){
                 _error.value = e.message?:"something went wrong while fetching saved shops"
             }
         }
     }
-
 }

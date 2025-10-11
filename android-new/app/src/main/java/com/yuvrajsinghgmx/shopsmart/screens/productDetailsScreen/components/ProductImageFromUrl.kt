@@ -1,11 +1,14 @@
 package com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,24 +32,27 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun ProductImageFromUrl(imageUrls: List<String>) {
+    val images = remember(imageUrls) { imageUrls.distinct() }
     val listState = rememberLazyListState()
-
     val currentPage by remember {
-        derivedStateOf {
-            minOf(listState.firstVisibleItemIndex, imageUrls.lastIndex)
-        }
+        derivedStateOf { minOf(listState.firstVisibleItemIndex, images.lastIndex) }
     }
+
     Box(modifier = Modifier.fillMaxWidth()) {
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
         LazyRow(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp),
-            horizontalArrangement = Arrangement.spacedBy(0.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            itemsIndexed(imageUrls) { index, url ->
+            itemsIndexed(images) { index, url ->
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(url)
@@ -55,18 +62,30 @@ fun ProductImageFromUrl(imageUrls: List<String>) {
                     contentScale = ContentScale.Crop,
                     error = painterResource(R.drawable.error),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .width(screenWidth - 32.dp)
+                        .height(250.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .height(250.dp),
-                    )
+                )
             }
         }
+
+        // Lightweight indicator (recomposes only this text)
+        ImageIndicator(currentPage, images.size)
+    }
+}
+
+@Composable
+private fun ImageIndicator(currentPage: Int, total: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
         Text(
-            text = "${currentPage + 1}/${imageUrls.size}",
+            text = "${currentPage + 1}/$total",
             color = Color.White,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
                 .padding(horizontal = 8.dp, vertical = 4.dp),
