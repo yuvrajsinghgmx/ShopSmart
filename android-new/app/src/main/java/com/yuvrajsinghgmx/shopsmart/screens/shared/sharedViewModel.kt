@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.OnboardingResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
 import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
@@ -39,6 +40,9 @@ class SharedAppViewModel @Inject constructor(
     private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
     private val _isOnboarding = MutableStateFlow(false)
     val isOnboarding: StateFlow<Boolean> = _isOnboarding
+    private val _onBoardingState = MutableStateFlow<OnboardingResponse?>(null)
+    val onBoardingState: MutableStateFlow<OnboardingResponse?> = _onBoardingState
+
     
     fun sendInitialOtp(phoneNumber: String, activity: Activity) {
         viewModelScope.launch {
@@ -185,4 +189,17 @@ class SharedAppViewModel @Inject constructor(
             _userState.value = user
         }
     }
+
+    fun getOnboardingData(){
+        viewModelScope.launch {
+            try{
+                val response = onboardingRepository.getOnboarding()
+                _onBoardingState.value = response
+                Log.d("getOnBoardingData","response: $response")
+            }catch (e: Exception){
+                Log.e("onBoarding","Error fetching onboarding data",e)
+            }
+        }
+    }
+
 }
