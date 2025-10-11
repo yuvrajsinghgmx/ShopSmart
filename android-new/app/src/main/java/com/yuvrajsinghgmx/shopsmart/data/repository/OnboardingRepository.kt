@@ -80,4 +80,8 @@ class OnboardingRepository @Inject constructor(
         }
         return response
     }
+
+    suspend fun getOnboarding(): OnboardingResponse{
+        return api.getOnboarding()
+    }
 }
