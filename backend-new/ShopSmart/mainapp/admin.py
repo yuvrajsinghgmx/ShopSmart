@@ -25,8 +25,17 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('id',)
 
 
-admin.site.register(Shop)
-admin.site.register(Product)
+@admin.register(Shop)
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ("id", "shop_id", "owner__full_name", "name", "position", 
+                    "is_approved")
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("id", "product_id", "shop", "name", "position", "price", "category")
+
+
 admin.site.register(FavoriteShop)
 admin.site.register(FavoriteProduct)
 admin.site.register(ShopReview)
