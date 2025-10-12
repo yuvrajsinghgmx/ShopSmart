@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from mainapp.models import Shop, Product
-from .models import SubscriptionPlan, ActiveSubscription
+from .models import SubscriptionPlan, ActiveSubscription, Banner
 from .choices import PlanType
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
@@ -36,6 +36,7 @@ class SubscriptionPurchaseSerializer(serializers.Serializer):
     plan_id = serializers.IntegerField(write_only=True)
     item_type = serializers.ChoiceField(choices=['shop', 'product'], write_only=True)
     item_id = serializers.IntegerField(write_only=True)
+    banner_image = serializers.ImageField(write_only=True, required=False)
 
     def validate(self, data):
         request = self.context['request']
@@ -49,31 +50,41 @@ class SubscriptionPurchaseSerializer(serializers.Serializer):
         item_type = data['item_type']
         item_id = data['item_id']
         item = None
-        
-        if item_type == 'shop':
+
+        if plan.plan_type == PlanType.BANNER:
+            if item_type != 'shop':
+                raise serializers.ValidationError({"item_type": "Banner plans can only be applied to shops."})
+            if 'banner_image' not in data:
+                raise serializers.ValidationError({"banner_image": "An image is required for a banner subscription."})
+            
             try:
                 item = Shop.objects.get(id=item_id, owner=user, is_approved=True)
             except Shop.DoesNotExist:
                 raise serializers.ValidationError({"item_id": "Approved shop not found or you are not the owner."})
-            if plan.plan_type != PlanType.SHOP_POSITION:
-                raise serializers.ValidationError({"plan_id": "This plan is not applicable to shops."})
+            
+            if Banner.objects.filter(shop=item, is_active=True, end_date__gt=timezone.now()).exists():
+                raise serializers.ValidationError({"item_id": "This shop already has an active banner."})
+        
+        elif plan.plan_type == PlanType.SHOP_POSITION:
+            if item_type != 'shop':
+                raise serializers.ValidationError({"item_type": "This plan requires a 'shop' item type."})
+            try:
+                item = Shop.objects.get(id=item_id, owner=user, is_approved=True)
+            except Shop.DoesNotExist:
+                raise serializers.ValidationError({"item_id": "Approved shop not found or you are not the owner."})
+            if ActiveSubscription.objects.filter(object_id=item.id, content_type__model='shop', plan__position_level=plan.position_level, end_date__gt=timezone.now(), is_active=True).exists():
+                raise serializers.ValidationError("This shop already has an active subscription for this position level.")
 
-        elif item_type == 'product':
+        elif plan.plan_type == PlanType.PRODUCT_POSITION:
+            if item_type != 'product':
+                raise serializers.ValidationError({"item_type": "This plan requires a 'product' item type."})
             try:
                 item = Product.objects.get(id=item_id, shop__owner=user, shop__is_approved=True)
             except Product.DoesNotExist:
                 raise serializers.ValidationError({"item_id": "Product not found in an approved shop or you are not the owner."})
-            if plan.plan_type != PlanType.PRODUCT_POSITION:
-                raise serializers.ValidationError({"plan_id": "This plan is not applicable to products."})
+            if ActiveSubscription.objects.filter(object_id=item.id, content_type__model='product', plan__position_level=plan.position_level, end_date__gt=timezone.now(), is_active=True).exists():
+                raise serializers.ValidationError("This product already has an active subscription for this position level.")
         
-        if ActiveSubscription.objects.filter(object_id=item.id, content_type__model=item_type, 
-                                            plan__position_level=plan.position_level, 
-                                            end_date__gt=timezone.now(), is_active=True
-        ).exists():
-            raise serializers.ValidationError(
-                f"This {item_type} already has an active subscription for this position level."
-            )
-
         data['plan'] = plan
         data['item'] = item
         return data
@@ -103,3 +114,12 @@ class ActiveSubscriptionSerializer(serializers.ModelSerializer):
                 "position": obj.content_object.position
             }
         return None
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    shop_id = serializers.IntegerField(source='shop.id', read_only=True)
+    shop_name = serializers.CharField(source='shop.name', read_only=True)
+
+    class Meta:
+        model = Banner
+        fields = ['id', 'image_url', 'shop_id', 'shop_name']

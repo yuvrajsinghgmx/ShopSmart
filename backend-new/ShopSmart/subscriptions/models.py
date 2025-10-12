@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from mainapp.models import Shop
 
 from .choices import PositionLevel, PlanType
 
@@ -58,6 +59,24 @@ class ActiveSubscription(models.Model):
             self.end_date = timezone.now() + timedelta(days=self.plan.duration_days)
         super().save(*args, **kwargs)
 
+    @property
+    def is_expired(self):
+        return self.end_date < timezone.now()
+
+
+class Banner(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="banners")
+    image_url = models.URLField(max_length=1024)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Banner for {self.shop.name} (Active: {self.is_active})"
+    
     @property
     def is_expired(self):
         return self.end_date < timezone.now()
