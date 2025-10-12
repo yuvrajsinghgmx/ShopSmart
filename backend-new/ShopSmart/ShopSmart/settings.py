@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'mainapp.apps.MainappConfig',
     'drf_spectacular',
-    'orders'
+    'orders',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [
@@ -146,7 +147,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    # 'DEFAULT_PAGINATION_CLASS': 'mainapp.pagination.StandardResultsSetPagination',
+    'PAGE_SIZE': 10,
 }
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'ShopSmart API',
     'DESCRIPTION': 'Official API documentation for the ShopSmart application.',

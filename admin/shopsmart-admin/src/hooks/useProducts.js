@@ -14,6 +14,8 @@ export const useProducts = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+  const [pagination, setPagination] = useState({ count: 0, next: null, previous: null });
+  const [currentPage, setCurrentPage] = useState(1);
 
   // State for modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,17 +23,18 @@ export const useProducts = () => {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsError, setDetailsError] = useState(null);
 
-  const fetchProducts = useCallback(async (search, sort) => {
+  const fetchProducts = useCallback(async (search, sort, page) => {
     try {
       setLoading(true);
       setError(null);
-      const params = {};
+      const params = { page };
       if (search) params.search = search;
       if (sort.key) {
         params.ordering = sort.direction === 'desc' ? `-${sort.key}` : sort.key;
       }
       const data = await getProducts(params);
-      setProducts(data.map(mapProductData));
+      setProducts(data.results.map(mapProductData));
+      setPagination({ count: data.count, next: data.links.next, previous: data.links.previous });
     } catch (err) {
       setError(err.message || 'Failed to fetch products.');
       setProducts([]); 
@@ -39,16 +42,20 @@ export const useProducts = () => {
       setLoading(false);
     }
   }, []);
+  
+  useEffect(() => { // Back to page 1 if sort or search changes
+    setCurrentPage(1);
+  }, [searchTerm, sortConfig]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      fetchProducts(searchTerm, sortConfig);
+      fetchProducts(searchTerm, sortConfig, currentPage);
     }, 300); // Debounce search
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, sortConfig, fetchProducts]);
+  }, [searchTerm, sortConfig, currentPage, fetchProducts]);
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -69,7 +76,7 @@ export const useProducts = () => {
         }
       }
       // Refetch with current settings
-      fetchProducts(searchTerm, sortConfig);
+      fetchProducts(searchTerm, sortConfig, currentPage);
     } catch (err) {
       alert(`Error performing action: ${err.message}`);
     }
@@ -109,5 +116,8 @@ export const useProducts = () => {
     detailsError,
     handleViewDetails,
     closeModal,
+    pagination,
+    currentPage,
+    setCurrentPage,
   };
 };

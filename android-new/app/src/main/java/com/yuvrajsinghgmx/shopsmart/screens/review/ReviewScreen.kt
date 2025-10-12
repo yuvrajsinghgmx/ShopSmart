@@ -25,17 +25,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,99 +68,113 @@ fun ReviewScreen(
     viewModel: ReviewViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(target) {
         viewModel.loadReviews(
             target
         )
     }
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 13.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
-    ) {
-        TopBar(navController)
-        LazyColumn(
+    LaunchedEffect(Unit) {
+        viewModel.snackbarEvent.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier =
-                Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 10.dp)
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 13.dp, start = 8.dp, end = 8.dp, bottom = 8.dp)
         ) {
-            when (uiState) {
-                is ReviewUiState.Loading -> {
-                    item {
-                        Text(
-                            text = "Loading reviews",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                is ReviewUiState.Error -> {
-                    item {
-                        Text(
-                            (uiState as ReviewUiState.Error).message,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                is ReviewUiState.Success -> {
-                    val summary = (uiState as ReviewUiState.Success).ratingSummary
-                    val reviews = (uiState as ReviewUiState.Success).reviews
-                    summary?.let {
-                        item {
-                            RatingSummaryView(it)
-                        }
-                    }
-                    item {
-                        WriteReview(
-                            viewModel,
-                            target
-                        )
-                    }
-                    item { ReviewTab(viewModel) }
-                    if (reviews.isEmpty()) {
+            TopBar(navController)
+            LazyColumn(
+                modifier =
+                    Modifier.fillMaxSize(), contentPadding = PaddingValues(vertical = 10.dp)
+            ) {
+                when (uiState) {
+                    is ReviewUiState.Loading -> {
                         item {
                             Text(
-                                text = "No Reviews yet",
+                                text = "Loading reviews",
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
                                 textAlign = TextAlign.Center
                             )
                         }
-                    } else {
-                        items(reviews, key = { it.id }) { review ->
-                            Card(
+                    }
+
+                    is ReviewUiState.Error -> {
+                        item {
+                            Text(
+                                (uiState as ReviewUiState.Error).message,
                                 modifier = Modifier
-                                    .padding(
-                                        horizontal = 12.dp,
-                                        vertical = 6.dp
-                                    )
-                                    .fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(4.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                            ) {
-                                ReviewItem(
-                                    review = review,
-                                    onToggle = {
-                                        viewModel.toggleHelpful(target, review.id)
-                                    })
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    is ReviewUiState.Success -> {
+                        val summary = (uiState as ReviewUiState.Success).ratingSummary
+                        val reviews = (uiState as ReviewUiState.Success).reviews
+                        summary?.let {
+                            item {
+                                RatingSummaryView(it)
+                            }
+                        }
+                        item {
+                            WriteReview(
+                                viewModel,
+                                target
+                            )
+                        }
+                        item { ReviewTab(viewModel) }
+                        if (reviews.isEmpty()) {
+                            item {
+                                Text(
+                                    text = "No Reviews yet",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        } else {
+                            items(reviews, key = { it.id }) { review ->
+                                Card(
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = 12.dp,
+                                            vertical = 6.dp
+                                        )
+                                        .fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(4.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                                ) {
+                                    ReviewItem(
+                                        review = review,
+                                        onToggle = {
+                                            viewModel.toggleHelpful(target, review.id)
+                                        })
+                                }
                             }
                         }
                     }
                 }
-            }
 
+            }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(alignment = Alignment.BottomCenter)
+        )
     }
+
 }
 
 @Composable
@@ -202,7 +220,7 @@ fun RatingSummaryView(summary: RatingSummary) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = String.format("%.1f", summary.average),
+                    text = String.format(java.util.Locale.US,"%.1f", summary.average),
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 StarRating(summary.average.toFloat(), 5, 18.dp)
@@ -285,15 +303,24 @@ fun WriteReview(viewModel: ReviewViewModel, target: ReviewTarget) {
                         target
                     )
                 },
+                enabled = !viewModel.isPosting,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary)
             ) {
-                Text(
-                    "Post Review"
-                )
+                if (viewModel.isPosting) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(22.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        "Post Review"
+                    )
+                }
             }
         }
     }
