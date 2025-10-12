@@ -178,7 +178,7 @@ fun NavGraphBuilder.mainGraph(
         }
 
         composable("editProfileScreen"){
-            EditProfileScreen(navController = navController, viewmodel = sharedAppViewModel)
+            EditProfileScreen(navController = navController, sharedViewModel = sharedAppViewModel)
         }
     }
 }
