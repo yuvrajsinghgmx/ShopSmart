@@ -6,16 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.OnboardingResponse
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.User
 import com.yuvrajsinghgmx.shopsmart.data.repository.AuthRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.UserRepository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
+import com.yuvrajsinghgmx.shopsmart.screens.profile.ProfileUiEvent
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -39,7 +43,12 @@ class SharedAppViewModel @Inject constructor(
     private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
     private val _isOnboarding = MutableStateFlow(false)
     val isOnboarding: StateFlow<Boolean> = _isOnboarding
-    
+    private val _onBoardingState = MutableStateFlow<OnboardingResponse?>(null)
+    val onBoardingState: MutableStateFlow<OnboardingResponse?> = _onBoardingState
+    private val _uiEvent = MutableSharedFlow<ProfileUiEvent>()
+    val uiEvent = _uiEvent
+
+
     fun sendInitialOtp(phoneNumber: String, activity: Activity) {
         viewModelScope.launch {
             authRepository.sendOtp(phoneNumber, activity, null).collect { state ->
@@ -116,13 +125,13 @@ class SharedAppViewModel @Inject constructor(
     }
 
     fun getLogInData() {
-        _userState.value=userRepository.getLoggedInUser()
+        _userState.value = userRepository.getLoggedInUser()
     }
 
     fun logout() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            try{
+            try {
 
                 val beforeToken = authPrefs.getRefreshToken()
                 Log.d("AuthDebug", "Before logout refreshToken = $beforeToken")
@@ -135,8 +144,8 @@ class SharedAppViewModel @Inject constructor(
                 Log.d("AuthDebug", "After logout refreshToken = $afterToken")
 
                 _authState.value = AuthState.Idle
-            }catch (e: Exception){
-                _authState.value = AuthState.Error(e.message?:"Logout Failed")
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Logout Failed")
             }
         }
     }
@@ -165,7 +174,7 @@ class SharedAppViewModel @Inject constructor(
                     email = email
                 )
                 Log.d("AuthDebug", "Onboarding response: $response")
-                if (response.onboardingCompleted){
+                if (response.onboardingCompleted) {
                     val roleEnum = UserRole.valueOf(role.uppercase())
                     _authState.value = AuthState.onboardingSuccess(roleEnum)
                     _userState.value = userRepository.getLoggedInUser()
@@ -173,7 +182,7 @@ class SharedAppViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("AuthDebug", "Error completing onboarding: ${e.message}")
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
-            }finally {
+            } finally {
                 _isOnboarding.value = false
             }
         }
@@ -185,4 +194,65 @@ class SharedAppViewModel @Inject constructor(
             _userState.value = user
         }
     }
+
+    fun getOnboardingData() {
+        viewModelScope.launch {
+            try {
+                val response = onboardingRepository.getOnboarding()
+                _onBoardingState.value = response
+                Log.d("getOnBoardingData", "response: $response")
+            } catch (e: Exception) {
+                Log.e("onBoarding", "Error fetching onboarding data", e)
+            }
+        }
+    }
+
+    fun updateProfile(
+        fullName: String,
+        email: String?,
+        imageFile: File?
+    ) {
+        viewModelScope.launch {
+            try {
+                _isOnboarding.value = true
+
+                val currentData = _onBoardingState.value
+
+                val role = currentData?.role ?: authPrefs.getRole() ?: ""
+                val address = currentData?.currentAddress ?: ""
+                val longitude = currentData?.longitude ?: 0.0
+                val latitude = currentData?.latitude ?: 0.0
+                val radius = currentData?.locationRadiusKm ?: 0
+
+                val response = onboardingRepository.completeOnboarding(
+                    role = role,
+                    fullName = fullName,
+                    email = email,
+                    address = address,
+                    longitude = longitude,
+                    latitude =  latitude,
+                    radius = radius,
+                    imageFile = imageFile
+                )
+                Log.d("AuthDebug", "Onboarding response: $response")
+
+                if(response.onboardingCompleted){
+                    _onBoardingState.value = response
+                    Log.d("Profile Update","Profile Updated Successfully")
+                    _uiEvent.emit(ProfileUiEvent.ShowSnackbar("Profile Updated Successfully"))
+                    _uiEvent.emit(ProfileUiEvent.NavigateBack)
+                }
+
+            }catch (e: Exception){
+                _uiEvent.emit(ProfileUiEvent.ShowSnackbar("Profile Update Failed"))
+                Log.e("Profile Update","Profile Update Failed")
+                _authState.value = AuthState.Error(e.message?:"Profile Update Failed")
+            }finally {
+                _isOnboarding.value = false
+            }
+
+        }
+
+    }
+
 }
