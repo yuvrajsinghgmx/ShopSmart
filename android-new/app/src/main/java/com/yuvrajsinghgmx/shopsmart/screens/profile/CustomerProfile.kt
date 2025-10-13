@@ -3,6 +3,7 @@ package com.yuvrajsinghgmx.shopsmart.screens.profile
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +15,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Star
@@ -30,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,7 +45,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -54,15 +62,17 @@ fun CustomerProfileScreen(
 ) {
     LaunchedEffect(Unit) {
         viewModel.getLogInData()
+        viewModel.getOnboardingData()
     }
     val user = viewModel.userState.collectAsState().value
+    val onBoarding = viewModel.onBoardingState.collectAsState().value
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
@@ -76,13 +86,14 @@ fun CustomerProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Spacer(modifier = Modifier.height(24.dp))
                     Box(
                         modifier = Modifier
                             .size(120.dp)
                             .clip(CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (user?.profilePic.isNullOrEmpty()) {
+                        if (onBoarding?.profileImage.isNullOrEmpty()) {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
                                 contentDescription = "Default Avatar",
@@ -91,7 +102,7 @@ fun CustomerProfileScreen(
                             )
                         } else {
                             AsyncImage(
-                                model = user.profilePic,
+                                model = onBoarding.profileImage,
                                 contentDescription = "Profile Image",
                                 modifier = Modifier
                                     .size(110.dp)
@@ -101,7 +112,7 @@ fun CustomerProfileScreen(
                         }
                     }
                     Spacer(Modifier.height(8.dp))
-                    user?.userName?.let {
+                    onBoarding?.fullName?.let {
                         Text(
                             text = it,
                             style = ShopSmartTypography.headlineLarge,
@@ -119,24 +130,21 @@ fun CustomerProfileScreen(
                         )
                     }
                     Spacer(Modifier.height(16.dp))
-                    Button(
-                        onClick = { /* reroute to edit profile screen */ },
-                        modifier = Modifier
-                            .fillMaxWidth(0.45f)
-                            .padding(horizontal = 16.dp)
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "Edit Profile",
-                            fontSize = 16.sp,
-                            style = ShopSmartTypography.headlineLarge
-                        )
-                    }
+                }
+                IconButton(
+                    onClick = {
+                        navController.navigate("editProfileScreen")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(50.dp)
+                        .padding(end = 10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
                 }
             }
 
@@ -159,21 +167,21 @@ fun CustomerProfileScreen(
                         .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
-                    MenuItem(icon = Icons.Outlined.LocationOn, text = "Delivery Radius", trailingText = "10 km", onClick = {})
+                    MenuItem(icon = Icons.Outlined.Email, text = onBoarding?.email?:"No email available")
                     if (user?.userType == "Shopowner") {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         MenuItem(icon = Icons.Outlined.Add, text = "Add New Product", onClick = {})
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    MenuItem(icon = Icons.Outlined.Bookmark, text = "Saved Items", onClick = {})
+                    MenuItem(icon = Icons.Outlined.LocationOn, text = onBoarding?.currentAddress?:"No address available")
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    MenuItem(icon = Icons.Outlined.Star, text = "My Reviews", onClick = {})
+                    MenuItem(icon = Icons.Outlined.Star, text = "My Reviews", onClick = {}, true)
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings", onClick = {})
+                    MenuItem(icon = Icons.Outlined.Notifications, text = "Notification Settings", onClick = {}, true)
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Help Center", onClick = {})
+                    MenuItem(icon = Icons.AutoMirrored.Outlined.Help, text = "Customer Support", onClick = {}, true)
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    MenuItem(icon = Icons.Outlined.Add, text = "Add Shop (temp)", onClick = {navController.navigate("addshop")})
+                    MenuItem(icon = Icons.Outlined.Info, text = "About Us", onClick = {},true)
 
 
                 }
@@ -219,16 +227,23 @@ fun CustomerProfileScreen(
 
 @Composable
 fun MenuItem(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    text: String,
-    trailingText: String? = null,
-    onClick: () -> Unit
+    icon: ImageVector,
+    text: String?,
+    onClick: (() -> Unit)? = null,
+    trailingArrow:Boolean = false
 ) {
-    Row(
-        modifier = Modifier
+    val clickModifier = if(onClick != null){
+        Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .clickable(onClick = onClick), // Use the passed lambda here
+            .padding(vertical = 16.dp)
+            .clickable(onClick = onClick)
+    }else{
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    }
+    Row(
+        modifier = clickModifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -241,28 +256,21 @@ fun MenuItem(
             )
             Spacer(Modifier.width(12.dp))
             Text(
-                text,
+                text = text ?: "",
                 color = MaterialTheme.colorScheme.onSurface,
                 style = ShopSmartTypography.bodyMedium,
                 fontSize = 16.sp
             )
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            trailingText?.let {
-                Text(
-                    it,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = ShopSmartTypography.bodyMedium,
-                    fontSize = 14.sp
+        if(trailingArrow){
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Arrow",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
                 )
-                Spacer(Modifier.width(8.dp))
             }
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Arrow",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp)
-            )
         }
     }
 }

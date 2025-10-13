@@ -25,6 +25,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetails
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.ProductDetailsViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.profile.EditProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
@@ -174,6 +175,10 @@ fun NavGraphBuilder.mainGraph(
                 else -> throw IllegalArgumentException("Unknown Review type")
             }
             ReviewScreen(target = target, navController = navController)
+        }
+
+        composable("editProfileScreen"){
+            EditProfileScreen(navController = navController, sharedViewModel = sharedAppViewModel)
         }
     }
 }
