@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.CategorizedProductsUi // Assuming this is your data class
+import com.yuvrajsinghgmx.shopsmart.data.modelClasses.CategorizedProductsUi
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.screens.home.components.HomeFooter
@@ -281,7 +281,7 @@ fun CategorizedProductsSection(
                 val minCardWidth = 160.dp
 
                 val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
-                val availableWidth = screenWidthDp - 32.dp // Account for horizontal padding of the grid
+                val availableWidth = screenWidthDp - 32.dp
                 val columns = (availableWidth / (minCardWidth + 8.dp)).toInt().coerceAtLeast(2)
                 val rows = ceil(selectedCategoryProducts.size.toFloat() / columns).toInt()
                 val cardImageHeight = (availableWidth / columns) - 8.dp
