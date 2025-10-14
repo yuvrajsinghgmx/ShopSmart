@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -50,8 +51,8 @@ fun HomeScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         HomeHeader(authPrefs = authPrefs)
         HomeSearchBar(
-            searchQuery = state.searchQuery ?: "",
-            onQueryChange = { viewModel.onEvent(HomeEvent.Search(it)) }
+            onClick = {navController.navigate("search")
+            }
         )
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             HomeBanner()
@@ -124,48 +125,49 @@ fun HomeHeader(authPrefs: AuthPrefs) {
         )
     }
 }
-
 @Composable
-fun HomeSearchBar(searchQuery: String, onQueryChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = searchQuery,
-        onValueChange = onQueryChange,
-        modifier = Modifier
+fun HomeSearchBar(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(50.dp),
-        leadingIcon = {
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "Search",
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        trailingIcon = {
-            Icon(
-                Icons.Default.FilterList,
-                contentDescription = "Filter",
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        placeholder = {
-            Text(
-                "Search products or shops...",
-                style = MaterialTheme.typography.bodySmall
-            )
-        },
+            .height(50.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-        ),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        singleLine = true
-    )
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Search products or shops...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f) // Ensures text doesn't overlap the filter icon
+            )
+            Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = "Filter",
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }
-
 @Composable
 fun HomeBanner() {
     AsyncImage(

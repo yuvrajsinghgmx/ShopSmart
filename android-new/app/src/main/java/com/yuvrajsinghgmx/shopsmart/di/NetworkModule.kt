@@ -12,9 +12,9 @@ import com.yuvrajsinghgmx.shopsmart.data.interfaces.OnboardingAPI
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ProductDetailApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.RefreshApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ReviewApi
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.SearchApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.ShopDetailsApi
-import com.yuvrajsinghgmx.shopsmart.data.modelClasses.LogoutResponse
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.Module
 import dagger.Provides
@@ -117,4 +117,9 @@ object NetworkModule {
     @Singleton
     fun provideShopDetailsApi(retrofit: Retrofit): ShopDetailsApi =
         retrofit.create(ShopDetailsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSearchApi(retrofit: Retrofit): SearchApi =
+        retrofit.create(SearchApi::class.java)
 }

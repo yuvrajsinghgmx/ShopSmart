@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
+import com.yuvrajsinghgmx.shopsmart.screens.search.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
@@ -129,10 +129,10 @@ fun NavGraphBuilder.mainGraph(
             )
         }
         composable(BottomNavItem.Search.route) {
-            SearchScreen(onShopClick = { shop ->
-                sharedViewModel.setSelectedShop(shop)
-                navController.navigate("shopDetails")
-            })
+            SearchScreen(navController)
+        }
+        composable("search") {
+            SearchScreen(navController)
         }
         composable(BottomNavItem.Saved.route) {
             SavedProductScreen(
