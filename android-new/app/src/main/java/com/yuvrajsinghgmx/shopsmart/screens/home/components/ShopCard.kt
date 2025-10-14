@@ -1,8 +1,9 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home.components
 
-import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,30 +13,35 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 
 @Composable
-fun ShopCard(shop: Shop, onClick: () -> Unit) {
+fun ShopCard(shop: Shop, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val imageUrl = shop.images.firstOrNull() ?: "https://via.placeholder.com/150.png?text=Shop"
-    Log.d("ShopCard", "Loading shop image: $imageUrl")
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 4.dp)
+        modifier = modifier
+            .width(120.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             AsyncImage(
                 model = imageUrl,
@@ -44,39 +50,33 @@ fun ShopCard(shop: Shop, onClick: () -> Unit) {
                 placeholder = painterResource(R.drawable.error),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(70.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(64.dp)
+                    .clip(CircleShape)
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = shop.name,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                maxLines = 2,
+                minLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.width(16.dp))
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = shop.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = shop.category,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-                Spacer(Modifier.height(4.dp))
-//                Text(
-//                    text = shop.distance,
-//                    style = MaterialTheme.typography.bodyMedium.copy(
-//                        fontWeight = FontWeight.Medium,
-//                        color = MaterialTheme.colorScheme.primary
-//                    )
-//                )
-            }
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = shop.category,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
