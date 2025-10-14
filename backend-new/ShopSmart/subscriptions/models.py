@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from mainapp.models import Shop
 
+from mainapp.models import Shop
 from .choices import PositionLevel, PlanType
 
 User = settings.AUTH_USER_MODEL
