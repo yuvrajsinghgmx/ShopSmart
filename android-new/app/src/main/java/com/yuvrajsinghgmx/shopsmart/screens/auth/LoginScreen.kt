@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -65,7 +64,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
@@ -96,6 +94,9 @@ fun LoginScreen(
                 showOtpField = true
                 isTimerRunning = true
                 scope.launch { snackbarHostState.showSnackbar("OTP Sent!") }
+            }
+            is AuthState.firebaseAuthSuccess -> {
+                viewModel.fetchDjangoToken()
             }
             is AuthState.AuthSuccess -> {
                 onLogInSuccess(authPrefs.isNewUser())
@@ -184,7 +185,7 @@ fun LoginScreen(
                     .padding(horizontal = 16.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = !isLoading && (!showOtpField || otp.isNotEmpty())
+                enabled = !isLoading && if (!showOtpField) phoneNumber.length == 10 else otp.length == 6
             ) {
                 if (isLoading) {
                     ButtonLoader()
@@ -290,7 +291,11 @@ fun PhoneInputSection(
             )
             TextField(
                 value = phoneNumber,
-                onValueChange = onPhoneNumberChange,
+                onValueChange = { newText ->
+                    if (newText.length <= 10 && newText.all { it.isDigit() }) {
+                        onPhoneNumberChange(newText)
+                    }
+                },
                 placeholder = { Text("Phone number") },
                 enabled = enabled,
                 modifier = Modifier.fillMaxWidth(),
@@ -311,7 +316,11 @@ fun PhoneInputSection(
 fun OtpInputSection(otp: String, onOtpChange: (String) -> Unit, enabled: Boolean) {
     OutlinedTextField(
         value = otp,
-        onValueChange = onOtpChange,
+        onValueChange = { newText ->
+            if (newText.length <= 6 && newText.all { it.isDigit() }) {
+                onOtpChange(newText)
+            }
+        },
         label = { Text("6-Digit OTP") },
         enabled = enabled,
         singleLine = true,

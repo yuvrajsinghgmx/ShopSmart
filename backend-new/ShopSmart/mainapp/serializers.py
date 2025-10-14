@@ -435,6 +435,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class FavoriteShopSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='shop.id', read_only=True)
     shop_name = serializers.CharField(source='shop.name', read_only=True)
     shop_images = serializers.JSONField(source='shop.images', read_only=True)
     shop_category = serializers.CharField(source='shop.category', read_only=True)
@@ -455,6 +456,7 @@ class FavoriteShopSerializer(serializers.ModelSerializer):
 
 
 class FavoriteProductSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='product.id', read_only=True)
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
     product_images = serializers.JSONField(source='product.images', read_only=True)
