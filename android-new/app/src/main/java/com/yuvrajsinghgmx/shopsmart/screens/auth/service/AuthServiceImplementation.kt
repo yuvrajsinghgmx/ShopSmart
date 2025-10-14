@@ -26,7 +26,6 @@ class AuthServiceImpl @Inject constructor(
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                trySend(AuthState.Loading)
                 auth.signInWithCredential(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         trySend(AuthState.firebaseAuthSuccess)

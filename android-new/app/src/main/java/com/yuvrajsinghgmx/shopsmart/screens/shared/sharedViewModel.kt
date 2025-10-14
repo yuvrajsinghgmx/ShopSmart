@@ -82,11 +82,7 @@ class SharedAppViewModel @Inject constructor(
         }
         viewModelScope.launch {
             authRepository.verifyOtp(verificationId, otp).collect { state ->
-                if (state is AuthState.firebaseAuthSuccess) {
-                    fetchDjangoToken()
-                } else {
-                    _authState.value = state
-                }
+                _authState.value = state
             }
         }
     }
@@ -94,6 +90,7 @@ class SharedAppViewModel @Inject constructor(
     fun fetchDjangoToken() {
         viewModelScope.launch {
             try {
+                _authState.value = AuthState.Loading
                 val firebaseUser = firebaseAuth.currentUser
                 val idToken = firebaseUser?.getIdToken(true)?.await()?.token
                 if (idToken != null) {
