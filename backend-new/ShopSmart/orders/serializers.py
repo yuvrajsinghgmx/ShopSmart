@@ -7,11 +7,12 @@ User = get_user_model()
 
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
+    shop_id = serializers.IntegerField(source='product.shop.id', read_only=True)
     price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)
-
+    shop_name = serializers.CharField(source='product.shop.name', read_only=True)
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'product_name', 'price', 'quantity']
+        fields = ['id', 'product', 'product_name', 'price', 'quantity', 'shop_id', 'shop_name']
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)

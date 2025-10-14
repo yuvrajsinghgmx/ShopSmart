@@ -16,8 +16,8 @@ android {
         applicationId = "com.yuvrajsinghgmx"
         minSdk = 30
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.1.7"
+        versionCode = 8
+        versionName = "1.1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -96,4 +96,5 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
     implementation("com.squareup.okhttp3:logging-interceptor:5.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
 }
