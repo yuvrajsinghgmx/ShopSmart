@@ -21,7 +21,8 @@ data class SavedProductResponse(
     @SerializedName("average_rating")
     val averageRating: Float,
     @SerializedName("added_at")
-    val addedAt: String
+    val addedAt: String,
+    val isFavorite: Boolean = true
 )
 
 data class SavedShopResponse(
@@ -39,7 +40,8 @@ data class SavedShopResponse(
     @SerializedName("average_rating")
     val averageRating: Float,
     @SerializedName("added_at")
-    val addedAt: String
+    val addedAt: String,
+    val isFavorite: Boolean = true
 )
 
 data class ToggleFavoriteProductResponse(
