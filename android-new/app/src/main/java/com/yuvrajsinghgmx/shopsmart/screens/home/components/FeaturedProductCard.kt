@@ -27,9 +27,14 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
+import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
+import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
 
 @Composable
-fun FeaturedProductCard(product: Product) {
+fun FeaturedProductCard(
+    product: Product,
+    sharedShopViewModel: SharedShopViewModel
+) {
     Column(
         modifier = Modifier
             .width(160.dp)
@@ -71,7 +76,7 @@ fun FeaturedProductCard(product: Product) {
                 )
             )
             Button(
-                onClick = {},
+                onClick = {sharedShopViewModel.addToCart(product.productId)},
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp), // Increased button padding

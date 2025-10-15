@@ -6,11 +6,13 @@ import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ProductDetailResponse
 import com.yuvrajsinghgmx.shopsmart.data.repository.FavoritesRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.ProductDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,16 +36,34 @@ class ProductDetailsViewModel @Inject constructor(
 
     // fetch product details by ID
     fun fetchProductDetails(id: Int) {
-        viewModelScope.launch {
-            _loading.value = true
-            _error.value = null
-            val result = productDetailsRepository.getProductDetails(id)
-            result.onSuccess { response ->
-                _productDetails.value = response
-            }.onFailure { e ->
-                _error.value = e.message ?: "Failed to load product"
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                withContext(Dispatchers.Main) {
+                    _loading.value = true
+                    _error.value = null
+                }
+
+                val result = productDetailsRepository.getProductDetails(id)
+
+                result.onSuccess { response ->
+                    withContext(Dispatchers.Main) {
+                        _productDetails.value = response
+                    }
+                }.onFailure { e ->
+                    withContext(Dispatchers.Main) {
+                        _error.value = e.message ?: "Failed to load product"
+                    }
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _error.value = e.message ?: "Something went wrong"
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    _loading.value = false
+                }
             }
-            _loading.value = false
         }
     }
 

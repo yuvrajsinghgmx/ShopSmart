@@ -285,7 +285,10 @@ fun ShopDetail(
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             items(featuredProducts) { product ->
-                                FeaturedProductCard(product)
+                                FeaturedProductCard(
+                                    product,
+                                    sharedViewModel
+                                )
                             }
                         }
                     }
