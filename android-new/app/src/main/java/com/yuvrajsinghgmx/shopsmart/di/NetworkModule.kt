@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.yuvrajsinghgmx.shopsmart.data.TokenAuthenticator
+import com.yuvrajsinghgmx.shopsmart.data.interfaces.CartApiService
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.DjangoAuthApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.FavoritesApi
 import com.yuvrajsinghgmx.shopsmart.data.interfaces.LoadApi
@@ -122,4 +123,9 @@ object NetworkModule {
     @Singleton
     fun provideSearchApi(retrofit: Retrofit): SearchApi =
         retrofit.create(SearchApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCartApi(retrofit: Retrofit): CartApiService =
+        retrofit.create(CartApiService::class.java)
 }

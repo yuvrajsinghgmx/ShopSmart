@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation)
+    implementation(libs.runtime)
     /*implementation(libs.secrets.gradle.plugin)*/
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
