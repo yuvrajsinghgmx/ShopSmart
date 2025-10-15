@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SubscriptionPlan, ActiveSubscription
+from .models import SubscriptionPlan, ActiveSubscription, Banner
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -29,4 +29,16 @@ class ActiveSubscriptionAdmin(admin.ModelAdmin):
 
     @admin.display(boolean=True, description='Expired?')
     def is_expired_status(self, obj):
+        return obj.is_expired
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'shop', 'start_date', 'end_date', 'is_active', 'is_expired')
+    list_filter = ('is_active', 'shop__name')
+    search_fields = ('shop__name',)
+    list_select_related = ('shop',)
+    readonly_fields = ('created_at', 'updated_at')
+
+    @admin.display(boolean=True, description='Expired?')
+    def is_expired(self, obj):
         return obj.is_expired

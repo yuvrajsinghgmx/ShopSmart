@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.screens.SearchScreen
+import com.yuvrajsinghgmx.shopsmart.screens.search.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
