@@ -171,8 +171,8 @@ class ShopSerializer(serializers.ModelSerializer):
     document_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.DOCUMENT_IMAGE_LIMIT
     )
-    latitude = serializers.FloatField(write_only=True)
-    longitude = serializers.FloatField(write_only=True)
+    latitude = serializers.FloatField()
+    longitude = serializers.FloatField()
 
     class Meta:
         model = Shop
