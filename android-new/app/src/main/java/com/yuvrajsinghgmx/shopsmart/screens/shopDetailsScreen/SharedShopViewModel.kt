@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Shop
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ShopResponse
-import com.yuvrajsinghgmx.shopsmart.data.repository.CartRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.FavoritesRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.ShopDetailsRepository
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.UiEvent
@@ -19,8 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedShopViewModel @Inject constructor(
     private  val shopDetailsRepository: ShopDetailsRepository,
-    private val favRepository: FavoritesRepository,
-    private val cartRepository: CartRepository
+    private val favRepository: FavoritesRepository
 ) : ViewModel() {
     private val _selectedShop = MutableStateFlow<Shop?>(null)
     val selectedShop: StateFlow<Shop?> = _selectedShop
@@ -81,11 +79,5 @@ class SharedShopViewModel @Inject constructor(
 
     fun initialStateFavorite(isFavorite: Boolean) {
         _isShopSaved.value = isFavorite
-    }
-
-    fun addToCart(productId: String){
-        viewModelScope.launch {
-            cartRepository.addToCart(productId)
-        }
     }
 }

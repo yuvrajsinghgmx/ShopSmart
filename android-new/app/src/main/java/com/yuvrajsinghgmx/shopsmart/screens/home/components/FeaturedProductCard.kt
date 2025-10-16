@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,19 +30,22 @@ import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
-import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun FeaturedProductCard(
     product: Product,
-    sharedShopViewModel: SharedShopViewModel
+    cartViewModel: CartViewModel,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
 ) {
     Column(
         modifier = Modifier
             .width(160.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(color = MaterialTheme.colorScheme.surface)
-            .padding(12.dp) // Increased from 8dp to 12dp
+            .padding(12.dp)
     ) {
         AsyncImage(
             model = product.images.firstOrNull(),
@@ -53,19 +58,19 @@ fun FeaturedProductCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
         )
-        Spacer(modifier = Modifier.height(12.dp)) // Increased from 8dp to 12dp
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = product.name,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp) // Added horizontal padding to text
+            modifier = Modifier.padding(horizontal = 4.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp)) // Increased from 2dp to 8dp
+        Spacer(modifier = Modifier.height(8.dp))
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp) // Added horizontal padding to price row
+                .padding(horizontal = 4.dp)
         ) {
             Text(
                 text = product.price,
@@ -76,13 +81,21 @@ fun FeaturedProductCard(
                 )
             )
             Button(
-                onClick = {sharedShopViewModel.addToCart(product.productId)},
+                onClick = {
+                    cartViewModel.addToCart(product.id)
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "${product.name} added to cart!",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp), // Increased button padding
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                 modifier = Modifier
-                    .width(55.dp) // Slightly increased width
-                    .height(32.dp) // Slightly increased height
+                    .width(55.dp)
+                    .height(32.dp)
             ) {
                 Text(
                     text = "Add",

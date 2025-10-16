@@ -16,7 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.ReviewTarget
-import com.yuvrajsinghgmx.shopsmart.screens.search.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
@@ -31,6 +30,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.profile.EditProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
+import com.yuvrajsinghgmx.shopsmart.screens.search.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
@@ -44,6 +44,7 @@ fun AppNavHost(
     val sharedViewModel: SharedShopViewModel = viewModel()
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs = AuthPrefs(LocalContext.current)
+    val cartViewModel: CartViewModel = hiltViewModel()
 
     val startDestination = when {
         authPrefs.getAccessToken().isNullOrBlank() -> "login_route"
@@ -57,7 +58,7 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         authGraph(navController, sharedAppViewModel)
-        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel,authPrefs)
+        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel,cartViewModel,authPrefs)
     }
 }
 
@@ -120,8 +121,8 @@ fun NavGraphBuilder.mainGraph(
     sharedAppViewModel: SharedAppViewModel,
     sharedViewModel: SharedShopViewModel,
     sharedProductViewModel: ProductDetailsViewModel,
-    authPrefs: AuthPrefs,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    authPrefs: AuthPrefs
 ) {
     navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
         composable(BottomNavItem.Home.route) {
@@ -131,14 +132,11 @@ fun NavGraphBuilder.mainGraph(
                 authPrefs = authPrefs
             )
         }
-
         composable(BottomNavItem.Cart.route) {
             CartScreen(
-                navController = navController,
                 viewModel = cartViewModel
             )
         }
-
         composable(BottomNavItem.Saved.route) {
             SavedProductScreen(
                 onBack = {
@@ -156,7 +154,8 @@ fun NavGraphBuilder.mainGraph(
             ShopDetail(
                 sharedViewModel = sharedViewModel,
                 navController = navController,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                cartViewModel = cartViewModel
             )
         }
         composable(
@@ -169,6 +168,10 @@ fun NavGraphBuilder.mainGraph(
                 navController = navController,
                 viewModel = sharedProductViewModel
             )
+        }
+
+        composable("search"){
+            SearchScreen(navController)
         }
 
         composable("reviewScreen/{type}/{id}") { backStackEntry ->
