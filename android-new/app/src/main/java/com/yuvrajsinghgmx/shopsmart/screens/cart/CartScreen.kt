@@ -206,18 +206,6 @@ fun CartScreenContent(
                                             style = MaterialTheme.typography.titleMedium
                                         )
                                     }
-
-//                                    TextButton(
-//                                        onClick = {
-//                                            viewModel.clearCart(shopItems.first().shop_id)
-//                                        },
-//                                        modifier = Modifier.align(Alignment.CenterHorizontally)
-//                                    ) {
-//                                        Text(
-//                                            "Remove All from Shop",
-//                                            color = Color.Gray
-//                                        )
-//                                    }
                                 }
                             }
 
