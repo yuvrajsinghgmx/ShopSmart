@@ -28,12 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.SavedProductResponse
-import com.yuvrajsinghgmx.shopsmart.navigation.BottomNavItem
 import com.yuvrajsinghgmx.shopsmart.screens.productDetailsScreen.components.StarRating
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 import com.yuvrajsinghgmx.shopsmart.ui.theme.LikeColor
@@ -42,7 +40,8 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 @Composable
 fun SavedProductCard(
     product: SavedProductResponse,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFavoriteClick: (Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -53,7 +52,7 @@ fun SavedProductCard(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Box{
+        Box {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(product.productImage.firstOrNull() ?: R.drawable.error)
@@ -67,7 +66,9 @@ fun SavedProductCard(
                     .fillMaxWidth()
             )
             IconButton(
-                onClick = { /* needs to be implemented*/ },
+                onClick = {
+                    onFavoriteClick(product.id)
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(6.dp)
@@ -81,7 +82,11 @@ fun SavedProductCard(
                 )
             }
         }
-        Column(modifier = Modifier.padding(10.dp).fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+        ) {
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.bodyMedium,
@@ -99,8 +104,11 @@ fun SavedProductCard(
                 color = NavySecondary,
                 style = MaterialTheme.typography.bodySmall
             )
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
-                StarRating(product.averageRating, 5,15.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                StarRating(product.averageRating, 5, 15.dp)
             }
         }
     }

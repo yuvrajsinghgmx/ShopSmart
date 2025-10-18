@@ -16,9 +16,12 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -36,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable
@@ -50,55 +52,91 @@ fun SavedProductScreen(
     val savedProducts by viewModel.savedProducts.collectAsState()
     val savedShops by viewModel.savedShops.collectAsState()
 
+    val snackbarState = remember { SnackbarHostState() }
+    val isProductLoading by viewModel.isProductLoading.collectAsState()
+    val isShopLoading by viewModel.isShopLoading.collectAsState()
+
     val listState = rememberLazyGridState()
     LaunchedEffect(selectedTab) {
         listState.animateScrollToItem(0)
     }
-    Column {
-        TopBar(onBack = onBack, onSearch = {})
-        Tabs(
-            tabs = tabs,
-            selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
-        )
-        val isProductsTab = selectedTab == 0
-        val items = if (isProductsTab) savedProducts else savedShops
-        if (items.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (isProductsTab) "No saved products" else "No saved shops",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            LazyVerticalGrid(
-                state = listState,
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(10.dp),
-                verticalArrangement = Arrangement.spacedBy(13.dp),
-                horizontalArrangement = Arrangement.spacedBy(13.dp)
-            ) {
-                if (isProductsTab) {
-                    items(savedProducts) { product ->
-                        SavedProductCard(product)
+    LaunchedEffect(Unit) {
+        viewModel.snackbarMessage.collect { message ->
+            snackbarState.showSnackbar(message)
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column {
+            TopBar(onBack = onBack, onSearch = {})
+            Tabs(
+                tabs = tabs,
+                selectedTab = selectedTab,
+                onTabSelected = { selectedTab = it }
+            )
+            val isProductsTab = selectedTab == 0
+            val items = if (isProductsTab) savedProducts else savedShops
+            val isLoading = if (isProductsTab) isProductLoading else isShopLoading
+
+            when {
+                isLoading ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
-                } else {
-                    items(savedShops) { shop ->
-                        SavedShopCard(shop)
+
+                items.isEmpty() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (isProductsTab) "No saved products" else "No saved shops",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
+
+                else ->
+                    LazyVerticalGrid(
+                        state = listState,
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(13.dp),
+                        horizontalArrangement = Arrangement.spacedBy(13.dp)
+                    ) {
+                        if (isProductsTab) {
+                            items(savedProducts) { product ->
+                                SavedProductCard(product, onFavoriteClick = { id ->
+                                    viewModel.onFavoriteProductIconClick(id)
+                                })
+                            }
+                        } else {
+                            items(savedShops) { shop ->
+                                SavedShopCard(shop, onFavoriteClick = { id ->
+                                    viewModel.onFavoriteShopIconClick(id)
+                                })
+                            }
+                        }
+                    }
+
             }
         }
+        SnackbarHost(
+            hostState = snackbarState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 @Composable
-fun TopBar(onBack: () -> Unit, onSearch: () -> Unit){
+fun TopBar(onBack: () -> Unit, onSearch: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,7 +167,7 @@ fun TopBar(onBack: () -> Unit, onSearch: () -> Unit){
 }
 
 @Composable
-fun Tabs(tabs: List<String>, selectedTab: Int, onTabSelected: (Int) -> Unit ){
+fun Tabs(tabs: List<String>, selectedTab: Int, onTabSelected: (Int) -> Unit) {
     TabRow(
         selectedTabIndex = selectedTab,
         indicator = { tabPositions ->

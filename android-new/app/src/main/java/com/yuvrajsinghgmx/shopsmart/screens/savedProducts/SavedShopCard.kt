@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,7 +40,8 @@ import com.yuvrajsinghgmx.shopsmart.ui.theme.NavySecondary
 @Composable
 fun SavedShopCard(
     shop: SavedShopResponse,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFavoriteClick: (Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -50,10 +52,10 @@ fun SavedShopCard(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
-        Box{
+        Box {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(shop.shopImages?.firstOrNull()?: R.drawable.error)
+                    .data(shop.shopImages?.firstOrNull() ?: R.drawable.error)
                     .crossfade(true)
                     .build(),
                 contentDescription = shop.shopName,
@@ -62,14 +64,16 @@ fun SavedShopCard(
                 modifier = Modifier
                     .height(120.dp)
                     .fillMaxWidth(),
-                contentScale = if(shop.shopImages.isEmpty()){
+                contentScale = if (shop.shopImages.isEmpty()) {
                     ContentScale.Fit
-                }else{
+                } else {
                     ContentScale.Crop
                 }
             )
             IconButton(
-                onClick = { /* needs to be implemented */ },
+                onClick = {
+                    onFavoriteClick(shop.id)
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(6.dp)
@@ -83,7 +87,11 @@ fun SavedShopCard(
                 )
             }
         }
-        Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ) {
             Text(
                 text = shop.shopName,
                 style = MaterialTheme.typography.bodyMedium,
@@ -96,7 +104,10 @@ fun SavedShopCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = modifier.height(1.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.fillMaxWidth()
+            ) {
                 StarRating(shop.averageRating, 5, 15.dp)
 //            Text(
 //                text = shop.distance,
