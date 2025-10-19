@@ -27,11 +27,12 @@ import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 
 @Composable
-fun AllProductCard(product: Product) {
+fun AllProductCard(
+    product: Product,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(210.dp)
+        modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(color = MaterialTheme.colorScheme.surface)
             .padding(12.dp)
@@ -49,7 +50,8 @@ fun AllProductCard(product: Product) {
         Text(
             text = product.name,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
+            maxLines = 2
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -65,13 +67,14 @@ fun AllProductCard(product: Product) {
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
-                )
+                ),
+                maxLines = 1
             )
             Button(
                 onClick = {},
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp), // Increased button padding
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                 modifier = Modifier
                     .width(55.dp)
                     .height(32.dp)

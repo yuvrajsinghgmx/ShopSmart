@@ -1,6 +1,8 @@
 package com.yuvrajsinghgmx.shopsmart.screens.cart
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.CartResponse
@@ -40,11 +42,12 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun addToCart(productId: Int, quantity: Int = 1) {
+    fun addToCart(context: Context, productId: Int, quantity: Int = 1) {
         viewModelScope.launch {
             _loading.value = true
             try {
                 _cart.value = repository.addToCart(productId, quantity)
+                Toast.makeText(context, "Product added to cart", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Log.e("CartViewModel", "Error adding to cart: ${e.message}")
             } finally {
