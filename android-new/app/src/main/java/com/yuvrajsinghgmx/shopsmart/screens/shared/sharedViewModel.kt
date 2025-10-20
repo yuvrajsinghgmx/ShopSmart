@@ -13,14 +13,13 @@ import com.yuvrajsinghgmx.shopsmart.data.repository.OnboardingRepository
 import com.yuvrajsinghgmx.shopsmart.data.repository.UserRepository
 import com.yuvrajsinghgmx.shopsmart.screens.auth.state.AuthState
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.UserRole
-import com.yuvrajsinghgmx.shopsmart.screens.profile.ProfileUiEvent
 import com.yuvrajsinghgmx.shopsmart.sharedprefs.AuthPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+    import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import retrofit2.HttpException
@@ -45,7 +44,7 @@ class SharedAppViewModel @Inject constructor(
     val isOnboarding: StateFlow<Boolean> = _isOnboarding
     private val _onBoardingState = MutableStateFlow<OnboardingResponse?>(null)
     val onBoardingState: MutableStateFlow<OnboardingResponse?> = _onBoardingState
-    private val _uiEvent = MutableSharedFlow<ProfileUiEvent>()
+    private val _uiEvent = MutableSharedFlow<String>()
     val uiEvent = _uiEvent
 
 
@@ -207,7 +206,10 @@ class SharedAppViewModel @Inject constructor(
     fun updateProfile(
         fullName: String,
         email: String?,
-        imageFile: File?
+        imageFile: File?,
+        address: String?,
+        longitude: Double?,
+        latitude: Double?
     ) {
         viewModelScope.launch {
             try {
@@ -216,9 +218,9 @@ class SharedAppViewModel @Inject constructor(
                 val currentData = _onBoardingState.value
 
                 val role = currentData?.role ?: authPrefs.getRole() ?: ""
-                val address = currentData?.currentAddress ?: ""
-                val longitude = currentData?.longitude ?: 0.0
-                val latitude = currentData?.latitude ?: 0.0
+                val address = address ?: currentData?.currentAddress ?: ""
+                val longitude = longitude ?: currentData?.longitude ?: 0.0
+                val latitude = latitude ?: currentData?.latitude ?: 0.0
                 val radius = currentData?.locationRadiusKm ?: 0
 
                 val response = onboardingRepository.completeOnboarding(
@@ -236,16 +238,15 @@ class SharedAppViewModel @Inject constructor(
                 if(response.onboardingCompleted){
                     _onBoardingState.value = response
                     Log.d("Profile Update","Profile Updated Successfully")
-                    _uiEvent.emit(ProfileUiEvent.ShowSnackbar("Profile Updated Successfully"))
-                    _uiEvent.emit(ProfileUiEvent.NavigateBack)
+                    _isOnboarding.value = false
+                    _uiEvent.emit("Profile Updated Successfully")
                 }
 
             }catch (e: Exception){
-                _uiEvent.emit(ProfileUiEvent.ShowSnackbar("Profile Update Failed"))
+                _isOnboarding.value = false
+                _uiEvent.emit("Profile Update Failed")
                 Log.e("Profile Update","Profile Update Failed")
                 _authState.value = AuthState.Error(e.message?:"Profile Update Failed")
-            }finally {
-                _isOnboarding.value = false
             }
 
         }
