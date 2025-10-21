@@ -7,14 +7,15 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance as GisDbDistance
 from django.contrib.gis.measure import Distance
 
-from .models import SubscriptionPlan, ActiveSubscription, Banner
+from .models import SubscriptionPlan, ActiveSubscription, Banner, ActivityLog
 from .serializers import (
     SubscriptionPlanSerializer, SubscriptionPurchaseSerializer, ActiveSubscriptionSerializer,
-    BannerSerializer
+    BannerSerializer, ActivityLogSerializer
 )
 from mainapp.permissions import IsAdmin, IsShopOwnerRole
 from mainapp.firebase_utils import FirebaseStorageManager
 from mainapp.models import Shop
+from mainapp.pagination import StandardResultsSetPagination
 from .choices import PlanType
 
 
@@ -49,6 +50,7 @@ class PurchaseSubscriptionView(generics.CreateAPIView):
 
         plan = serializer.validated_data['plan']
         item = serializer.validated_data['item']
+        active_subscription = None
         
         with transaction.atomic():
             if plan.plan_type == PlanType.BANNER:
@@ -73,6 +75,21 @@ class PurchaseSubscriptionView(generics.CreateAPIView):
                 if plan.position_level:
                     item.position = plan.position_level
                     item.save(update_fields=['position'])
+        
+        if active_subscription:
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='SUBSCRIPTION_PURCHASED',
+                details={
+                    'plan_name': plan.name,
+                    'plan_id': plan.id,
+                    'item_type': active_subscription.content_type.model,
+                    'item_id': active_subscription.object_id,
+                    'item_repr': str(active_subscription.content_object),
+                    'user_id': request.user.id,
+                    'username': request.user.username,
+                }
+            )
 
         response_serializer = ActiveSubscriptionSerializer(active_subscription, context={'request': request})
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
@@ -106,3 +123,13 @@ class BannerListView(generics.ListAPIView):
             queryset = Banner.objects.filter(shop__in=nearest_shops_with_banners_qs, is_active=True, end_date__gt=now)
         
         return queryset
+
+
+class ActivityLogListView(generics.ListAPIView):
+    """
+    Admin endpoint to retrieve a paginated list of all activity logs.
+    """
+    queryset = ActivityLog.objects.select_related('user').all()
+    serializer_class = ActivityLogSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    pagination_class = StandardResultsSetPagination

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import SubscriptionPlan, ActiveSubscription, Banner
+from .models import SubscriptionPlan, ActiveSubscription, Banner, ActivityLog
+
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -15,6 +16,7 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
         ('Plan Details', {'fields': ('plan_type', 'position_level', 'price', 'duration_days')}),
     )
     
+
 @admin.register(ActiveSubscription)
 class ActiveSubscriptionAdmin(admin.ModelAdmin):
     """
@@ -42,3 +44,29 @@ class BannerAdmin(admin.ModelAdmin):
     @admin.display(boolean=True, description='Expired?')
     def is_expired(self, obj):
         return obj.is_expired
+
+
+@admin.register(ActivityLog)
+class ActivityLogAdmin(admin.ModelAdmin):
+    """
+    Admin interface for viewing activity logs. Read-only.
+    """
+    list_display = ('timestamp', 'user_display', 'action_type', 'details')
+    list_filter = ('action_type', 'timestamp')
+    search_fields = ('user__username', 'details')
+    list_select_related = ('user',)
+    readonly_fields = ('user', 'action_type', 'details', 'timestamp')
+
+    def user_display(self, obj):
+        return obj.user.username if obj.user else "System Action"
+    
+    user_display.short_description = 'User'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

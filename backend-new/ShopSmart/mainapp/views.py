@@ -30,6 +30,7 @@ from .serializers import (
     ProductSearchSerializer
 )
 from .models import Product, Shop, ShopReview, ProductReview, FavoriteShop, FavoriteProduct
+from subscriptions.models import ActivityLog
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 User = get_user_model()
@@ -48,7 +49,13 @@ class ShopListCreateView(generics.ListCreateAPIView):
         return super().get_permissions()
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        shop = serializer.save(owner=self.request.user)
+        ActivityLog.objects.create(user=self.request.user, action_type='SHOP_REGISTERED', details={
+                                                                                                'shop_id': shop.id,
+                                                                                                'shop_name': shop.name,
+                                                                                                'owner_id': self.request.user.id
+                                                                                            }
+        )
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
@@ -68,7 +75,14 @@ class ProductListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         shop_pk = self.kwargs['shop_pk']
         shop = get_object_or_404(Shop, pk=shop_pk)
-        serializer.save(shop=shop)
+        product = serializer.save(shop=shop)
+        ActivityLog.objects.create(user=self.request.user, action_type='PRODUCT_CREATED', details={
+                                                                                                'product_id': product.id,
+                                                                                                'product_name': product.name,
+                                                                                                'shop_id': shop.id,
+                                                                                                'shop_name': shop.name
+                                                                                            }
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -479,7 +493,13 @@ class RegisterShopView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated, IsShopOwnerRole]
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        shop = serializer.save(owner=self.request.user)
+        ActivityLog.objects.create(user=self.request.user, action_type='SHOP_REGISTERED', details={
+                                                                                                'shop_id': shop.id,
+                                                                                                'shop_name': shop.name,
+                                                                                                'owner_id': self.request.user.id
+                                                                                            }
+        )
 
 
 class AddProductView(generics.CreateAPIView):
@@ -489,7 +509,14 @@ class AddProductView(generics.CreateAPIView):
     def perform_create(self, serializer):
         shop_pk = self.kwargs['shop_pk']
         shop = get_object_or_404(Shop, pk=shop_pk, is_approved=True)
-        serializer.save(shop=shop)
+        product = serializer.save(shop=shop)
+        ActivityLog.objects.create(user=self.request.user, action_type='PRODUCT_CREATED', details={
+                                                                                                'product_id': product.id,
+                                                                                                'product_name': product.name,
+                                                                                                'shop_id': shop.id,
+                                                                                                'shop_name': shop.name
+                                                                                            }
+        )
 
 
 class EditShopView(generics.UpdateAPIView):
@@ -590,18 +617,33 @@ class ApproveShopView(generics.UpdateAPIView):
 
         if serializer.is_valid():
             action = serializer.validated_data['approval_action']
+            rejection_reason = serializer.validated_data.get('rejection_reason', '')
+            action_type = None
+
             if action == 'approve':
                 shop.is_approved = True
                 shop.approval_date = timezone.now()
                 shop.rejection_reason = ''
                 message = f"Shop '{shop.name}' has been approved"
+                action_type = 'SHOP_APPROVED'
             elif action == 'reject':
                 shop.is_approved = False
                 shop.approval_date = None
-                shop.rejection_reason = serializer.validated_data.get('rejection_reason', '')
+                shop.rejection_reason = rejection_reason
                 message = f"Shop '{shop.name}' has been rejected"
+                action_type = 'SHOP_REJECTED'
 
             shop.save()
+            
+            if action_type:
+                ActivityLog.objects.create(user=request.user, action_type=action_type, details={
+                                                            'shop_id': shop.id,
+                                                            'shop_name': shop.name,
+                                                            'approved_by': request.user.username,
+                                                            'rejection_reason': rejection_reason if action == 'reject' else "N/A"
+                                                        }
+                )
+
             return Response({'message': message, 'shop_id': shop.shop_id, 'is_approved': shop.is_approved}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

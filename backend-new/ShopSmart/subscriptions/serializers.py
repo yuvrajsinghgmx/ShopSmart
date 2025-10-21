@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.utils import timezone
 
 from mainapp.models import Shop, Product
-from .models import SubscriptionPlan, ActiveSubscription, Banner
+from .models import SubscriptionPlan, ActiveSubscription, Banner, ActivityLog
 from .choices import PlanType
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
@@ -124,3 +124,19 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ['id', 'image_url', 'shop_id', 'shop_name']
+
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the ActivityLog model for admin review.
+    """
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ActivityLog
+        fields = ['id', 'user_name', 'action_type', 'details', 'timestamp']
+
+    def get_user_name(self, obj):
+        if obj.user:
+            return obj.user.full_name or obj.user.username
+        return "System Action"
