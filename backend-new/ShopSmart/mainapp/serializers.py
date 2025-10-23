@@ -171,8 +171,8 @@ class ShopSerializer(serializers.ModelSerializer):
     document_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.DOCUMENT_IMAGE_LIMIT
     )
-    latitude = serializers.FloatField()
-    longitude = serializers.FloatField()
+    latitude = serializers.FloatField(write_only=True)
+    longitude = serializers.FloatField(write_only=True)
 
     class Meta:
         model = Shop
@@ -182,6 +182,16 @@ class ShopSerializer(serializers.ModelSerializer):
             'average_rating', 'created_at', 'image_uploads', 'document_uploads', 'latitude', 'longitude','sponsored'
         ]
         read_only_fields = ['id', 'shop_id', 'is_approved', 'created_at']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.location:
+            representation['latitude'] = instance.location.y
+            representation['longitude'] = instance.location.x
+        else:
+            representation['latitude'] = None
+            representation['longitude'] = None
+        return representation
 
     def get_distance(self, obj) -> Optional[float]:
         if hasattr(obj, 'distance') and obj.distance is not None:
