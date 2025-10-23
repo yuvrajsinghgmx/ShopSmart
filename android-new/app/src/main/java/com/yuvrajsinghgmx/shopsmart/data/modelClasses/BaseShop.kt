@@ -19,5 +19,8 @@ data class BaseShop(
     @SerializedName("reviews_count") val reviewsCount: Int,
     @SerializedName("average_rating") val averageRating: Double,
     @SerializedName("created_at") val createdAt: String,
-    @SerializedName("sponsored") val sponsored: Boolean
+    @SerializedName("sponsored") val sponsored: Boolean,
+    @SerializedName(value = "latitude") val latitude: Double,
+    @SerializedName(value = "longitude") val longitude: Double,
+    @SerializedName("phone") val phone: String
 )

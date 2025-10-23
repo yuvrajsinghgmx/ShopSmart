@@ -36,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,14 +44,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.sharedComponents.ButtonLoader
+import com.yuvrajsinghgmx.shopsmart.sharedComponents.FullScreenMapPickerDialog
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
+import com.yuvrajsinghgmx.shopsmart.ui.theme.ShopSmartTypography
 import com.yuvrajsinghgmx.shopsmart.utils.uriToFile
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -72,26 +72,29 @@ fun EditProfileScreen(
         mutableStateOf(onBoardingData?.currentAddress ?: "")
     }
     var profileUri by remember { mutableStateOf<Uri?>(null) }
+    var showMapDialog by remember { mutableStateOf<Boolean>(false) }
+    var longitude by remember { mutableStateOf<Double?>(null) }
+    var latitude by remember { mutableStateOf<Double?>(null) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 profileUri = uri
             }
         }
-    
+
     val snackbarState = remember { SnackbarHostState() }
 
     LaunchedEffect(sharedViewModel.uiEvent) {
-        sharedViewModel.uiEvent.collect { event ->
-            when (event) {
-                is ProfileUiEvent.ShowSnackbar -> {
-                    snackbarState.showSnackbar(event.message)
-                }
-
-                is ProfileUiEvent.NavigateBack -> {
-                    navController.popBackStack()
-                }
+        sharedViewModel.uiEvent.collect { message ->
+            val job = launch {
+                snackbarState.showSnackbar(
+                    message = message,
+                    duration = SnackbarDuration.Indefinite
+                )
             }
+            delay(500)
+            navController.popBackStack()
+            job.cancel()
         }
     }
     Box(
@@ -220,51 +223,86 @@ fun EditProfileScreen(
 
             OutlinedTextField(
                 value = address,
-                onValueChange = { address = it },
+                onValueChange = {},
                 label = { Text("Address") },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable {
+                        showMapDialog = true
+                    },
+                enabled = false,
                 shape = MaterialTheme.shapes.medium,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = GreenPrimary,
                     focusedLabelColor = GreenPrimary
                 )
             )
-        }
-        Button(
-            onClick = {
-                if(profileUri != null){
-                    val imageFile = uriToFile(context, profileUri!!)
-                    sharedViewModel.updateProfile(userName,email,imageFile)
-                }else{
-                    sharedViewModel.updateProfile(userName,email,null)
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(bottom = 10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = GreenPrimary
-            ),
-            shape = MaterialTheme.shapes.medium,
-            enabled = !isLoading
-        ) {
-            if(isLoading){
-                ButtonLoader()
-            }else {
-                Text(
-                    text = "Save Changes",
+            if (showMapDialog) {
+                FullScreenMapPickerDialog(
+                    initialLocation = null,
+                    onLocationConfirmed = { Laglat, addressString ->
+                        address = addressString
+                        longitude = Laglat.longitude
+                        latitude = Laglat.latitude
+                        showMapDialog = false
+                    },
+                    selAddress = { selectedAddress ->
+                        address = selectedAddress ?: ""
+                    },
+                    onDismiss = { showMapDialog = false}
                 )
             }
-
-
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    if (profileUri != null) {
+                        val imageFile = uriToFile(context, profileUri!!)
+                        sharedViewModel.updateProfile(
+                            fullName = userName,
+                            email = email,
+                            imageFile = imageFile,
+                            address = address,
+                            longitude = longitude,
+                            latitude = latitude
+                        )
+                    } else {
+                        sharedViewModel.updateProfile(
+                            fullName = userName,
+                            email = email,
+                            imageFile = null,
+                            address = address,
+                            longitude = longitude,
+                            latitude = latitude
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 3.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = GreenPrimary
+                ),
+                shape = MaterialTheme.shapes.medium,
+                enabled = !isLoading
+            ) {
+                if (isLoading) {
+                    ButtonLoader()
+                } else {
+                    Text(
+                        text = "Save Changes",
+                        fontSize = 16.sp,
+                        style = ShopSmartTypography.bodyMedium
+                    )
+                }
+            }
         }
+
         SnackbarHost(
             hostState = snackbarState,
             modifier = Modifier
-                .align(Alignment.BottomCenter))
+                .align(Alignment.BottomCenter)
+        )
     }
 
 }

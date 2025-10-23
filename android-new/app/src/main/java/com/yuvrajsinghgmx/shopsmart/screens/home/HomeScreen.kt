@@ -1,6 +1,7 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -21,12 +22,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.CategorizedProductsUi
@@ -41,49 +43,63 @@ import kotlin.math.ceil
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel,
     sharedViewModel: SharedShopViewModel,
     navController: NavController,
     authPrefs: AuthPrefs
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state.collectAsState()
+    val hasData =
+        state.products.isNotEmpty() || state.nearbyShops.isNotEmpty() || state.categorizedProducts.isNotEmpty()
 
     Column(modifier = Modifier.fillMaxSize()) {
         HomeHeader(authPrefs = authPrefs)
         HomeSearchBar(
-            onClick = {navController.navigate("search")
-            }
+            onClick = { navController.navigate("search") }
         )
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            HomeBanner()
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                HomeBanner()
 
-            if (state.products.isNotEmpty()) {
-                ProductCarouselSection(
-                    title = "Trending Products",
-                    products = state.products,
-                    navController = navController
-                )
-            }
+                if (!hasData && !state.isLoading && state.error == null) {
+                    Text(
+                        text = "No products or shops found nearby.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 48.dp)
+                    )
+                }
 
-            if (state.nearbyShops.isNotEmpty()) {
-                ShopCarouselSection(
-                    title = "Nearby Shops",
-                    shops = state.nearbyShops,
-                    onShopClick = { shop ->
-                        sharedViewModel.setSelectedShop(shop)
-                        navController.navigate("shopDetails")
-                    }
-                )
-            }
+                if (state.products.isNotEmpty()) {
+                    ProductCarouselSection(
+                        title = "Trending Products",
+                        products = state.products,
+                        navController = navController
+                    )
+                }
 
-            if (state.categorizedProducts.isNotEmpty()) {
-                CategorizedProductsSection(
-                    categorizedProducts = state.categorizedProducts,
-                    navController = navController
-                )
+                if (state.nearbyShops.isNotEmpty()) {
+                    ShopCarouselSection(
+                        title = "Nearby Shops",
+                        shops = state.nearbyShops,
+                        onShopClick = { shop ->
+                            sharedViewModel.setSelectedShop(shop)
+                            navController.navigate("shopDetails")
+                        }
+                    )
+                }
+
+                if (state.categorizedProducts.isNotEmpty()) {
+                    CategorizedProductsSection(
+                        categorizedProducts = state.categorizedProducts,
+                        navController = navController
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                HomeFooter()
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            HomeFooter()
         }
     }
 }
@@ -125,6 +141,7 @@ fun HomeHeader(authPrefs: AuthPrefs) {
         )
     }
 }
+
 @Composable
 fun HomeSearchBar(
     onClick: () -> Unit,
@@ -135,6 +152,7 @@ fun HomeSearchBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .height(50.dp)
+            .background(color = Color.Transparent)
             .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -157,7 +175,7 @@ fun HomeSearchBar(
                 text = "Search products or shops...",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f) // Ensures text doesn't overlap the filter icon
+                modifier = Modifier.weight(1f)
             )
             Icon(
                 imageVector = Icons.Default.FilterList,
@@ -168,6 +186,7 @@ fun HomeSearchBar(
         }
     }
 }
+
 @Composable
 fun HomeBanner() {
     AsyncImage(

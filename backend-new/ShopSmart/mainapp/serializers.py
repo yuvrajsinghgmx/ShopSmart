@@ -156,7 +156,6 @@ class UserOnboardingSerializer(serializers.ModelSerializer):
 
         return instance
 
-
 class ShopSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.full_name', read_only=True)
     distance = serializers.SerializerMethodField()
@@ -171,8 +170,8 @@ class ShopSerializer(serializers.ModelSerializer):
     document_uploads = serializers.ListField(
         child=serializers.ImageField(), write_only=True, required=False, max_length=settings.DOCUMENT_IMAGE_LIMIT
     )
-    latitude = serializers.FloatField(write_only=True)
-    longitude = serializers.FloatField(write_only=True)
+    latitude = serializers.FloatField(required=False)
+    longitude = serializers.FloatField(required=False)
 
     class Meta:
         model = Shop
@@ -184,14 +183,14 @@ class ShopSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'shop_id', 'is_approved', 'created_at']
 
     def to_representation(self, instance):
-        representation = super().to_representation(instance)
+        data = super().to_representation(instance)
         if instance.location:
-            representation['latitude'] = instance.location.y
-            representation['longitude'] = instance.location.x
+            data['latitude'] = instance.location.y
+            data['longitude'] = instance.location.x
         else:
-            representation['latitude'] = None
-            representation['longitude'] = None
-        return representation
+            data['latitude'] = None
+            data['longitude'] = None
+        return data
 
     def get_distance(self, obj) -> Optional[float]:
         if hasattr(obj, 'distance') and obj.distance is not None:
@@ -199,7 +198,7 @@ class ShopSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and hasattr(request, 'user') and request.user.is_authenticated:
             user = request.user
-            if user.latitude and user.longitude and obj.location:
+            if getattr(user, 'latitude', None) and getattr(user, 'longitude', None) and obj.location:
                 user_point = Point(user.longitude, user.latitude, srid=4326)
                 distance = obj.location.distance(user_point) * 111
                 return round(distance, 2)
@@ -227,15 +226,20 @@ class ShopSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         image_uploads = validated_data.pop('image_uploads', [])
         document_uploads = validated_data.pop('document_uploads', [])
-        latitude = validated_data.pop('latitude')
-        longitude = validated_data.pop('longitude')
-        validated_data['location'] = Point(longitude, latitude, srid=4326)
+        latitude = validated_data.pop('latitude', None)
+        longitude = validated_data.pop('longitude', None)
+
+        if latitude is not None and longitude is not None:
+            validated_data['location'] = Point(longitude, latitude, srid=4326)
+
         shop = super().create(validated_data)
         firebase_manager = FirebaseStorageManager()
+
         if image_uploads:
             shop.images = firebase_manager.upload_multiple_images(image_uploads, 'shops', settings.SHOP_IMAGE_LIMIT)
         if document_uploads:
             shop.document_images = firebase_manager.upload_multiple_images(document_uploads, 'documents', settings.DOCUMENT_IMAGE_LIMIT)
+
         shop.save()
         return shop
 

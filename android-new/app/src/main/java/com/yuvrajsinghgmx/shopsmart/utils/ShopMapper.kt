@@ -14,7 +14,10 @@ fun BaseShop.toUiShop(): Shop {
         isFavorite = isFavorite,
         averageRating = averageRating,
         description = description,
-        address = address
+        address = address,
+        latitude = latitude,
+        longitude = longitude,
+        phone = phone
     )
 }
 

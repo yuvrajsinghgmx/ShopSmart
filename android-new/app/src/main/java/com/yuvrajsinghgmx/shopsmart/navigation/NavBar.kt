@@ -20,6 +20,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.auth.LoginScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartScreen
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.home.HomeScreen
+import com.yuvrajsinghgmx.shopsmart.screens.home.HomeViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.SharedShopViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.shopDetailsScreen.ShopDetail
 import com.yuvrajsinghgmx.shopsmart.screens.onboarding.OnBoardingScreen
@@ -30,6 +31,7 @@ import com.yuvrajsinghgmx.shopsmart.screens.profile.EditProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.profile.UserProfileScreen
 import com.yuvrajsinghgmx.shopsmart.screens.review.ReviewScreen
 import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedProductScreen
+import com.yuvrajsinghgmx.shopsmart.screens.savedProducts.SavedViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.search.SearchScreen
 import com.yuvrajsinghgmx.shopsmart.screens.shared.SharedAppViewModel
 import com.yuvrajsinghgmx.shopsmart.screens.shops.AddShopScreen
@@ -45,7 +47,8 @@ fun AppNavHost(
     val sharedAppViewModel: SharedAppViewModel = hiltViewModel()
     val authPrefs = AuthPrefs(LocalContext.current)
     val cartViewModel: CartViewModel = hiltViewModel()
-
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val savedViewModel : SavedViewModel = hiltViewModel()
     val startDestination = when {
         authPrefs.getAccessToken().isNullOrBlank() -> "login_route"
         !authPrefs.isOnboardingCompleted() -> "onboarding"
@@ -58,7 +61,16 @@ fun AppNavHost(
         modifier = Modifier.padding(padding)
     ) {
         authGraph(navController, sharedAppViewModel)
-        mainGraph(navController, sharedAppViewModel, sharedViewModel, sharedProductViewModel,cartViewModel,authPrefs)
+        mainGraph(
+            navController,
+            sharedAppViewModel,
+            sharedViewModel,
+            savedViewModel = savedViewModel,
+            sharedProductViewModel = sharedProductViewModel,
+            cartViewModel = cartViewModel,
+            homeViewModel = homeViewModel,
+            authPrefs = authPrefs
+        )
     }
 }
 
@@ -122,26 +134,29 @@ fun NavGraphBuilder.mainGraph(
     sharedViewModel: SharedShopViewModel,
     sharedProductViewModel: ProductDetailsViewModel,
     cartViewModel: CartViewModel,
+    homeViewModel: HomeViewModel,
+    savedViewModel: SavedViewModel,
     authPrefs: AuthPrefs
 ) {
     navigation(startDestination = BottomNavItem.Home.route, route = "main_graph") {
         composable(BottomNavItem.Home.route) {
             HomeScreen(
                 navController = navController,
+                viewModel = homeViewModel,
                 sharedViewModel = sharedViewModel,
                 authPrefs = authPrefs
             )
         }
         composable(BottomNavItem.Cart.route) {
             CartScreen(
-                viewModel = cartViewModel
+                viewModel = cartViewModel,
+                navController = navController
             )
         }
         composable(BottomNavItem.Saved.route) {
             SavedProductScreen(
-                onBack = {
-                    handleBack(navController)
-                }
+                onBack = { handleBack(navController)},
+                viewModel = savedViewModel
             )
         }
         composable(BottomNavItem.Profile.route) {

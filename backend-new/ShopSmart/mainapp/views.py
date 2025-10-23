@@ -283,7 +283,7 @@ class LoadHomeView(APIView):
 
             except Exception as e:
                 print(f"Error in LoadHomeView: {str(e)}")
-                return Response({'error': 'Something went wrong while loading data'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({f"error': 'Something went wrong while loading data: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ShopDetailView(generics.RetrieveAPIView):

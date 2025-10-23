@@ -12,7 +12,10 @@ data class Shop(
     val isFavorite: Boolean,
     val averageRating: Double,
     val description: String,
-    val address: String
+    val address: String,
+    val latitude: Double,
+    val longitude: Double,
+    val phone: String?
 )
 
 data class ShopResponse(
@@ -36,7 +39,9 @@ data class ShopResponse(
     @SerializedName("products_count") val productsCount: Int? = null,
     @SerializedName("recent_reviews") val recentReviews: List<Review>? = null,
     @SerializedName("document_images") val documentImages: List<String>? = emptyList(),
-    val phone: String,
+    val phone: String?,
     @SerializedName("featured_products") val featuredProducts: List<Product>? = emptyList(),
-    @SerializedName("all_products") val allProducts: List<Product>? = emptyList()
+    @SerializedName("all_products") val allProducts: List<Product>? = emptyList(),
+    val latitude: Double?,
+    val longitude: Double?
 )

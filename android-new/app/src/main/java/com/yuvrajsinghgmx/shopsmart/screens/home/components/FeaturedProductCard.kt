@@ -1,5 +1,6 @@
 package com.yuvrajsinghgmx.shopsmart.screens.home.components
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,19 +29,16 @@ import coil3.compose.AsyncImage
 import com.yuvrajsinghgmx.shopsmart.R
 import com.yuvrajsinghgmx.shopsmart.data.modelClasses.Product
 import com.yuvrajsinghgmx.shopsmart.screens.cart.CartViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun FeaturedProductCard(
     product: Product,
     cartViewModel: CartViewModel,
-    snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
+    context: Context,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
-            .width(160.dp)
+        modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(color = MaterialTheme.colorScheme.surface)
             .padding(12.dp)
@@ -62,7 +58,8 @@ fun FeaturedProductCard(
         Text(
             text = product.name,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp),
+            maxLines = 2
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -78,17 +75,12 @@ fun FeaturedProductCard(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
-                )
+                ),
+                maxLines = 1
             )
             Button(
                 onClick = {
-                    cartViewModel.addToCart(product.id)
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "${product.name} added to cart!",
-                            duration = SnackbarDuration.Short
-                        )
-                    }
+                    cartViewModel.addToCart(context = context,product.id)
                 },
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),

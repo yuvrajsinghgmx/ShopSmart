@@ -38,12 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuvrajsinghgmx.shopsmart.ui.theme.GreenPrimary
 
 @Composable
 fun SavedProductScreen(
-    viewModel: SavedViewModel = hiltViewModel(),
+    viewModel: SavedViewModel,
     onBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -81,7 +80,7 @@ fun SavedProductScreen(
             val isLoading = if (isProductsTab) isProductLoading else isShopLoading
 
             when {
-                isLoading ->
+                isLoading && items.isNotEmpty() ->
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -89,7 +88,7 @@ fun SavedProductScreen(
                         CircularProgressIndicator()
                     }
 
-                items.isEmpty() -> {
+                !isLoading && items.isEmpty() -> {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
