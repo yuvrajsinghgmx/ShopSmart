@@ -80,3 +80,20 @@ class Banner(models.Model):
     @property
     def is_expired(self):
         return self.end_date < timezone.now()
+
+
+class ActivityLog(models.Model):
+    """
+    Model to log important activities in the system for admin review.
+    """
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="activity_logs")
+    action_type = models.CharField(max_length=100)
+    details = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        user_str = self.user.username if self.user else "System"
+        return f"[{self.timestamp.strftime('%Y-%m-%d %H:%M')}] {user_str} - {self.action_type}"
