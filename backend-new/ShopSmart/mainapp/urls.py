@@ -19,6 +19,7 @@ from .views import (
     # Admin views
     AdminShopsListView, AdminPendingShopsView, ApproveShopView, AdminDeleteShopView,
     AdminProductsListView, AdminDeleteProductView, AdminShopDetailView, 
+    AdminUsersListView, AdminUserDetailView,
     
     ProductListCreateView, ShopListCreateView, 
     OnboardingView, ApiRootView,
@@ -81,6 +82,8 @@ urlpatterns = [
     path('admin/shops/<int:pk>/delete/', AdminDeleteShopView.as_view(), name='admin-delete-shop'),
     path('admin/products/', AdminProductsListView.as_view(), name='admin-products-list'),
     path('admin/products/<int:pk>/delete/', AdminDeleteProductView.as_view(), name='admin-delete-product'),
+    path('admin/users/', AdminUsersListView.as_view(), name='admin-users-list'),
+    path('admin/users/<int:pk>/', AdminUserDetailView.as_view(), name='admin-user-detail'),
 
     path('health/', health_check, name='health-check'),
     

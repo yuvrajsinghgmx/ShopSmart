@@ -27,7 +27,7 @@ from .serializers import (
     AdminShopListSerializer, AdminShopApprovalSerializer, AdminProductListSerializer,
     ChoicesSerializer, ToggleFavoriteResponseSerializer, ToggleHelpfulResponseSerializer,
     ApiRootResponseSerializer, LoadHomeResponseSerializer,ShopWithProductsSerializer,
-    ProductSearchSerializer
+    ProductSearchSerializer, AdminUserListSerializer, AdminUserDetailSerializer, AdminUserUpdateSerializer
 )
 from .models import Product, Shop, ShopReview, ProductReview, FavoriteShop, FavoriteProduct
 from subscriptions.models import ActivityLog
@@ -675,6 +675,43 @@ class AdminDeleteProductView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
+
+
+class AdminUsersListView(generics.ListAPIView):
+    """
+    Admin view to list all users.
+    """
+    serializer_class = AdminUserListSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['username', 'full_name', 'email', 'phone_number']
+    ordering_fields = ['id', 'username', 'full_name', 'email', 'role', 'is_active', 'date_joined']
+    ordering = ['-date_joined']
+    pagination_class = StandardResultsSetPagination
+    
+    def get_queryset(self):
+        return User.objects.all()
+
+
+class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Admin view for retrieving, updating, or deleting a user.
+    """
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, IsAdmin]
+    lookup_field = 'pk' 
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return AdminUserUpdateSerializer
+        return AdminUserDetailSerializer
+    
+    def perform_destroy(self, instance):
+        if instance == self.request.user: # Prevent self-deletion
+            raise ValidationError("You cannot delete your own account.")
+        if instance.is_superuser:
+            raise ValidationError("Superuser accounts cannot be deleted via the API.")
+        super().perform_destroy(instance)
 
 
 def health_check(request):
