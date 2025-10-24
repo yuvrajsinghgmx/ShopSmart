@@ -96,3 +96,23 @@ export const deleteProduct = (id) => {
     method: 'DELETE',
   });
 };
+
+export const getUsers = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return apiRequest(`admin/users/?${query}`, { method: 'GET' });
+};
+
+export const getUserDetails = (pk) => apiRequest(`admin/users/${pk}/`, { method: 'GET' });
+
+export const updateUser = (pk, data) => {
+  return apiRequest(`admin/users/${pk}/`, {
+    method: 'PATCH',
+    body: data,
+  });
+};
+
+export const deleteUser = (pk) => {
+  return apiRequest(`admin/users/${pk}/`, {
+    method: 'DELETE',
+  });
+};

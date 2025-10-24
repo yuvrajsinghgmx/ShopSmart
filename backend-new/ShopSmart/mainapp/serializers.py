@@ -6,6 +6,7 @@ from django.conf import settings
 from .models import Product, Shop, FavoriteShop, FavoriteProduct, ShopReview, ProductReview
 from .firebase_utils import FirebaseStorageManager
 from random import shuffle
+from .choices import Role
 
 User = get_user_model()
 
@@ -574,3 +575,34 @@ class AdminAuthResponseSerializer(serializers.Serializer):
     access = serializers.CharField()
     refresh = serializers.CharField()
     user = AdminUserSerializer()
+
+
+class AdminUserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'full_name', 'email', 'phone_number',
+            'role', 'is_active', 'date_joined'
+        ]
+
+
+class AdminUserDetailSerializer(serializers.ModelSerializer):
+    shops_owned = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'full_name', 'email', 'phone_number', 'role', 'is_active', 'date_joined', 'last_login',
+            'profile_image', 'current_address', 'latitude', 'longitude', 'location_radius_km', 'onboarding_completed', 'shops_owned'
+        ]
+
+    def get_shops_owned(self, obj):
+        if obj.role == Role.SHOP_OWNER:
+            return [{'id': shop.id, 'name': shop.name, 'is_approved': shop.is_approved} for shop in obj.shops.all()]
+        return None
+
+
+class AdminUserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['role', 'is_active']
