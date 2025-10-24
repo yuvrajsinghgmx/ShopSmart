@@ -48,48 +48,55 @@ fun ProductImageFromUrl(imageUrls: List<String>) {
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp)
+                .height(280.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
         ) {
             itemsIndexed(images) { index, url ->
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(url)
                         .crossfade(true)
+                        .crossfade(300)
                         .build(),
-                    contentDescription = "Product Image $index",
+                    contentDescription = "Product Image ${index + 1} of ${images.size}",
                     contentScale = ContentScale.Crop,
                     error = painterResource(R.drawable.error),
+                    placeholder = painterResource(R.drawable.error),
                     modifier = Modifier
-                        .width(screenWidth - 32.dp)
-                        .height(250.dp)
+                        .width(screenWidth - 60.dp)
+                        .height(264.dp)
                         .clip(RoundedCornerShape(12.dp))
                 )
             }
         }
 
-        // Lightweight indicator (recomposes only this text)
+        // Image indicator overlay
         ImageIndicator(currentPage, images.size)
     }
 }
 
 @Composable
 private fun ImageIndicator(currentPage: Int, total: Int) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        Text(
-            text = "${currentPage + 1}/$total",
-            color = Color.White,
+    if (total > 1) {
+        Box(
             modifier = Modifier
-                .padding(16.dp)
-                .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
+                .fillMaxWidth()
+                .height(280.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Text(
+                text = "${currentPage + 1}/$total",
+                color = Color.White,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
     }
 }
